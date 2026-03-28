@@ -21,6 +21,7 @@ from characters.m import draw_m
 from characters.n import draw_n
 from characters.q import draw_q
 from characters.r import draw_r
+from characters.t import draw_t
 from characters.u import draw_u
 from characters.y import draw_y
 
@@ -57,6 +58,7 @@ def build_font(output_path="OrbitonMono.ttf"):
             "p",
             "q",
             "r",
+            "t",
             "u",
             "y",
         ]
@@ -81,6 +83,7 @@ def build_font(output_path="OrbitonMono.ttf"):
             112: "p",
             113: "q",
             114: "r",
+            116: "t",
             117: "u",
             121: "y",
         }
@@ -142,6 +145,9 @@ def build_font(output_path="OrbitonMono.ttf"):
     r_pen = TTGlyphPen(None)
     draw_r(r_pen, font_config=FontConfig, stroke=60)
 
+    t_pen = TTGlyphPen(None)
+    draw_t(t_pen, font_config=FontConfig, stroke=60)
+
     u_pen = TTGlyphPen(None)
     draw_u(u_pen, font_config=FontConfig, stroke=60)
 
@@ -169,6 +175,7 @@ def build_font(output_path="OrbitonMono.ttf"):
             "p": p_pen.glyph(),
             "q": q_pen.glyph(),
             "r": r_pen.glyph(),
+            "t": t_pen.glyph(),
             "u": u_pen.glyph(),
             "y": y_pen.glyph(),
         }

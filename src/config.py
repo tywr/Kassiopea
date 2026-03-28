@@ -48,6 +48,10 @@ class FontConfig:
     F_OFFSET = 0.2
     F_CAP_OFFSET = 0
 
+    # How much offset for T character and the foot
+    T_OFFSET = 0.2
+    T_FOOT_OFFSET = 0.2
+
     # Length of the m letter middle tail (percentage of x-height)
     M_CUT_RATIO = 0.4
 
