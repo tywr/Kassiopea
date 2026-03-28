@@ -27,7 +27,8 @@ def draw_y(pen, font_config: FontConfig, stroke: int):
         corner_y=FontConfig.DESCENT + FontConfig.LOWER_HOOK_OFFSET,   # bottom of the descender
         vertical_end=stroke,           # up to baseline area (overlaps with u)
         horizontal_end=outer_left,     # hook extends left
-        radius=FontConfig.HOOK_RADIUS,
+        x_offset=FontConfig.HOOK_X_OFFSET,
+        y_offset=FontConfig.HOOK_Y_OFFSET,
         stroke=stroke,
     )
 

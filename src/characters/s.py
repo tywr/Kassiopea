@@ -11,26 +11,26 @@ def draw_s(pen, font_config: FontConfig, stroke: int):
     mid_y = FontConfig.X_HEIGHT / 2
     top = FontConfig.X_HEIGHT
 
-    h_radius = FontConfig.H_RADIUS
-    v_radius = FontConfig.V_RADIUS
+    x_off = FontConfig.X_OFFSET
+    y_off = FontConfig.Y_OFFSET
 
     # --- Top half: rounded rect from mid_y to top, opening on the right ---
-    top_outer_cv = min(v_radius, (top - mid_y) / 2)
-    top_outer_ch = min(h_radius, (outer_right - outer_left) / 2)
+    top_xo = min(x_off, (outer_right - outer_left) / 2)
+    top_yo = min(y_off, (top - mid_y) / 2)
 
     top_shape = pathops.Path()
     top_pen = top_shape.getPen()
     rounded_rect(
         top_pen,
         x1=outer_left, y1=mid_y, x2=outer_right, y2=top,
-        radius_v=top_outer_cv, radius_h=top_outer_ch, clockwise=False,
+        x_offset=top_xo, y_offset=top_yo, clockwise=False,
     )
-    inner_cv = max(0, top_outer_cv - stroke)
-    inner_ch = max(0, top_outer_ch - stroke)
+    inner_xo = max(0, top_xo - stroke)
+    inner_yo = max(0, top_yo - stroke)
     rounded_rect(
         top_pen,
         x1=outer_left + stroke, y1=mid_y + stroke, x2=outer_right - stroke, y2=top - stroke,
-        radius_v=inner_cv, radius_h=inner_ch, clockwise=True,
+        x_offset=inner_xo, y_offset=inner_yo, clockwise=True,
     )
 
     # Cut right opening (from mid_y to mid_y + gap)
@@ -46,20 +46,20 @@ def draw_s(pen, font_config: FontConfig, stroke: int):
     top_result = pathops.op(top_shape, cut_right, pathops.PathOp.DIFFERENCE, fix_winding=True)
 
     # --- Bottom half: rounded rect from 0 to mid_y, opening on the left ---
-    bot_outer_cv = min(v_radius, mid_y / 2)
-    bot_outer_ch = min(h_radius, (outer_right - outer_left) / 2)
+    bot_xo = min(x_off, (outer_right - outer_left) / 2)
+    bot_yo = min(y_off, mid_y / 2)
 
     bot_shape = pathops.Path()
     bot_pen = bot_shape.getPen()
     rounded_rect(
         bot_pen,
         x1=outer_left, y1=0, x2=outer_right, y2=mid_y,
-        radius_v=bot_outer_cv, radius_h=bot_outer_ch, clockwise=False,
+        x_offset=bot_xo, y_offset=bot_yo, clockwise=False,
     )
     rounded_rect(
         bot_pen,
         x1=outer_left + stroke, y1=stroke, x2=outer_right - stroke, y2=mid_y - stroke,
-        radius_v=inner_cv, radius_h=inner_ch, clockwise=True,
+        x_offset=inner_xo, y_offset=inner_yo, clockwise=True,
     )
 
     # Cut left opening (from gap to mid_y)

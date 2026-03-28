@@ -1,10 +1,43 @@
 import math
 
 
+def _solve_cubic_roots_01(a, b, c, d):
+    """Find real roots of ax³ + bx² + cx + d = 0 in [0, 1]."""
+    # Normalize
+    if abs(a) < 1e-12:
+        # Degenerate to quadratic
+        return _solve_quadratic(b, c, d)
+
+    # Use numerical approach: sample and refine with Newton's method
+    roots = []
+    n = 64
+    prev = a * 0 + b * 0 + c * 0 + d
+    for i in range(1, n + 1):
+        t = i / n
+        val = a * t**3 + b * t**2 + c * t + d
+        if abs(val) < 1e-12:
+            roots.append(t)
+        elif prev * val < 0:
+            # Sign change — bisect
+            lo, hi = (i - 1) / n, t
+            for _ in range(50):
+                mid = (lo + hi) / 2
+                fmid = a * mid**3 + b * mid**2 + c * mid + d
+                if abs(fmid) < 1e-12:
+                    break
+                if fmid * (a * lo**3 + b * lo**2 + c * lo + d) < 0:
+                    hi = mid
+                else:
+                    lo = mid
+            roots.append((lo + hi) / 2)
+        prev = val
+
+    return roots
+
+
 def _solve_quadratic(a, b, c):
     """Solve ax² + bx + c = 0, return real roots in [0, 1]."""
     if abs(a) < 1e-12:
-        # Linear: bx + c = 0
         if abs(b) < 1e-12:
             return []
         t = -c / b
@@ -22,71 +55,43 @@ def _solve_quadratic(a, b, c):
     return roots
 
 
-def _eval_quad(p0, p1, p2, t):
-    """Evaluate a quadratic bezier at parameter t."""
-    return (1 - t) ** 2 * p0 + 2 * t * (1 - t) * p1 + t ** 2 * p2
+def _eval_cubic(p0, p1, p2, p3, t):
+    """Evaluate a cubic bezier at parameter t."""
+    u = 1 - t
+    return u**3 * p0 + 3 * u**2 * t * p1 + 3 * u * t**2 * p2 + t**3 * p3
 
 
-def rounded_rect_intersect_y(x1, y1, x2, y2, radius_h, radius_v, y):
+def rounded_rect_intersect_y(x1, y1, x2, y2, x_offset, y_offset, y):
     """Find x coordinates where the rounded rect outline crosses a horizontal line y=k.
 
     Returns a list of (x, y) points sorted by x.
     """
-    left, bottom, right, top = x1, y1, x2, y2
-    ch, cv = radius_h, radius_v
+    mid_x = (x1 + x2) / 2
+    mid_y = (y1 + y2) / 2
     points = []
 
-    # Left edge: x=left, from y=bottom+cv to y=top-cv
-    if bottom + cv <= y <= top - cv:
-        points.append((left, y))
-
-    # Right edge: x=right, from y=bottom+cv to y=top-cv
-    if bottom + cv <= y <= top - cv:
-        points.append((right, y))
-
-    # Bottom edge: y=bottom, from x=left+ch to x=right-ch (only if y == bottom)
-    # Top edge: y=top, from x=left+ch to x=right-ch (only if y == top)
-    if abs(y - bottom) < 1e-9:
-        points.append((left + ch, y))
-        points.append((right - ch, y))
-    if abs(y - top) < 1e-9:
-        points.append((left + ch, y))
-        points.append((right - ch, y))
-
-    # BL corner: P0=(left+ch, bottom), P1=(left, bottom), P2=(left, bottom+cv)
-    for t in _solve_quadratic(
-        bottom - 2 * bottom + (bottom + cv),
-        2 * (bottom - bottom),
-        bottom - y,
-    ):
-        # Recalculate properly
-        pass
-
-    # Solve each corner's quadratic bezier against y=k
-    corners = [
-        # (P0, P1, P2) for each corner
-        # BL: bottom-left
-        ((left + ch, bottom), (left, bottom), (left, bottom + cv)),
-        # BR: bottom-right
-        ((right - ch, bottom), (right, bottom), (right, bottom + cv)),
-        # TR: top-right
-        ((right, top - cv), (right, top), (right - ch, top)),
-        # TL: top-left
-        ((left, top - cv), (left, top), (left + ch, top)),
+    # The shape has 4 cubic bezier curves connecting midpoints.
+    # Each curve: (start, cp1, cp2, end) with x and y coordinates.
+    curves = [
+        # Bottom-right: bottom_mid → right_mid
+        ((mid_x, y1), (mid_x + x_offset, y1), (x2, mid_y - y_offset), (x2, mid_y)),
+        # Top-right: right_mid → top_mid
+        ((x2, mid_y), (x2, mid_y + y_offset), (mid_x + x_offset, y2), (mid_x, y2)),
+        # Top-left: top_mid → left_mid
+        ((mid_x, y2), (mid_x - x_offset, y2), (x1, mid_y + y_offset), (x1, mid_y)),
+        # Bottom-left: left_mid → bottom_mid
+        ((x1, mid_y), (x1, mid_y - y_offset), (mid_x - x_offset, y1), (mid_x, y1)),
     ]
 
-    # Clear previous corner attempts
-    points_from_corners = []
-    for p0, p1, p2 in corners:
-        # Solve (1-t)²·p0y + 2t(1-t)·p1y + t²·p2y = y
-        a = p0[1] - 2 * p1[1] + p2[1]
-        b = 2 * (p1[1] - p0[1])
-        c = p0[1] - y
-        for t in _solve_quadratic(a, b, c):
-            x = _eval_quad(p0[0], p1[0], p2[0], t)
-            points_from_corners.append((x, y))
-
-    points.extend(points_from_corners)
+    for p0, p1, p2, p3 in curves:
+        # Solve for t where y(t) = y
+        a = -p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]
+        b = 3 * p0[1] - 6 * p1[1] + 3 * p2[1]
+        c = -3 * p0[1] + 3 * p1[1]
+        d = p0[1] - y
+        for t in _solve_cubic_roots_01(a, b, c, d):
+            x_val = _eval_cubic(p0[0], p1[0], p2[0], p3[0], t)
+            points.append((x_val, y))
 
     # Deduplicate close points
     unique = []
@@ -97,48 +102,30 @@ def rounded_rect_intersect_y(x1, y1, x2, y2, radius_h, radius_v, y):
     return unique
 
 
-def rounded_rect_intersect_x(x1, y1, x2, y2, radius_h, radius_v, x):
+def rounded_rect_intersect_x(x1, y1, x2, y2, x_offset, y_offset, x):
     """Find y coordinates where the rounded rect outline crosses a vertical line x=k.
 
     Returns a list of (x, y) points sorted by y.
     """
-    left, bottom, right, top = x1, y1, x2, y2
-    ch, cv = radius_h, radius_v
+    mid_x = (x1 + x2) / 2
+    mid_y = (y1 + y2) / 2
     points = []
 
-    # Bottom edge: y=bottom, from x=left+ch to x=right-ch
-    if left + ch <= x <= right - ch:
-        points.append((x, bottom))
-
-    # Top edge: y=top, from x=left+ch to x=right-ch
-    if left + ch <= x <= right - ch:
-        points.append((x, top))
-
-    # Left edge: x=left (only if x == left)
-    if abs(x - left) < 1e-9:
-        points.append((x, bottom + cv))
-        points.append((x, top - cv))
-
-    # Right edge: x=right (only if x == right)
-    if abs(x - right) < 1e-9:
-        points.append((x, bottom + cv))
-        points.append((x, top - cv))
-
-    # Solve each corner's quadratic bezier against x=k
-    corners = [
-        ((left + ch, bottom), (left, bottom), (left, bottom + cv)),
-        ((right - ch, bottom), (right, bottom), (right, bottom + cv)),
-        ((right, top - cv), (right, top), (right - ch, top)),
-        ((left, top - cv), (left, top), (left + ch, top)),
+    curves = [
+        ((mid_x, y1), (mid_x + x_offset, y1), (x2, mid_y - y_offset), (x2, mid_y)),
+        ((x2, mid_y), (x2, mid_y + y_offset), (mid_x + x_offset, y2), (mid_x, y2)),
+        ((mid_x, y2), (mid_x - x_offset, y2), (x1, mid_y + y_offset), (x1, mid_y)),
+        ((x1, mid_y), (x1, mid_y - y_offset), (mid_x - x_offset, y1), (mid_x, y1)),
     ]
 
-    for p0, p1, p2 in corners:
-        a = p0[0] - 2 * p1[0] + p2[0]
-        b = 2 * (p1[0] - p0[0])
-        c = p0[0] - x
-        for t in _solve_quadratic(a, b, c):
-            y = _eval_quad(p0[1], p1[1], p2[1], t)
-            points.append((x, y))
+    for p0, p1, p2, p3 in curves:
+        a = -p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]
+        b = 3 * p0[0] - 6 * p1[0] + 3 * p2[0]
+        c = -3 * p0[0] + 3 * p1[0]
+        d = p0[0] - x
+        for t in _solve_cubic_roots_01(a, b, c, d):
+            y_val = _eval_cubic(p0[1], p1[1], p2[1], p3[1], t)
+            points.append((x, y_val))
 
     # Deduplicate close points
     unique = []

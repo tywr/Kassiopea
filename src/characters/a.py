@@ -58,7 +58,8 @@ def draw_a(pen, font_config: FontConfig, stroke: int):
         vertical_end=0,
         horizontal_end=FontConfig.WIDTH / 2
         - (FontConfig.A_TAIL_RATIO * FontConfig.X_WIDTH) / 2,
-        radius=FontConfig.HOOK_RADIUS,
+        x_offset=FontConfig.HOOK_X_OFFSET,
+        y_offset=FontConfig.HOOK_Y_OFFSET,
         stroke=stroke,
     )
 

@@ -1,41 +1,89 @@
-def rounded_rect(pen, x1, y1, x2, y2, radius_v, radius_h, clockwise=False):
-    """Draw a rounded rectangle where each corner is an identical curve.
+def rounded_rect_asym(
+    pen, x1, y1, x2, y2,
+    x_offset_left, y_offset_left,
+    x_offset_right, y_offset_right,
+    clockwise=False,
+):
+    """Draw a rounded rectangle with independent offsets for left and right sides.
 
-    The shape is 4 straight sides connected by 4 identical quadratic bezier
-    corners. Each corner curve starts `radius_h` units from the corner along
-    the horizontal edge and ends `radius_v` units from the corner along the
-    vertical edge. The control point sits at the sharp corner itself.
+    Each quarter-curve connects two adjacent side midpoints via a cubic bezier.
+    The left two quarters use x_offset_left/y_offset_left, the right two use
+    x_offset_right/y_offset_right.
 
     Args:
         x1, y1: bottom-left corner of the bounding box.
         x2, y2: top-right corner of the bounding box.
-        radius_v: vertical extent of each corner curve.
-        radius_h: horizontal extent of each corner curve.
+        x_offset_left: horizontal control point offset for the left side quarters.
+        y_offset_left: vertical control point offset for the left side quarters.
+        x_offset_right: horizontal control point offset for the right side quarters.
+        y_offset_right: vertical control point offset for the right side quarters.
         clockwise: winding direction (True for inner counter / hole).
     """
-    left, bottom, right, top = x1, y1, x2, y2
-    ch, cv = radius_h, radius_v
+    mid_x = (x1 + x2) / 2
+    mid_y = (y1 + y2) / 2
 
     if not clockwise:
-        # Counter-clockwise (outer contour)
-        pen.moveTo((left + ch, bottom))
-        pen.lineTo((right - ch, bottom))  # bottom edge
-        pen.qCurveTo((right, bottom), (right, bottom + cv))  # BR corner
-        pen.lineTo((right, top - cv))  # right edge
-        pen.qCurveTo((right, top), (right - ch, top))  # TR corner
-        pen.lineTo((left + ch, top))  # top edge
-        pen.qCurveTo((left, top), (left, top - cv))  # TL corner
-        pen.lineTo((left, bottom + cv))  # left edge
-        pen.qCurveTo((left, bottom), (left + ch, bottom))  # BL corner
+        # CCW: bottom → right → top → left
+        pen.moveTo((mid_x, y1))
+        # Bottom-right quarter
+        pen.curveTo(
+            (mid_x + x_offset_right, y1),
+            (x2, mid_y - y_offset_right),
+            (x2, mid_y),
+        )
+        # Top-right quarter
+        pen.curveTo(
+            (x2, mid_y + y_offset_right),
+            (mid_x + x_offset_right, y2),
+            (mid_x, y2),
+        )
+        # Top-left quarter
+        pen.curveTo(
+            (mid_x - x_offset_left, y2),
+            (x1, mid_y + y_offset_left),
+            (x1, mid_y),
+        )
+        # Bottom-left quarter
+        pen.curveTo(
+            (x1, mid_y - y_offset_left),
+            (mid_x - x_offset_left, y1),
+            (mid_x, y1),
+        )
     else:
-        # Clockwise (inner contour / hole)
-        pen.moveTo((left + ch, bottom))
-        pen.qCurveTo((left, bottom), (left, bottom + cv))  # BL corner
-        pen.lineTo((left, top - cv))  # left edge
-        pen.qCurveTo((left, top), (left + ch, top))  # TL corner
-        pen.lineTo((right - ch, top))  # top edge
-        pen.qCurveTo((right, top), (right, top - cv))  # TR corner
-        pen.lineTo((right, bottom + cv))  # right edge
-        pen.qCurveTo((right, bottom), (right - ch, bottom))  # BR corner
-        pen.lineTo((left + ch, bottom))  # bottom edge
+        # CW: bottom → left → top → right
+        pen.moveTo((mid_x, y1))
+        # Bottom-left quarter
+        pen.curveTo(
+            (mid_x - x_offset_left, y1),
+            (x1, mid_y - y_offset_left),
+            (x1, mid_y),
+        )
+        # Top-left quarter
+        pen.curveTo(
+            (x1, mid_y + y_offset_left),
+            (mid_x - x_offset_left, y2),
+            (mid_x, y2),
+        )
+        # Top-right quarter
+        pen.curveTo(
+            (mid_x + x_offset_right, y2),
+            (x2, mid_y + y_offset_right),
+            (x2, mid_y),
+        )
+        # Bottom-right quarter
+        pen.curveTo(
+            (x2, mid_y - y_offset_right),
+            (mid_x + x_offset_right, y1),
+            (mid_x, y1),
+        )
     pen.closePath()
+
+
+def rounded_rect(pen, x1, y1, x2, y2, x_offset, y_offset, clockwise=False):
+    """Draw a symmetric rounded rectangle. Delegates to rounded_rect_asym."""
+    rounded_rect_asym(
+        pen, x1, y1, x2, y2,
+        x_offset_left=x_offset, y_offset_left=y_offset,
+        x_offset_right=x_offset, y_offset_right=y_offset,
+        clockwise=clockwise,
+    )

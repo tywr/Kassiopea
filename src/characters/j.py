@@ -44,7 +44,8 @@ def draw_j(pen, font_config: FontConfig, stroke: int):
         corner_y=FontConfig.DESCENT + FontConfig.LOWER_HOOK_OFFSET,
         vertical_end=FontConfig.X_HEIGHT,
         horizontal_end=outer_left,
-        radius=FontConfig.HOOK_RADIUS,
+        x_offset=FontConfig.HOOK_X_OFFSET,
+        y_offset=FontConfig.HOOK_Y_OFFSET,
         stroke=stroke,
     )
 

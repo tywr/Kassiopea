@@ -1,4 +1,4 @@
-"""Generate a minimal TTF font containing the letter 'o'."""
+"""Generate a TTF font with cubic bezier support."""
 
 from fontTools.fontBuilder import FontBuilder
 from fontTools.pens.ttGlyphPen import TTGlyphPen
@@ -107,89 +107,92 @@ def build_font(output_path="OrbitonMono.ttf"):
         }
     )
 
+    stroke = 60
+
     notdef_pen = TTGlyphPen(None)
     draw_notdef(notdef_pen)
 
     space_pen = TTGlyphPen(None)
 
     a_pen = TTGlyphPen(None)
-    draw_a(a_pen, font_config=FontConfig, stroke=60)
+    draw_a(a_pen, font_config=FontConfig, stroke=stroke)
 
     l_pen = TTGlyphPen(None)
-    draw_l(l_pen, font_config=FontConfig, stroke=60)
+    draw_l(l_pen, font_config=FontConfig, stroke=stroke)
 
     o_pen = TTGlyphPen(None)
-    draw_o(o_pen, font_config=FontConfig, stroke=60)
+    draw_o(o_pen, font_config=FontConfig, stroke=stroke)
 
     c_pen = TTGlyphPen(None)
-    draw_c(c_pen, font_config=FontConfig, stroke=60)
+    draw_c(c_pen, font_config=FontConfig, stroke=stroke)
 
     b_pen = TTGlyphPen(None)
-    draw_b(b_pen, font_config=FontConfig, stroke=60)
+    draw_b(b_pen, font_config=FontConfig, stroke=stroke)
 
     d_pen = TTGlyphPen(None)
-    draw_d(d_pen, font_config=FontConfig, stroke=60)
+    draw_d(d_pen, font_config=FontConfig, stroke=stroke)
 
     e_pen = TTGlyphPen(None)
-    draw_e(e_pen, font_config=FontConfig, stroke=60)
+    draw_e(e_pen, font_config=FontConfig, stroke=stroke)
 
     f_pen = TTGlyphPen(None)
-    draw_f(f_pen, font_config=FontConfig, stroke=60)
+    draw_f(f_pen, font_config=FontConfig, stroke=stroke)
 
     g_pen = TTGlyphPen(None)
-    draw_g(g_pen, font_config=FontConfig, stroke=60)
+    draw_g(g_pen, font_config=FontConfig, stroke=stroke)
 
     i_pen = TTGlyphPen(None)
-    draw_i(i_pen, font_config=FontConfig, stroke=60)
+    draw_i(i_pen, font_config=FontConfig, stroke=stroke)
 
     j_pen = TTGlyphPen(None)
-    draw_j(j_pen, font_config=FontConfig, stroke=60)
+    draw_j(j_pen, font_config=FontConfig, stroke=stroke)
 
     k_pen = TTGlyphPen(None)
-    draw_k(k_pen, font_config=FontConfig, stroke=60)
+    draw_k(k_pen, font_config=FontConfig, stroke=stroke)
 
     p_pen = TTGlyphPen(None)
-    draw_p(p_pen, font_config=FontConfig, stroke=60)
+    draw_p(p_pen, font_config=FontConfig, stroke=stroke)
 
     h_pen = TTGlyphPen(None)
-    draw_h(h_pen, font_config=FontConfig, stroke=60)
+    draw_h(h_pen, font_config=FontConfig, stroke=stroke)
 
     m_pen = TTGlyphPen(None)
-    draw_m(m_pen, font_config=FontConfig, stroke=60)
+    draw_m(m_pen, font_config=FontConfig, stroke=stroke)
 
     n_pen = TTGlyphPen(None)
-    draw_n(n_pen, font_config=FontConfig, stroke=60)
+    draw_n(n_pen, font_config=FontConfig, stroke=stroke)
 
     q_pen = TTGlyphPen(None)
-    draw_q(q_pen, font_config=FontConfig, stroke=60)
+    draw_q(q_pen, font_config=FontConfig, stroke=stroke)
 
     r_pen = TTGlyphPen(None)
-    draw_r(r_pen, font_config=FontConfig, stroke=60)
+    draw_r(r_pen, font_config=FontConfig, stroke=stroke)
 
     s_pen = TTGlyphPen(None)
-    draw_s(s_pen, font_config=FontConfig, stroke=60)
+    draw_s(s_pen, font_config=FontConfig, stroke=stroke)
 
     t_pen = TTGlyphPen(None)
-    draw_t(t_pen, font_config=FontConfig, stroke=60)
+    draw_t(t_pen, font_config=FontConfig, stroke=stroke)
 
     u_pen = TTGlyphPen(None)
-    draw_u(u_pen, font_config=FontConfig, stroke=60)
+    draw_u(u_pen, font_config=FontConfig, stroke=stroke)
 
     v_pen = TTGlyphPen(None)
-    draw_v(v_pen, font_config=FontConfig, stroke=60)
+    draw_v(v_pen, font_config=FontConfig, stroke=stroke)
 
     w_pen = TTGlyphPen(None)
-    draw_w(w_pen, font_config=FontConfig, stroke=60)
+    draw_w(w_pen, font_config=FontConfig, stroke=stroke)
 
     x_pen = TTGlyphPen(None)
-    draw_x(x_pen, font_config=FontConfig, stroke=60)
+    draw_x(x_pen, font_config=FontConfig, stroke=stroke)
 
     y_pen = TTGlyphPen(None)
-    draw_y(y_pen, font_config=FontConfig, stroke=60)
+    draw_y(y_pen, font_config=FontConfig, stroke=stroke)
 
     z_pen = TTGlyphPen(None)
-    draw_z(z_pen, font_config=FontConfig, stroke=60)
+    draw_z(z_pen, font_config=FontConfig, stroke=stroke)
 
+    fb.setupHead(glyphDataFormat=1)
     fb.setupGlyf(
         {
             ".notdef": notdef_pen.glyph(),

@@ -25,7 +25,8 @@ def draw_t(pen, font_config: FontConfig, stroke: int):
         corner_y=0,
         vertical_end=FontConfig.ASCENT,
         horizontal_end=foot_right,
-        radius=FontConfig.HOOK_RADIUS,
+        x_offset=FontConfig.HOOK_X_OFFSET,
+        y_offset=FontConfig.HOOK_Y_OFFSET,
         stroke=stroke,
     )
 

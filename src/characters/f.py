@@ -25,7 +25,8 @@ def draw_f(pen, font_config: FontConfig, stroke: int):
         corner_y=FontConfig.ASCENT,
         vertical_end=0,
         horizontal_end=cap_right,
-        radius=FontConfig.HOOK_RADIUS,
+        x_offset=FontConfig.HOOK_X_OFFSET,
+        y_offset=FontConfig.HOOK_Y_OFFSET,
         stroke=stroke,
     )
 
