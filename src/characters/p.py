@@ -1,32 +1,49 @@
-import pathops
-from fontTools.pens.recordingPen import RecordingPen
-
 from config import FontConfig
-from characters.o import draw_o
+from shapes.rounded_loop_tapered import rounded_loop_tapered
+from shapes.rect import rect
+from shapes.intersection_filler import intersection_filler
 
 
 def draw_p(pen, font_config: FontConfig, stroke: int):
     """Draw a 'p' by adding a vertical bar on the left side of an 'o', extending to descender."""
-    rec_o = RecordingPen()
-    draw_o(rec_o, font_config=font_config, stroke=stroke, taper="left", taper_ratio=FontConfig.TAPER_RATIO)
-
-    o_path = pathops.Path()
-    rec_o.replay(o_path.getPen())
-
-    # Left vertical bar extending to descender depth
     outer_left = FontConfig.WIDTH / 2 - FontConfig.X_WIDTH / 2 - stroke / 2
-    bar_left = outer_left
+    outer_right = FontConfig.WIDTH / 2 + FontConfig.X_WIDTH / 2 + stroke / 2
+
+    max_xo = (outer_right - outer_left) / 2
+    max_yo = FontConfig.X_HEIGHT / 2
+    x_offset = min(FontConfig.X_OFFSET, max_xo)
+    y_offset = min(FontConfig.Y_OFFSET, max_yo)
+
+    # Left vertical bar (ascender height)
     bar_right = outer_left + stroke
-    bar_bottom = FontConfig.DESCENT
-    bar_top = FontConfig.X_HEIGHT
+    rect(pen, outer_left, FontConfig.DESCENT, bar_right, FontConfig.X_HEIGHT)
 
-    bar = pathops.Path()
-    bar_pen = bar.getPen()
-    bar_pen.moveTo((bar_left, bar_bottom))
-    bar_pen.lineTo((bar_left, bar_top))
-    bar_pen.lineTo((bar_right, bar_top))
-    bar_pen.lineTo((bar_right, bar_bottom))
-    bar_pen.closePath()
+    # Loop tapered on the right (where the stem is)
+    rounded_loop_tapered(
+        pen,
+        x1=outer_left,
+        y1=0,
+        x2=outer_right,
+        y2=FontConfig.X_HEIGHT,
+        x_offset=x_offset,
+        y_offset=y_offset,
+        x_offset_taper=FontConfig.X_OFFSET_TAPER,
+        y_offset_taper=FontConfig.Y_OFFSET_TAPER,
+        stroke=stroke,
+        ratio_taper=FontConfig.RATIO_TAPER,
+        direction="left",
+    )
+    intersection_filler(
+        pen=pen,
+        stroke=stroke,
+        outer_left=outer_left + stroke * FontConfig.RATIO_TAPER,
+        outer_right=outer_right,
+        height=FontConfig.X_HEIGHT,
+        x_offset=x_offset,
+        y_offset=y_offset,
+        side="left",
+        bar_position=bar_right,
+        fill_height=FontConfig.INTERSECTION_FILL_HEIGHT,
+    )
 
-    result = pathops.op(o_path, bar, pathops.PathOp.UNION, fix_winding=True)
-    result.draw(pen)
+    return None

@@ -1,6 +1,5 @@
 from config import FontConfig
 from shapes.rounded_loop_tapered import rounded_loop_tapered
-from shapes.intersect import rounded_rect_intersect_x
 from shapes.rect import rect
 from shapes.intersection_filler import intersection_filler
 
@@ -42,7 +41,8 @@ def draw_d(pen, font_config: FontConfig, stroke: int):
         height=FontConfig.X_HEIGHT,
         x_offset=x_offset,
         y_offset=y_offset,
-        bar_left=bar_left,
+        side="right",
+        bar_position=bar_left,
         fill_height=FontConfig.INTERSECTION_FILL_HEIGHT,
     )
 

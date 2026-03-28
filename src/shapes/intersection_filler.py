@@ -11,7 +11,6 @@ def fill_intersection(
     y: float,
     fill_height: float,
 ):
-    print(x, y)
     x1 = x - stroke / 2
     x2 = x + stroke / 2
     if direction == "bottom":
@@ -31,7 +30,8 @@ def intersection_filler(
     height,
     x_offset,
     y_offset,
-    bar_left,
+    side,
+    bar_position,
     fill_height,
 ):
     hits = rounded_rect_intersect_x(
@@ -41,17 +41,16 @@ def intersection_filler(
         height,
         x_offset,
         y_offset,
-        bar_left,
+        bar_position,
     )
 
     if len(hits) >= 2:
         bottom, top = hits[0], hits[-1]
-        print(hits)
         fill_intersection(
             pen,
             stroke=stroke,
             direction="bottom",
-            side="right",
+            side=side,
             x=bottom[0],
             y=bottom[1],
             fill_height=fill_height,
@@ -60,7 +59,7 @@ def intersection_filler(
             pen,
             stroke=stroke,
             direction="top",
-            side="right",
+            side=side,
             x=top[0],
             y=top[1],
             fill_height=fill_height,
