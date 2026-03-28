@@ -10,6 +10,7 @@ def draw_o(
     taper_ratio=1.0,
     center_x=None,
     x_ratio=1.0,
+    height=None,
 ):
     """Draw a tall rounded-rectangle 'o' with generous corner rounding.
 
@@ -25,7 +26,8 @@ def draw_o(
     """
     if center_x is None:
         center_x = FontConfig.WIDTH / 2
-    height = FontConfig.X_HEIGHT
+    if height is None:
+        height = FontConfig.X_HEIGHT
     half_width = FontConfig.X_WIDTH / 2 * x_ratio
     inner_left = center_x - half_width + stroke / 2
     inner_right = center_x + half_width - stroke / 2
@@ -44,7 +46,7 @@ def draw_o(
 
     # Clamp so corners don't exceed half the shape dimensions
     max_ch = (outer_right - outer_left) / 2
-    max_cv = font_config.X_HEIGHT / 2
+    max_cv = height / 2
     outer_corner_h = min(h_radius, max_ch)
     outer_corner_v = min(v_radius, max_cv)
 
@@ -54,7 +56,7 @@ def draw_o(
         left=outer_left,
         bottom=0,
         right=outer_right,
-        top=font_config.X_HEIGHT,
+        top=height,
         corner_h=outer_corner_h,
         corner_v=outer_corner_v,
         clockwise=False,
