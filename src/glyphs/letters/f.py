@@ -16,8 +16,8 @@ def draw_f(
         fc.x_height,
         xmid + fc.o_width / 2,
         fc.ascent,
-        fc.a_hx,
-        fc.a_hy,
+        fc.f_hx,
+        fc.f_hy,
         orientation="top-right",
     )
     draw_rect(

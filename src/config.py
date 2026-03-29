@@ -12,6 +12,7 @@ class FontConfig:
 
     tooth = 100
     cover = 20
+    tail_offset = 20
 
     o_width = 320
     o_hx = 175
@@ -23,9 +24,14 @@ class FontConfig:
 
     c_opening = 0.5
 
-    f_offset = -20
+    f_offset = -25
     f_len_left = 120
     f_len_right = 180
+    f_hx = 140
+    f_hy = 140
+
+    g_hx = 110
+    g_hy = 110
 
     m_width = 400
 
