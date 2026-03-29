@@ -2,7 +2,7 @@ class FontConfig:
     FAMILY_NAME = "OrbitonMono"
 
     UNITS_PER_EM = 1000
-    ASCENT = 665
+    ASCENT = 650
     DESCENT = -200
     CAP = 650
     WIDTH = 500

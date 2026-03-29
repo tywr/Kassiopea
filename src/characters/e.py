@@ -1,4 +1,3 @@
-import pathops
 from fontTools.pens.recordingPen import RecordingPen
 from shapes.rounded_half_loop import rounded_half_loop
 from shapes.rounded_half_loop_vertical import rounded_half_loop_vertical
