@@ -6,11 +6,6 @@ from shapes.rect import draw_rect
 def draw_a(
     pen,
     stroke: int,
-    taper=None,
-    taper_ratio=1.0,
-    center_x=None,
-    x_ratio=1.0,
-    height=None,
 ):
     x1 = fc.width / 2 - fc.o_width / 2 - stroke / 2
     y1 = 0

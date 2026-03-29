@@ -50,21 +50,21 @@ def _draw_outer_ear_right(
     mid_x = (x1 + x2) / 2
     mid_y = (y1 + y2) / 2
     p_start = (x2 - stroke, y1 + tooth - stroke / 2)
-    p_end = (x2 - stroke, y2 - tooth + stroke / 2)
+    p_end   = (x2 - stroke, y2 - tooth + stroke / 2)
 
-    pen.moveTo(p_start)
-    pen.curveTo((p_start[0], y1), (mid_x, y1), (mid_x, y1))
-    pen.curveTo(
-        (mid_x - hx, y1),
-        (x1, mid_y - hy),
+    pen.moveTo(p_end)                                        # start top-right
+    pen.curveTo((p_end[0], y2), (mid_x, y2), (mid_x, y2))  # → top-middle
+    pen.curveTo(                                             # top-left quarter
+        (mid_x - hx, y2),
+        (x1, mid_y + hy),
         (x1, mid_y),
     )
-    pen.curveTo(
-        (x1, mid_y + hy),
-        (mid_x - hx, y2),
-        (mid_x, y2),
+    pen.curveTo(                                             # bottom-left quarter
+        (x1, mid_y - hy),
+        (mid_x - hx, y1),
+        (mid_x, y1),
     )
-    pen.curveTo((mid_x, y2), (p_end[0], y2), (p_end[0], p_end[1]))
+    pen.curveTo((mid_x, y1), (p_start[0], y1), p_start)    # → bottom-right
     pen.closePath()
 
 
@@ -121,7 +121,7 @@ def draw_superellipse_ear(
         y2 - stroke,
         inner_hx,
         inner_hy,
-        clockwise=side == "left",
+        clockwise="left",
     )
 
     # Draw the covers

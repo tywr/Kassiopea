@@ -22,6 +22,9 @@ class FontConfig:
     a_hx = 125
     a_hy = 125
 
+    # c character
+    c_opening = 0.5
+
     m_width = 400
 
     tension = 1
