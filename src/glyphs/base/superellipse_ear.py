@@ -18,23 +18,23 @@ def _draw_outer_ear(
     p_start = (x1 + stroke, y1 + tooth)
     p_end = (x1 + stroke, y2 - tooth)
 
-    # bottom-tooth -> right -> top -> left
-    pen.moveTo(p1)
-    pen.curveTo(
-        (x1 + stroke + hx, y1 + tooth),
-        (mid_x, mid_y + hy),
-        (x2, mid_y),
-    )
+    # Trace: p_start → bottom → right side (superellipse) → top → p_end → close
+    pen.moveTo(p_start)
+    pen.lineTo((mid_x, y1))
+    # bottom-right quarter
     pen.curveTo(
         (mid_x + hx, y1),
         (x2, mid_y - hy),
         (x2, mid_y),
     )
-    pen.curveTo(            # top-right
+    # top-right quarter
+    pen.curveTo(
         (x2, mid_y + hy),
         (mid_x + hx, y2),
         (mid_x, y2),
     )
+    pen.lineTo(p_end)
+    pen.closePath()
 
 
 def draw_superellipse_ear(
