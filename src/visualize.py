@@ -52,12 +52,12 @@ def plot_control_points(ax, recording):
                     "-", color="#e74c3c", linewidth=0.5, alpha=0.5, zorder=4)
 
 
-def visualize(family, glyph, show_controls=False):
+def visualize(family, glyph, show_controls=False, stroke=STROKE):
     mod = importlib.import_module(f"glyphs.{family}.{glyph}")
     draw_fn = getattr(mod, f"draw_{glyph}")
 
     rec = RecordingPen()
-    draw_fn(rec, stroke=STROKE)
+    draw_fn(rec, stroke=stroke)
 
     fig, ax = plt.subplots(1, 1, figsize=(6, 8))
 
@@ -98,5 +98,6 @@ if __name__ == "__main__":
     parser.add_argument("family", help="Glyph family (e.g. base, letters)")
     parser.add_argument("glyph", help="Glyph name (e.g. d, superellipse_ear)")
     parser.add_argument("-c", action="store_true", help="Show bezier control points")
+    parser.add_argument("-s", type=int, default=60, help="Stroke width (default: 60)")
     args = parser.parse_args()
-    visualize(args.family, args.glyph, show_controls=args.c)
+    visualize(args.family, args.glyph, show_controls=args.c, stroke=args.s)

@@ -31,6 +31,12 @@ class FontConfig:
     f_hx = 150
     f_hy = 150
 
+    i_offset = 0
+    i_len_left = 150
+    i_len_right = 160
+    i_len_cap = 140
+    i_dot_width = 43 
+
     g_hx = 150
     g_hy = 150
 
