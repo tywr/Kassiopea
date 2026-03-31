@@ -14,9 +14,9 @@ class LowercaseUGlyph(Glyph):
         stroke: int,
     ):
         offset = 0
-        width = 320
-        hx = 200
-        hy = 230
+        width = fc.body_width + fc.h_overshoot
+        hx = fc.hx
+        hy = fc.hy
 
         x1 = fc.width / 2 - width / 2 - stroke / 2 + offset
         y1 = -fc.overshoot

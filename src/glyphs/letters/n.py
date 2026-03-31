@@ -14,7 +14,7 @@ class LowercaseNGlyph(Glyph):
         stroke: int,
     ):
         offset = 0
-        width = fc.width
+        width = fc.body_width
         hx = fc.hx
         hy = fc.hy
 

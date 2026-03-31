@@ -16,7 +16,7 @@ class LowercaseCGlyph(Glyph):
         stroke: int,
     ):
         offset = 0
-        width = fc.width
+        width = fc.body_width + 2 * fc.h_overshoot
         hx = fc.hx
         hy = fc.hy
         opening = 280
@@ -29,9 +29,7 @@ class LowercaseCGlyph(Glyph):
         ymid = fc.x_height / 2
 
         loop_glyph = ufoLib2.objects.Glyph()
-        draw_superellipse_loop(
-            loop_glyph.getPen(), stroke, x1, y1, x2, y2, hx, hy
-        )
+        draw_superellipse_loop(loop_glyph.getPen(), stroke, x1, y1, x2, y2, hx, hy)
 
         cut_glyph = ufoLib2.objects.Glyph()
         draw_rect(

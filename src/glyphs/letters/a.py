@@ -15,7 +15,7 @@ class LowercaseAGlyph(Glyph):
         stroke: int,
     ):
         offset = 0
-        width = 320
+        width = fc.body_width + fc.h_overshoot
         loop_ratio = 0.6
         hx = 135
         hy = 150
@@ -40,7 +40,7 @@ class LowercaseAGlyph(Glyph):
             fc.tooth,
             fc.cover,
             side="right",
-            cut="top"
+            cut="top",
         )
         draw_rect(pen, x2 - stroke, 0, x2, fc.x_height / 2)
         # Curve to the cap
@@ -68,4 +68,10 @@ class LowercaseAGlyph(Glyph):
             hy,
             orientation="top-right",
         )
-        draw_rect(pen, xmid, fc.x_height * loop_ratio - stroke, x2 - stroke, fc.x_height * loop_ratio)
+        draw_rect(
+            pen,
+            xmid,
+            fc.x_height * loop_ratio - stroke,
+            x2 - stroke,
+            fc.x_height * loop_ratio,
+        )

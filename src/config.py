@@ -9,11 +9,20 @@ class FontConfig:
     x_height = 500
     accent = 605
     overshoot = 10
+    h_overshoot = 5
 
+    # Depth of tooth
     tooth = 120
+
+    # Amount of tooth gap coverage
     cover = 26
+
+    # Y-axis offset of the tail above descender line (g, y)
     tail_offset = 20
 
+    # Standard width of characters
+    body_width = 320
+
+    # Standard hx and hy curve parameters for superellipse
     hx = 200
     hy = 230
-    width = 320
