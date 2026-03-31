@@ -3,7 +3,7 @@ from glyph import Glyph
 from shapes.superellipse_loop import draw_superellipse_loop
 
 
-class OGlyph(Glyph):
+class LowercaseOGlyph(Glyph):
     name = "o"
     unicode = "0x6F"
 
