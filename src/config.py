@@ -1,5 +1,5 @@
 class FontConfig:
-    family_name = "orbitonmono"
+    family_name = "Vimpera"
 
     units_per_em = 1000
     ascent = 650
@@ -79,5 +79,3 @@ class FontConfig:
     o_width = 320
     o_hx = 200
     o_hy = 230
-
-    tension = 1

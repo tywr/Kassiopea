@@ -1,11 +1,11 @@
-"""Generate OrbitonMono OTF font with CFF outlines."""
+"""Generate font."""
 
 import pathops
 from fontTools.fontBuilder import FontBuilder
 from fontTools.pens.t2CharStringPen import T2CharStringPen
-from fontTools.pens.pointPen import SegmentToPointPen
 
 from config import FontConfig as fc
+
 from glyphs.letters.a import draw_a
 from glyphs.letters.o import draw_o
 from glyphs.letters.b import draw_b
@@ -39,18 +39,7 @@ def record_glyph(draw_fn, **kwargs):
     return pen.getCharString()
 
 
-    # path = pathops.Path()
-    # draw_fn(pathops.PathPen(path), **kwargs)
-    #
-    # result = pathops.Path()
-    # pathops.op(path, path, pathops.PathOp.UNION, result)
-    #
-    # pathops.simplify(path, clockwise=False)
-    # path.draw(pen)
-    # return pen.getCharString()
-
-
-def build_font(output_path="OrbitonMono.otf"):
+def build_font(output_path=f"{fc.family_name}.otf"):
     cmap = {
         0x20: "space",
         0x61: "a",
