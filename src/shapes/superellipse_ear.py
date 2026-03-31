@@ -13,6 +13,7 @@ def draw_superellipse_ear(
     tooth,
     cover,
     side="right",
+    m_junction=None,
     cut=None,
 ):
     mid_x = (x1 + x2) / 2
@@ -50,8 +51,12 @@ def draw_superellipse_ear(
         if cut != "top":
             # Top half: outer right mid → outer top → p_top → inner left mid → inner top → inner right mid → closePath
             pen.moveTo((x2, mid_y))
-            pen.curveTo((x2, mid_y + hy), (mid_x + hx, y2), (mid_x, y2))
-            pen.curveTo((p_top[0], y2), p_top, p_top)
+            if m_junction is not None:
+                pen.lineTo(m_junction)
+                pen.curveTo((x2, mid_y + hy), (mid_x + hx, y2), (mid_x, y2))
+            else:
+                pen.curveTo((x2, mid_y + hy), (mid_x + hx, y2), (mid_x, y2))
+            pen.curveTo((p_top[0], y2), (p_top[0], p_top[1]), p_top)
             pen.lineTo((ix1, imid_y))
             pen.curveTo((ix1, imid_y + ihy), (imid_x - ihx, iy2), (imid_x, iy2))
             pen.curveTo((imid_x + ihx, iy2), (ix2, imid_y + ihy), (ix2, imid_y))
