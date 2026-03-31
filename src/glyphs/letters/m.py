@@ -19,6 +19,8 @@ class LowercaseMGlyph(Glyph):
         # hy1 = 250
         # hx2 = 125
         # hy2 = 250
+        mhx = 80
+        mhy = 60
         hx1 = 135
         hy1 = fc.x_height / 2 + fc.overshoot
         hx2 = 135
@@ -45,7 +47,16 @@ class LowercaseMGlyph(Glyph):
             fc.cover,
             side="left",
             cut="bottom",
-            m_junction=(xmid + stroke / 2, fc.x_height - fc.tooth + fc.cover + fc.overshoot + stroke / 2),
+            m_junction=[
+                (
+                    xmid + stroke / 2,
+                    fc.x_height - fc.tooth + stroke / 2 + fc.cover + fc.overshoot,
+                ),
+                (
+                    mhx,
+                    mhy,
+                ),
+            ],
         )
         # Right ear
         draw_superellipse_ear(

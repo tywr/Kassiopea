@@ -52,8 +52,10 @@ def draw_superellipse_ear(
             # Top half: outer right mid → outer top → p_top → inner left mid → inner top → inner right mid → closePath
             pen.moveTo((x2, mid_y))
             if m_junction is not None:
-                pen.lineTo(m_junction)
-                pen.curveTo((x2, mid_y + hy), (mid_x + hx, y2), (mid_x, y2))
+                mx, my = m_junction[0]
+                mhx, mhy = m_junction[1]
+                pen.lineTo((mx, my))
+                pen.curveTo((mx, my + mhy), (mid_x + mhx, y2), (mid_x, y2))
             else:
                 pen.curveTo((x2, mid_y + hy), (mid_x + hx, y2), (mid_x, y2))
             pen.curveTo((p_top[0], y2), (p_top[0], p_top[1]), p_top)
