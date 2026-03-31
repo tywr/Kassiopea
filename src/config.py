@@ -59,6 +59,14 @@ class FontConfig:
     k_offset = 0
     k_neck_len = 100
     k_width = 300
+     
+    l_offset = 0
+    l_len_left = 150
+    l_len_right = 160
+    l_len_cap = 140
+
+    m_offset = 0
+    m_width = 400
 
     n_offset = 0
 
