@@ -14,10 +14,12 @@ def draw_k(
     y2 = fc.x_height
 
     # Angle of each branch
-    a = fc.k_width - fc.k_neck_len - stroke
+    a = fc.k_width - fc.k_neck_len
     b = fc.x_height / 2
     theta = atan(b / a)
     delta = stroke / sin(theta)
+    x_neck = x1 + fc.k_neck_len + stroke - delta / 2
+
 
     # Left ascender line
     draw_rect(pen, x1, 0, x1 + stroke, fc.ascent)
@@ -26,36 +28,36 @@ def draw_k(
         pen,
         x1 + stroke,
         fc.x_height / 2 - stroke / 2,
-        x1 + fc.k_neck_len + stroke,
+        x_neck,
         fc.x_height / 2 + stroke / 2,
     )
     # Upper branch
     draw_polygon(
         pen,
         points=[
-            (x1 + fc.k_neck_len + stroke, fc.x_height / 2 + stroke / 2),
+            (x_neck, fc.x_height / 2 + stroke / 2),
             (x2 - delta / 2, fc.x_height),
             (x2 + delta / 2, fc.x_height),
-            (x1 + fc.k_neck_len + delta + stroke, fc.x_height / 2 + stroke / 2),
+            (x_neck + delta, fc.x_height / 2 + stroke / 2),
             (
-                x1 + fc.k_neck_len + delta + stroke - stroke * cos(theta),
+                x_neck + delta - stroke * cos(theta),
                 fc.x_height / 2 + stroke / 2 - stroke * sin(theta),
             ),
-            (x1 + fc.k_neck_len + stroke, fc.x_height / 2 - stroke / 2),
+            (x_neck, fc.x_height / 2 - stroke / 2),
         ],
     )
     # Lower branch
     draw_polygon(
         pen,
         points=[
-            (x1 + fc.k_neck_len + stroke, fc.x_height / 2 + stroke / 2),
+            (x_neck, fc.x_height / 2 + stroke / 2),
             (
-                x1 + fc.k_neck_len + delta + stroke - stroke * cos(theta),
+                x_neck + delta - stroke * cos(theta),
                 fc.x_height / 2 - stroke / 2 + stroke * sin(theta),
             ),
-            (x1 + fc.k_neck_len + delta + stroke, fc.x_height / 2 - stroke / 2),
+            (x_neck + delta, fc.x_height / 2 - stroke / 2),
             (x2 + delta / 2, 0),
             (x2 - delta / 2, 0),
-            (x1 + fc.k_neck_len + stroke, fc.x_height / 2 - stroke / 2),
+            (x_neck, fc.x_height / 2 - stroke / 2),
         ],
     )
