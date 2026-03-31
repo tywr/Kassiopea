@@ -34,16 +34,13 @@ def draw_notdef(pen):
 
 
 def record_glyph(glyph, **kwargs):
-    # path = pathops.Path()
-    # pen = pathops.PathPen(path)
-    # glyph.draw(pathops.PathPen(path), **kwargs)
-    # path = pathops.simplify(path, clockwise=False)
-    #
-    # pen = T2CharStringPen(fc.width, None)
-    # path.draw(pen)
-    # return pen.getCharString()
+    path = pathops.Path()
+    pen = pathops.PathPen(path)
+    glyph.draw(pathops.PathPen(path), **kwargs)
+    path = pathops.simplify(path, clockwise=False, keep_starting_points=True)
+
     pen = T2CharStringPen(fc.width, None)
-    glyph.draw(pen, **kwargs)
+    path.draw(pen)
     return pen.getCharString()
 
 

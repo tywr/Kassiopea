@@ -24,5 +24,5 @@ class FontConfig:
     body_width = 320
 
     # Standard hx and hy curve parameters for superellipse
-    hx = 200
-    hy = 230
+    hx = 180
+    hy = 180
