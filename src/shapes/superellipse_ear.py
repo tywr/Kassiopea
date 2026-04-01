@@ -12,8 +12,6 @@ def draw_superellipse_ear(
     hy,
     tooth,
     cover,
-    ehx=10,
-    ehy=30,
     gap=5,
     side="right",
     m_junction=None,
@@ -26,7 +24,7 @@ def draw_superellipse_ear(
     h = (y2 - y1) / 2
     ihx = hx * (w - stroke) / w
     ihy = hy * (h - stroke) / h
-    ehy = hy * (tooth - stroke / 2) / h
+    ehy = ihy / ihx * stroke / 4
     ehx = stroke / 4
 
     # Inner box
@@ -73,7 +71,7 @@ def draw_superellipse_ear(
                     (mid_x + ihx + stroke / 2, y2),
                     (mid_x, y2),
                 )
-            pen.curveTo((p_top[0] + ehx, y2), (p_top[0], p_top[1] + ehy), p_top)
+            pen.curveTo((mid_x - ihx, y2), (p_top[0] + ehx, p_top[1] + ehy), p_top)
             pen.lineTo((p_top[0] - gap, p_top[1]))
             pen.lineTo((ix1, imid_y))
             pen.curveTo((ix1, imid_y + ihy), (imid_x - ihx, iy2), (imid_x, iy2))
