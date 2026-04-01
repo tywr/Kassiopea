@@ -1,6 +1,6 @@
 from config import FontConfig as fc
 from glyph import Glyph
-from shapes.superellipse_ear import draw_superellipse_ear
+from shapes.superellipse_arch import draw_superellipse_arch
 from shapes.rect import draw_rect
 
 
@@ -24,7 +24,7 @@ class LowercaseQGlyph(Glyph):
         y2 = fc.x_height + fc.overshoot
 
         # Right-ear
-        draw_superellipse_ear(
+        draw_superellipse_arch(
             pen,
             stroke,
             x1,
@@ -33,8 +33,6 @@ class LowercaseQGlyph(Glyph):
             y2,
             hx,
             hy,
-            fc.tooth,
-            fc.cover,
             side="right",
         )
         # Descender

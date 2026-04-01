@@ -1,10 +1,12 @@
 import ufoLib2
-from shapes.rect import draw_rect
-from shapes.superellipse import draw_superellipse
 from booleanOperations.booleanGlyph import BooleanGlyph
 
+from shapes.rect import draw_rect
+from shapes.superellipse import draw_superellipse
+from utils.intersection import find_offset
 
-def draw_superellipse_ear(
+
+def draw_superellipse_arch(
     pen,
     stroke,
     x1,
@@ -13,22 +15,22 @@ def draw_superellipse_ear(
     y2,
     hx,
     hy,
+    tooth=70,
     side="right",
     cut=None,
 ):
-    offset = stroke / 4
+    w, h = (x2 - x1) / 2, (y2 - y1) / 2
+    x_mid, y_mid = x1 + w, y1 + h
+
+    tooth = 100
+    offset = find_offset(x1, y1, x2, y2, hx, hy, stroke, tooth)
+    print(offset)
 
     # Outer box
     ox1 = x1 + (stroke - offset if side == "left" else 0)
     oy1 = y1
     ox2 = x2 - (stroke - offset if side == "right" else 0)
     oy2 = y2
-
-    w = (x2 - x1) / 2
-    h = (y2 - y1) / 2
-
-    y_mid = y1 + h
-
     ohx = hx * (w - offset) / w
     ohy = hy * (h - offset) / h
 

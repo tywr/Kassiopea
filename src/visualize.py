@@ -177,7 +177,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Visualize a single glyph")
     parser.add_argument("family", help="Glyph family (e.g. base, letters)")
-    parser.add_argument("glyph", help="Glyph name (e.g. d, superellipse_ear)")
+    parser.add_argument("glyph", help="Glyph name (e.g. d, superellipse_arch)")
     parser.add_argument("-c", action="store_true", help="Show bezier control points")
     parser.add_argument("-o", action="store_true", help="Show optical center")
     parser.add_argument("-s", type=str, default="60", help="Stroke width(s), comma-separated (e.g. 100,60,80)")

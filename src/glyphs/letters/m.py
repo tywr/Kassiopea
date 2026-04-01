@@ -1,6 +1,6 @@
 from config import FontConfig as fc
 from glyph import Glyph
-from shapes.superellipse_ear import draw_superellipse_ear
+from shapes.superellipse_arch import draw_superellipse_arch
 from shapes.rect import draw_rect
 
 
@@ -24,8 +24,8 @@ class LowercaseMGlyph(Glyph):
         y2 = fc.x_height + fc.overshoot
         xmid = x1 + (x2 - x1) / 2
 
-        # Left ear
-        draw_superellipse_ear(
+        # Left arch
+        draw_superellipse_arch(
             pen,
             stroke,
             x1,
@@ -34,28 +34,19 @@ class LowercaseMGlyph(Glyph):
             y2,
             hx,
             hy,
-            fc.tooth,
-            0,
             side="left",
             cut="bottom",
-            # m_junction=(
-            #     xmid + stroke / 2 - overlap,
-            #     fc.x_height - fc.tooth + stroke / 2,
-            # ),
-            # m_junction=fc.gap,
         )
-        # Right ear
-        draw_superellipse_ear(
+        # Right arch
+        draw_superellipse_arch(
             pen,
             stroke,
-            xmid - stroke / 2, 
+            xmid - stroke / 2,
             y1,
             x2,
             y2,
             hx,
             hy,
-            fc.tooth,
-            0,
             side="left",
             cut="bottom",
         )
