@@ -35,6 +35,7 @@ class LowercaseQGlyph(Glyph):
             hy,
             fc.tooth,
             fc.cover,
+            ehy=fc.ehy,
             side="right",
         )
         # Descender
