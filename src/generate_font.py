@@ -12,7 +12,7 @@ from glyph import Glyph
 
 import glyphs.letters
 
-STROKE = 70
+STROKE = 80
 
 
 def discover_glyphs():

@@ -19,7 +19,7 @@ class LowercaseJGlyph(Glyph):
         corner_width = 160
         hx = 160
         hy = 160
-        dot_width = 40
+        dot_width = 30
 
         xmid = fc.width / 2 + offset
         # Stem

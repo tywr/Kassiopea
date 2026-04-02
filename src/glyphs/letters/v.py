@@ -14,7 +14,7 @@ class LowercaseVGlyph(Glyph):
         stroke: int,
     ):
         offset = 0
-        width = 345
+        width = 380
         taper = 0.6
 
         xmid = fc.width / 2 + offset

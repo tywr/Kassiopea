@@ -14,10 +14,10 @@ class LowercaseKGlyph(Glyph):
         pen,
         stroke: int,
     ):
-        offset = 46
+        offset = 10
         bowl_width = 320
         neck_len = 100
-        width = 300
+        width = 380
 
         x1 = fc.width / 2 - bowl_width / 2 - stroke / 2 + offset
         y1 = 0

@@ -12,11 +12,11 @@ class LowercaseIGlyph(Glyph):
         pen,
         stroke: int,
     ):
-        offset = 13
-        len_left = 180
-        len_right = 180
-        dot_width = 40
-        len_cap = 140
+        offset = 30
+        len_left = 200
+        len_right = 200
+        dot_width = 30
+        len_cap = 180
 
         xmid = fc.width / 2 + offset
         # Stem

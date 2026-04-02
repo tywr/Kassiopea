@@ -12,7 +12,7 @@ sys.path.insert(0, "src")
 from config import FontConfig as fc
 from glyph import Glyph
 
-STROKE = 70
+STROKE = 80
 
 
 def recording_to_mpl_path(recording):
