@@ -37,6 +37,7 @@ class DrawConfig(FontConfig):
         overshoot_top=False,
         overshoot_bottom=False,
         height="x_height",
+        width_ratio=1,
     ):
         """
         Abstraction for storing common metrics relative to the body
@@ -45,11 +46,12 @@ class DrawConfig(FontConfig):
         For most capital letters, it's a centered rectangle of length
         `width` of a of height `ascent`.
         """
+        width = self.width * width_ratio
         if height not in ["x_height", "ascent"]:
             raise ValueError(f"Value {height} should be `x_height` or `ascent`")
-        x1 = self.window_width / 2 - self.width / 2 - self.stroke / 2 + offset
+        x1 = self.window_width / 2 - width / 2 - self.stroke / 2 + offset
         y1 = 0
-        x2 = self.window_width / 2 + self.width / 2 + self.stroke / 2 + offset
+        x2 = self.window_width / 2 + width / 2 + self.stroke / 2 + offset
         y2 = getattr(self, height)
 
         # Add horizontal overshoots
@@ -63,6 +65,6 @@ class DrawConfig(FontConfig):
         if overshoot_top:
             y2 += self.v_overshoot
 
-        hx = self.hx * (x2 - x1 - self.stroke) / self.width
+        hx = self.hx * width_ratio * (x2 - x1 - self.stroke) / width
         hy = self.hy * (y2 - y1) / self.x_height
         return BodyBounds(x1=x1, y1=y1, x2=x2, y2=y2, hx=hx, hy=hy)
