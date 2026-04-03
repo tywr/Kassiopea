@@ -9,6 +9,7 @@ class LowercaseAGlyph(Glyph):
     name = "lowercase_a"
     unicode = "0x61"
     offset = 0
+    loop_ratio = 0.6
 
     def draw(self, pen, dc):
         loop_ratio = 0.6
@@ -19,7 +20,7 @@ class LowercaseAGlyph(Glyph):
             overshoot_left=True,
         )
         # Add dampening on hx to keep ratio with the dent
-        hx, hy = dc.hx * 0.8, dc.hy * loop_ratio
+        hx, hy = dc.hx * 0.8, dc.hy * self.loop_ratio
 
         # Lower half half of the bowl
         draw_superellipse_arch(
@@ -28,10 +29,10 @@ class LowercaseAGlyph(Glyph):
             b.x1,
             b.y1,
             b.x2,
-            b.y1 + b.height * loop_ratio,
+            b.y1 + b.height * self.loop_ratio,
             hx,
             hy,
-            tooth=dc.dent + dc.v_overshoot,
+            dent=dc.dent + dc.v_overshoot,
             side="right",
             cut="top",
         )
@@ -40,28 +41,29 @@ class LowercaseAGlyph(Glyph):
             pen,
             dc.stroke,
             b.x1,
-            b.y1 + b.height * loop_ratio / 2,
+            b.y1 + b.height * self.loop_ratio / 2,
             b.xmid,
-            b.y1 + b.height * loop_ratio,
+            b.y1 + b.height * self.loop_ratio,
             hx,
             hy,
             orientation="top-right",
         )
+        # Middle line
         draw_rect(
             pen,
             b.xmid,
-            b.y1 + b.height * loop_ratio - dc.stroke,
+            b.y1 + b.height * self.loop_ratio - dc.stroke,
             b.x2 - dc.stroke,
-            b.y1 + b.height * loop_ratio,
+            b.y1 + b.height * self.loop_ratio,
         )
         # Curve to the cap
         draw_corner(
             pen,
             dc.stroke,
             b.x2,
-            fc.x_height / 2,
+            b.y1 + b.height / 2,
             b.xmid,
-            fc.x_height,
+            b.y2,
             b.hy,
             b.hy,
             orientation="top-left",
@@ -81,12 +83,12 @@ class LowercaseAGlyph(Glyph):
             b.x2 - dc.stroke + dc.gap,
             0,
             b.x2,
-            loop_ratio * (fc.x_height + 2 * dc.v_overshoot) - dc.v_overshoot,
+            b.y1 + b.height / 2,
         )
         draw_rect(
             pen,
             b.x2 - dc.stroke,
             dc.dent,
             b.x2,
-            loop_ratio * (fc.x_height + 2 * dc.v_overshoot) - dc.v_overshoot,
+            b.y1 + b.height / 2,
         )
