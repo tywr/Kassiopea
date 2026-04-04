@@ -7,8 +7,8 @@ class LowercaseMGlyph(Glyph):
     name = "lowercase_m"
     unicode = "0x6D"
     offset = 0
-    width_ratio = 440 / 340
-    hx = 140  # Reduced hx for tighter arches at double width
+    width_ratio = 1.4
+    rx = 0.7
     mid_y = 200  # Bottom of the middle stem extension
 
     def draw(self, pen, dc):
@@ -19,29 +19,29 @@ class LowercaseMGlyph(Glyph):
             width_ratio=self.width_ratio,
         )
 
-        # Left arch (x1 to xmid)
-        draw_superellipse_arch(
+        # Left arch (x1 to xmid) and store offset
+        offset = draw_superellipse_arch(
             pen,
             dc.stroke,
             b.x1,
             b.y1,
             b.xmid + dc.stroke / 2,
             b.y2,
-            self.hx,
+            dc.hx * self.rx,
             dc.hy,
             dent=dc.dent + dc.v_overshoot,
             side="left",
-            cut="bottom",
+            cut="m_junction",
         )
         # Right arch (xmid to x2)
         draw_superellipse_arch(
             pen,
             dc.stroke,
-            b.xmid - dc.stroke / 2,
+            b.xmid - dc.stroke / 2 - 0.5 * offset,
             b.y1,
             b.x2,
             b.y2,
-            self.hx,
+            dc.hx * self.rx,
             dc.hy,
             dent=dc.dent + dc.v_overshoot,
             side="left",
@@ -57,6 +57,6 @@ class LowercaseMGlyph(Glyph):
             pen,
             b.xmid - dc.stroke / 2,
             self.mid_y,
-            b.xmid + dc.stroke / 2,
+            b.xmid + dc.stroke / 2 - 0.5 * offset,
             dc.x_height - dc.dent,
         )

@@ -78,9 +78,23 @@ def draw_superellipse_arch(
         result = BooleanGlyph(loop_glyph).difference(BooleanGlyph(cut_glyph))
         result.draw(pen)
 
+    elif cut == "m_junction":
+        # First cut the bottom part
+        cut_glyph = ufoLib2.objects.Glyph()
+        draw_rect(cut_glyph.getPen(), x1 - 10, y1, x2 + 10, y_mid)
+        result_1 = BooleanGlyph(loop_glyph).difference(BooleanGlyph(cut_glyph))
+
+        # Cut the part after x2-offset
+        cut_glyph = ufoLib2.objects.Glyph()
+        draw_rect(cut_glyph.getPen(), x2 - offset, y1, x2 + 10, y2)
+        result_2 = result_1.difference(BooleanGlyph(cut_glyph))
+
+        result_2.draw(pen)
+
     else:
         result = BooleanGlyph(loop_glyph)
         result.draw(pen)
+    return offset
 
     # # Draw the covers
     # xl = junction_x if side == "left" else junction_x - stroke / 8
