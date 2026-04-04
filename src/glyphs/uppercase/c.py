@@ -9,14 +9,12 @@ class UppercaseCGlyph(Glyph):
     name = "uppercase_c"
     unicode = "0x43"
     offset = 0
-    width_ratio = 350 / 340
     opening = 280  # Opening height at x_height, scaled to ascent in draw
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
             offset=self.offset,
             height="ascent",
-            width_ratio=self.width_ratio,
             overshoot_bottom=True,
             overshoot_top=True,
             overshoot_left=True,
@@ -26,7 +24,9 @@ class UppercaseCGlyph(Glyph):
         opening = self.opening * dc.ascent / dc.x_height
 
         loop_glyph = ufoLib2.objects.Glyph()
-        draw_superellipse_loop(loop_glyph.getPen(), dc.stroke, b.x1, b.y1, b.x2, b.y2, dc.hx, hy)
+        draw_superellipse_loop(
+            loop_glyph.getPen(), dc.stroke, b.x1, b.y1, b.x2, b.y2, dc.hx, hy
+        )
 
         cut_glyph = ufoLib2.objects.Glyph()
         draw_rect(

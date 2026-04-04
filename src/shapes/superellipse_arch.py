@@ -3,7 +3,7 @@ from booleanOperations.booleanGlyph import BooleanGlyph
 
 from shapes.rect import draw_rect
 from shapes.superellipse import draw_superellipse
-from utils.intersection import find_offset, find_offset_horizontal
+from utils.intersection import find_offset
 
 
 def draw_superellipse_arch(
@@ -27,7 +27,7 @@ def draw_superellipse_arch(
         if side in ("left", "right"):
             offset = find_offset(x1, y1, x2, y2, hx, hy, stroke, dent)
         else:
-            offset = find_offset_horizontal(x1, y1, x2, y2, hx, hy, stroke, dent)
+            offset = find_offset(-y2, x1, -y1, x2, hy, hx, stroke, dent)
 
     # Outer box
     ox1 = x1 + (stroke - offset if side == "left" else 0)
@@ -87,6 +87,20 @@ def draw_superellipse_arch(
         # Cut the part after x2-offset
         cut_glyph = ufoLib2.objects.Glyph()
         draw_rect(cut_glyph.getPen(), x2 - offset, y1, x2 + 10, y2)
+        result_2 = result_1.difference(BooleanGlyph(cut_glyph))
+
+        result_2.draw(pen)
+
+    elif cut == "b_junction":
+        # First cut the left part
+        x_mid = x1 + w
+        cut_glyph = ufoLib2.objects.Glyph()
+        draw_rect(cut_glyph.getPen(), x1, y1 - 10, x_mid, y2 + 10)
+        result_1 = BooleanGlyph(loop_glyph).difference(BooleanGlyph(cut_glyph))
+
+        # Cut the part below offset
+        cut_glyph = ufoLib2.objects.Glyph()
+        draw_rect(cut_glyph.getPen(), x1 - 10, y1, x2 + 10, y1 + offset)
         result_2 = result_1.difference(BooleanGlyph(cut_glyph))
 
         result_2.draw(pen)

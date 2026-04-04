@@ -62,14 +62,18 @@ def find_offset(x1, y1, x2, y2, hx, hy, stroke, tooth):
     return brentq(lambda offset: _intersection_y(offset) - target_y, 0, stroke)
 
 
-def find_offset_horizontal(x1, y1, x2, y2, hx, hy, stroke, tooth):
+def find_offset_horizontal(x1, y1, x2, y2, hx, hy, stroke, tooth, side="top"):
     """Find the offset for side='top'/'bottom' arches.
 
-    The outer superellipse is inset by (stroke - offset) on the top.
-    This function solves for the offset value that places the intersection
-    of the outer curve with y = y2 - stroke exactly at x = x2 - tooth.
-    By vertical symmetry the same offset applies to side='bottom'.
+    For side='top': insets oy2, finds where the outer curve crosses
+    y = y2 - stroke at x = x2 - tooth.
+    For side='bottom': insets oy1, finds where the outer curve crosses
+    y = y1 + stroke at x = x2 - tooth (solved by reflecting vertically).
     """
+    if side == "bottom":
+        # Reflect vertically to reuse the top case
+        return find_offset_horizontal(x1, -y2, x2, -y1, hx, hy, stroke, tooth, side="top")
+
     iy2 = y2 - stroke
     target_x = x2 - tooth
     w = (x2 - x1) / 2
