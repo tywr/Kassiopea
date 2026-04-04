@@ -37,7 +37,7 @@ class LowercaseMGlyph(Glyph):
         draw_superellipse_arch(
             pen,
             dc.stroke,
-            b.xmid - dc.stroke / 2 - 0.5 * offset,
+            b.xmid - dc.stroke / 2 - offset + dc.gap,
             b.y1,
             b.x2,
             b.y2,
@@ -57,6 +57,6 @@ class LowercaseMGlyph(Glyph):
             pen,
             b.xmid - dc.stroke / 2,
             self.mid_y,
-            b.xmid + dc.stroke / 2 - 0.5 * offset,
+            b.xmid + dc.stroke / 2 - offset + dc.gap,
             dc.x_height - dc.dent,
         )
