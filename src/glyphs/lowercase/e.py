@@ -1,4 +1,4 @@
-from glyph import Glyph
+from glyphs import Glyph
 from shapes.superellipse_loop import draw_superellipse_loop
 from shapes.corner import draw_corner
 from shapes.rect import draw_rect
@@ -21,12 +21,13 @@ class LowercaseEGlyph(Glyph):
 
         # Half-top of a superellipse
         draw_superellipse_loop(
-            pen, dc.stroke, b.x1, b.y1, b.x2, b.y2, dc.hx, dc.hy, cut="bottom"
+            pen, dc.stroke_x, dc.stroke_y, b.x1, b.y1, b.x2, b.y2, dc.hx, dc.hy, cut="bottom"
         )
         # Corner from mid-left to bottom
         draw_corner(
             pen,
-            dc.stroke,
+            dc.stroke_x,
+            dc.stroke_y,
             b.x1,
             b.ymid + 2 * dc.v_overshoot,
             b.xmid,
@@ -36,13 +37,13 @@ class LowercaseEGlyph(Glyph):
             orientation="bottom-right",
         )
         # Extension
-        draw_rect(pen, b.xmid, 0, b.x1 + self.len_tail + dc.stroke / 2, dc.stroke)
+        draw_rect(pen, b.xmid, 0, b.x1 + self.len_tail + dc.stroke_x / 2, dc.stroke_y)
         # Mid-bar
         draw_rect(
             pen,
-            b.x1 + dc.stroke / 2,
+            b.x1 + dc.stroke_x / 2,
             b.ymid,
-            b.x2 - dc.stroke / 2,
-            b.ymid + dc.stroke / 2,
+            b.x2 - dc.stroke_x / 2,
+            b.ymid + dc.stroke_y / 2,
         )
-        draw_rect(pen, b.x1 + dc.stroke / 2, b.ymid - dc.stroke / 2, b.x2, b.ymid)
+        draw_rect(pen, b.x1 + dc.stroke_x / 2, b.ymid - dc.stroke_y / 2, b.x2, b.ymid)

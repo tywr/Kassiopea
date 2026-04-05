@@ -1,4 +1,4 @@
-from glyph import Glyph
+from glyphs import Glyph
 from shapes.rect import draw_rect
 
 
@@ -10,24 +10,24 @@ class LowercaseLGlyph(Glyph):
 
     def draw(self, pen, dc):
         b = dc.body_bounds(offset=self.offset, height="ascent")
-        right_len = b.width * self.rl_ratio - dc.stroke / 2
-        left_len = b.width * (1 - self.rl_ratio) - dc.stroke / 2
+        right_len = b.width * self.rl_ratio - dc.stroke_x / 2
+        left_len = b.width * (1 - self.rl_ratio) - dc.stroke_x / 2
 
         # Stem
-        draw_rect(pen, b.xmid - dc.stroke / 2, 0, b.xmid + dc.stroke / 2, dc.ascent)
+        draw_rect(pen, b.xmid - dc.stroke_x / 2, 0, b.xmid + dc.stroke_x / 2, dc.ascent)
         # Footer
         draw_rect(
             pen,
-            b.xmid - left_len - dc.stroke / 2,
+            b.xmid - left_len - dc.stroke_x / 2,
             0,
-            b.xmid + right_len + dc.stroke / 2,
-            dc.stroke,
+            b.xmid + right_len + dc.stroke_x / 2,
+            dc.stroke_y,
         )
         # Left cap
         draw_rect(
             pen,
-            b.xmid - left_len - dc.stroke / 2,
-            dc.ascent - dc.stroke,
+            b.xmid - left_len - dc.stroke_x / 2,
+            dc.ascent - dc.stroke_y,
             b.xmid,
             dc.ascent,
         )

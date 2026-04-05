@@ -1,5 +1,5 @@
 from math import tan
-from glyph import Glyph
+from glyphs import Glyph
 from shapes.parallelogramm import draw_parallelogramm
 
 
@@ -17,7 +17,8 @@ class LowercaseYGlyph(Glyph):
 
         draw_parallelogramm(
             pen,
-            dc.stroke,
+            dc.stroke_x,
+            dc.stroke_y,
             b.xmid + self.overlap * b.width,
             dent_height,
             b.x1,
@@ -26,7 +27,8 @@ class LowercaseYGlyph(Glyph):
         )
         theta, delta = draw_parallelogramm(
             pen,
-            dc.stroke,
+            dc.stroke_x,
+            dc.stroke_y,
             b.xmid - self.overlap * b.width,
             dent_height,
             b.x2,
@@ -34,7 +36,8 @@ class LowercaseYGlyph(Glyph):
         )
         draw_parallelogramm(
             pen,
-            dc.stroke,
+            dc.stroke_x,
+            dc.stroke_y,
             b.xmid - self.overlap * b.width + delta,
             dent_height,
             b.xmid

@@ -1,4 +1,4 @@
-from glyph import Glyph
+from glyphs import Glyph
 from shapes.superellipse_loop import draw_superellipse_loop
 from shapes.cross_curve import draw_cross_curve
 
@@ -23,19 +23,20 @@ class LowercaseSGlyph(Glyph):
 
         # Height of each half-loop from its respective baseline
         loop_len = b.y2 * self.loop_ratio
-        ym1 = b.y1 + loop_len - dc.stroke / 2  # Top of the bottom half-loop
-        ym2 = b.y2 - loop_len + dc.stroke / 2  # Bottom of the top half-loop
+        ym1 = b.y1 + loop_len - dc.stroke_y / 2  # Top of the bottom half-loop
+        ym2 = b.y2 - loop_len + dc.stroke_y / 2  # Bottom of the top half-loop
 
         # Bottom half-loop (cut at top)
-        draw_superellipse_loop(pen, dc.stroke, b.x1, b.y1, b.x2, ym1, hx, hy, cut="top")
+        draw_superellipse_loop(pen, dc.stroke_x, dc.stroke_y, b.x1, b.y1, b.x2, ym1, hx, hy, cut="top")
         # Top half-loop (cut at bottom)
         draw_superellipse_loop(
-            pen, dc.stroke, b.x1, ym2, b.x2, b.y2, hx, hy, cut="bottom"
+            pen, dc.stroke_x, dc.stroke_y, b.x1, ym2, b.x2, b.y2, hx, hy, cut="bottom"
         )
         # Middle cross junction connecting the two half-loops
         draw_cross_curve(
             pen,
-            dc.stroke,
+            dc.stroke_x,
+            dc.stroke_y,
             b.x1,
             (b.y1 + ym1) / 2,
             b.x2,

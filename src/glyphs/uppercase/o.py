@@ -1,11 +1,8 @@
-import ufoLib2
-from booleanOperations.booleanGlyph import BooleanGlyph
-from glyph import Glyph
+from glyphs.uppercase import UppercaseGlyph
 from shapes.superellipse_loop import draw_superellipse_loop
-from shapes.rect import draw_rect
 
 
-class UppercaseCGlyph(Glyph):
+class UppercaseOGlyph(UppercaseGlyph):
     name = "uppercase_o"
     unicode = "0x4F"
     offset = 0
@@ -18,5 +15,16 @@ class UppercaseCGlyph(Glyph):
             overshoot_top=True,
             overshoot_left=True,
             overshoot_right=True,
+            width_ratio=self.width_ratio,
         )
-        draw_superellipse_loop(pen, dc.stroke, b.x1, b.y1, b.x2, b.y2, dc.hx, dc.hy)
+        draw_superellipse_loop(
+            pen,
+            dc.stroke_x,
+            dc.stroke_y,
+            b.x1,
+            b.y1,
+            b.x2,
+            b.y2,
+            dc.hx * self.width_ratio,
+            dc.hy,
+        )

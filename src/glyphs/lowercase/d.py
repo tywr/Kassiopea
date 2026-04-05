@@ -1,4 +1,4 @@
-from glyph import Glyph
+from glyphs import Glyph
 from shapes.superellipse_arch import draw_superellipse_arch
 from shapes.rect import draw_rect
 
@@ -17,7 +17,8 @@ class LowercaseDGlyph(Glyph):
         )
         draw_superellipse_arch(
             pen,
-            dc.stroke,
+            dc.stroke_x,
+            dc.stroke_y,
             b.x1,
             b.y1,
             b.x2,
@@ -28,5 +29,5 @@ class LowercaseDGlyph(Glyph):
             side="right",
         )
         # Stem
-        draw_rect(pen, b.x2 - dc.stroke + dc.gap, 0, b.x2, dc.ascent)
-        draw_rect(pen, b.x2 - dc.stroke, dc.dent, b.x2, dc.x_height - dc.dent)
+        draw_rect(pen, b.x2 - dc.stroke_x + dc.gap, 0, b.x2, dc.ascent)
+        draw_rect(pen, b.x2 - dc.stroke_x, dc.dent, b.x2, dc.x_height - dc.dent)

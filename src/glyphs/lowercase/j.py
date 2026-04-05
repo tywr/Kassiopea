@@ -1,4 +1,4 @@
-from glyph import Glyph
+from glyphs import Glyph
 from shapes.corner import draw_corner
 from shapes.rect import draw_rect
 
@@ -15,19 +15,20 @@ class LowercaseJGlyph(Glyph):
     def draw(self, pen, dc):
         b = dc.body_bounds(offset=self.offset, width_ratio=self.width_ratio)
         # Stem
-        draw_rect(pen, b.x2 - dc.stroke, 0, b.x2, dc.x_height)
+        draw_rect(pen, b.x2 - dc.stroke_x, 0, b.x2, dc.x_height)
         # Left cap
         draw_rect(
             pen,
             b.x1 + (1 - self.ud_ratio) * b.width,
-            dc.x_height - dc.stroke,
+            dc.x_height - dc.stroke_y,
             b.x2,
             dc.x_height,
         )
         # Corner curving down-left into the descender
         draw_corner(
             pen,
-            dc.stroke,
+            dc.stroke_x,
+            dc.stroke_y,
             b.x2,
             0,
             b.xmid,
@@ -42,13 +43,13 @@ class LowercaseJGlyph(Glyph):
             b.x1,
             dc.descent + self.tail_offset,
             b.xmid,
-            dc.descent + self.tail_offset + dc.stroke,
+            dc.descent + self.tail_offset + dc.stroke_y,
         )
         # Accent dot
         draw_rect(
             pen,
-            b.x2 - dc.stroke / 2 - self.dot_width / 2 - dc.stroke / 2,
-            dc.accent - self.dot_width / 2 - dc.stroke / 2,
+            b.x2 - dc.stroke_x / 2 - self.dot_width / 2 - dc.stroke_x / 2,
+            dc.accent - self.dot_width / 2 - dc.stroke_y / 2,
             b.x2 + self.dot_width / 2,
-            dc.accent + dc.stroke / 2 + self.dot_width / 2,
+            dc.accent + dc.stroke_y / 2 + self.dot_width / 2,
         )

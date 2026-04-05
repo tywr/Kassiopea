@@ -1,14 +1,16 @@
-from glyph import Glyph
+from glyphs.uppercase import UppercaseGlyph
 from shapes.rect import draw_rect
 
 
-class UppercaseTGlyph(Glyph):
+class UppercaseTGlyph(UppercaseGlyph):
     name = "uppercase_t"
     unicode = "0x54"
     offset = 0
 
     def draw(self, pen, dc):
-        b = dc.body_bounds(offset=self.offset, height="ascent")
+        b = dc.body_bounds(
+            offset=self.offset, height="ascent", width_ratio=self.width_ratio
+        )
 
         # Vertical stem (centered)
         draw_rect(pen, b.xmid - dc.stroke / 2, b.y1, b.xmid + dc.stroke / 2, b.y2)

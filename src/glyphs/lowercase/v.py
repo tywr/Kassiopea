@@ -1,5 +1,5 @@
 from math import atan, cos, sin
-from glyph import Glyph
+from glyphs import Glyph
 from shapes.polygon import draw_polygon
 from shapes.parallelogramm import draw_parallelogramm
 
@@ -16,7 +16,8 @@ class LowercaseVGlyph(Glyph):
 
         draw_parallelogramm(
             pen,
-            dc.stroke,
+            dc.stroke_x,
+            dc.stroke_y,
             b.xmid - self.overlap * b.width,
             0,
             b.x2,
@@ -24,7 +25,8 @@ class LowercaseVGlyph(Glyph):
         )
         draw_parallelogramm(
             pen,
-            dc.stroke,
+            dc.stroke_x,
+            dc.stroke_y,
             b.xmid + self.overlap * b.width,
             0,
             b.x1,

@@ -1,15 +1,52 @@
-from math import sqrt, atan2
+from math import sqrt, atan2, sin, cos
 from shapes.polygon import draw_polygon
 
 
-def draw_parallelogramm(
-    pen, stroke, x1, y1, x2, y2, direction="top-right", no_draw=False
+def _solve_parallelogram_stroke(
+    stroke_x, stroke_y, x1, y1, x2, y2, tol=1e-6, max_iter=100
 ):
     w = max(x2, x1) - min(x2, x1)
     h = max(y2, y1) - min(y2, y1)
-    s = stroke
-    delta = (s * (h * sqrt(w**2 + h**2 - s**2) - s * w)) / (h**2 - s**2)
-    theta = atan2(h, w - delta)
+
+    # Initial guess: angle of the bare diagonal (delta=0)
+    theta = atan2(h, w)
+
+    for _ in range(max_iter):
+        s = sqrt((stroke_x * cos(theta)) ** 2 + (stroke_y * sin(theta)) ** 2)
+
+        denom = h**2 - s**2
+        if abs(denom) < 1e-12:
+            break  # degenerate case
+
+        inner = w**2 + h**2 - s**2
+        if inner < 0:
+            break  # stroke too thick for this geometry
+
+        delta = (s * (h * sqrt(inner) - s * w)) / denom
+        new_theta = atan2(h, w - delta)
+
+        if abs(new_theta - theta) < tol:
+            theta = new_theta
+            break
+
+        theta = new_theta
+
+    s = sqrt((stroke_x * cos(theta)) ** 2 + (stroke_y * sin(theta)) ** 2)
+    denom = h**2 - s**2
+    delta = (s * (h * sqrt(w**2 + h**2 - s**2) - s * w)) / denom
+
+    return s, delta, theta
+
+
+def draw_parallelogramm(
+    pen, stroke_x, stroke_y, x1, y1, x2, y2, direction="top-right", no_draw=False
+):
+    # w = max(x2, x1) - min(x2, x1)
+    # h = max(y2, y1) - min(y2, y1)
+    s, delta, theta = _solve_parallelogram_stroke(stroke_x, stroke_y, x1, y1, x2, y2)
+    # s = sqrt((stroke_x * cos(theta)) ** 2 + (stroke_y * sin(theta)) ** 2)
+    # delta = (s * (h * sqrt(w**2 + h**2 - s**2) - s * w)) / (h**2 - s**2)
+    # theta = atan2(h, w - delta)
     if no_draw:
         return theta, delta
     if direction == "top-right":

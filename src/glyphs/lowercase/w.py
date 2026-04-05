@@ -1,5 +1,5 @@
 from math import atan, cos, sin
-from glyph import Glyph
+from glyphs import Glyph
 from shapes.polygon import draw_polygon
 from shapes.parallelogramm import draw_parallelogramm
 
@@ -21,7 +21,8 @@ class LowercaseWGlyph(Glyph):
         inner_height = self.inner_height_ratio * b.height
         theta, delta = draw_parallelogramm(
             pen,
-            dc.stroke,
+            dc.stroke_x,
+            dc.stroke_y,
             b.xmid + self.inner_angle_ratio * b.width,
             0,
             b.x2,
@@ -29,7 +30,8 @@ class LowercaseWGlyph(Glyph):
         )
         draw_parallelogramm(
             pen,
-            dc.stroke,
+            dc.stroke_x,
+            dc.stroke_y,
             b.xmid - self.inner_angle_ratio * b.width,
             0,
             b.x1,
@@ -38,7 +40,8 @@ class LowercaseWGlyph(Glyph):
         )
         draw_parallelogramm(
             pen,
-            dc.stroke * self.inner_stroke_ratio,
+            dc.stroke_x,
+            dc.stroke_y,
             b.xmid + self.inner_angle_ratio * b.width - ov + delta,
             0,
             b.xmid - ov,
@@ -47,7 +50,8 @@ class LowercaseWGlyph(Glyph):
         )
         draw_parallelogramm(
             pen,
-            dc.stroke * self.inner_stroke_ratio,
+            dc.stroke_x,
+            dc.stroke_y,
             b.xmid - self.inner_angle_ratio * b.width + ov - delta,
             0,
             b.xmid + ov,

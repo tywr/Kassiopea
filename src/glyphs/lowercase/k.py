@@ -1,5 +1,5 @@
 from math import tan
-from glyph import Glyph
+from glyphs import Glyph
 from shapes.rect import draw_rect
 from shapes.parallelogramm import draw_parallelogramm
 
@@ -18,27 +18,34 @@ class LowercaseKGlyph(Glyph):
         x_branch = b.x1 + (1 - self.branch_ratio) * b.width
 
         # Left ascender stem
-        draw_rect(pen, b.x1, 0, b.x1 + dc.stroke, dc.ascent)
+        draw_rect(pen, b.x1, 0, b.x1 + dc.stroke_x, dc.ascent)
 
         # Upper branch
         draw_parallelogramm(
             pen,
-            dc.stroke,
+            dc.stroke_x,
+            dc.stroke_y,
             x_branch,
-            b.ymid + dc.stroke / 2,
+            b.ymid + dc.stroke_y / 2,
             b.x2,
             b.y1,
             direction="bottom-right",
         )
         theta, delta = draw_parallelogramm(
-            pen, dc.stroke, x_branch, b.ymid - dc.stroke / 2, b.x2, b.y2
+            pen,
+            dc.stroke_x,
+            dc.stroke_y,
+            x_branch,
+            b.ymid - dc.stroke_y / 2,
+            b.x2,
+            b.y2,
         )
 
         # Neck
         draw_rect(
             pen,
             b.x1,
-            b.ymid - dc.stroke / 2,
+            b.ymid - dc.stroke_y / 2,
             x_branch + delta / tan(theta),
-            b.ymid + dc.stroke / 2,
+            b.ymid + dc.stroke_y / 2,
         )

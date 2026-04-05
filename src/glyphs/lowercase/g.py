@@ -1,4 +1,4 @@
-from glyph import Glyph
+from glyphs import Glyph
 from shapes.superellipse_arch import draw_superellipse_arch
 from shapes.rect import draw_rect
 from shapes.corner import draw_corner
@@ -21,7 +21,8 @@ class LowercaseGGlyph(Glyph):
         # Bowl (open on the right, mirrored from b)
         draw_superellipse_arch(
             pen,
-            dc.stroke,
+            dc.stroke_x,
+            dc.stroke_y,
             b.x1,
             b.y1,
             b.x2,
@@ -32,13 +33,14 @@ class LowercaseGGlyph(Glyph):
             side="right",
         )
         # Right stem with gap at baseline and dent inset
-        draw_rect(pen, b.x2 - dc.stroke + dc.gap, 0, b.x2, dc.x_height)
-        draw_rect(pen, b.x2 - dc.stroke, dc.dent, b.x2, dc.x_height - dc.dent)
+        draw_rect(pen, b.x2 - dc.stroke_x + dc.gap, 0, b.x2, dc.x_height)
+        draw_rect(pen, b.x2 - dc.stroke_x, dc.dent, b.x2, dc.x_height - dc.dent)
 
         # Corner curving down-left into the descender
         draw_corner(
             pen,
-            dc.stroke - dc.gap,
+            dc.stroke_x - dc.gap,
+            dc.stroke_y - dc.gap,
             b.x2,
             0,
             b.x2 - b.width / 2,
@@ -50,8 +52,8 @@ class LowercaseGGlyph(Glyph):
         # Horizontal tail along the descender
         draw_rect(
             pen,
-            b.x1 + dc.stroke / 2,
+            b.x1 + dc.stroke_x / 2,
             dc.descent + self.tail_offset,
             b.x2 - b.width / 2,
-            dc.descent + self.tail_offset + dc.stroke - dc.gap,
+            dc.descent + self.tail_offset + dc.stroke_y - dc.gap,
         )

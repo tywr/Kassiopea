@@ -2,6 +2,7 @@
 """Visualize a single glyph. Usage: python visualize_one.py <letter>"""
 
 import sys
+import inspect
 import importlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
@@ -11,7 +12,7 @@ from fontTools.pens.recordingPen import RecordingPen
 sys.path.insert(0, "src")
 from config import FontConfig as fc
 from config import DrawConfig
-from glyph import Glyph
+from glyphs import Glyph
 
 
 def recording_to_mpl_path(recording):
@@ -128,7 +129,11 @@ def visualize(
     mod = importlib.import_module(f"glyphs.{family}.{glyph}")
     glyph_cls = None
     for attr in vars(mod).values():
-        if isinstance(attr, type) and issubclass(attr, Glyph) and attr is not Glyph:
+        if (
+            isinstance(attr, type)
+            and issubclass(attr, Glyph)
+            and not inspect.isabstract(attr)
+        ):
             glyph_cls = attr
             break
     draw_fn = glyph_cls().draw

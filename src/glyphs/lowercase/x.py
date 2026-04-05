@@ -1,5 +1,5 @@
 from math import atan, sin
-from glyph import Glyph
+from glyphs import Glyph
 from shapes.polygon import draw_polygon
 from shapes.parallelogramm import draw_parallelogramm
 
@@ -12,7 +12,7 @@ class LowercaseXGlyph(Glyph):
 
     def draw(self, pen, dc):
         b = dc.body_bounds(offset=self.offset, width_ratio=self.width_ratio)
-        draw_parallelogramm(pen, dc.stroke, b.x1, b.y1, b.x2, b.y2)
+        draw_parallelogramm(pen, dc.stroke_x, dc.stroke_y, b.x1, b.y1, b.x2, b.y2)
         draw_parallelogramm(
-            pen, dc.stroke, b.x2, b.y1, b.x1, b.y2, direction="top-left"
+            pen, dc.stroke_x, dc.stroke_y, b.x2, b.y1, b.x1, b.y2, direction="top-left"
         )

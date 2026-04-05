@@ -1,5 +1,5 @@
 from config import FontConfig as fc
-from glyph import Glyph
+from glyphs import Glyph
 from shapes.superellipse_loop import draw_superellipse_loop
 from shapes.rect import draw_rect
 import ufoLib2
@@ -24,16 +24,16 @@ class LowercaseCGlyph(Glyph):
 
         loop_glyph = ufoLib2.objects.Glyph()
         draw_superellipse_loop(
-            loop_glyph.getPen(), dc.stroke, b.x1, b.y1, b.x2, b.y2, dc.hx, dc.hy
+            loop_glyph.getPen(), dc.stroke_x, dc.stroke_y, b.x1, b.y1, b.x2, b.y2, dc.hx, dc.hy
         )
 
         cut_glyph = ufoLib2.objects.Glyph()
         draw_rect(
             cut_glyph.getPen(),
             b.xmid,
-            b.ymid - self.opening / 2 + dc.stroke / 2,
+            b.ymid - self.opening / 2 + dc.stroke_y / 2,
             b.xmid + b.width,
-            b.ymid + self.opening / 2 - dc.stroke / 2,
+            b.ymid + self.opening / 2 - dc.stroke_y / 2,
         )
 
         result = BooleanGlyph(loop_glyph).difference(BooleanGlyph(cut_glyph))

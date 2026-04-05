@@ -1,5 +1,5 @@
 from config import FontConfig as fc
-from glyph import Glyph
+from glyphs import Glyph
 from shapes.superellipse_arch import draw_superellipse_arch
 from shapes.corner import draw_corner
 from shapes.rect import draw_rect

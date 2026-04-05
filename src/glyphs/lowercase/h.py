@@ -1,4 +1,4 @@
-from glyph import Glyph
+from glyphs import Glyph
 from shapes.superellipse_arch import draw_superellipse_arch
 from shapes.rect import draw_rect
 
@@ -23,7 +23,8 @@ class LowercaseHGlyph(Glyph):
         # Top arch, cut at the bottom (only upper half drawn)
         draw_superellipse_arch(
             pen,
-            dc.stroke,
+            dc.stroke_x,
+            dc.stroke_y,
             b.x1,
             b.y2 - b.height * self.loop_ratio,
             b.x2,
@@ -35,8 +36,8 @@ class LowercaseHGlyph(Glyph):
             cut="bottom",
         )
         # Left stem — full ascent height with gap at the top
-        draw_rect(pen, b.x1, 0, b.x1 + dc.stroke, dc.x_height - dc.dent)
-        draw_rect(pen, b.x1, 0, b.x1 + dc.stroke - dc.gap, dc.ascent)
+        draw_rect(pen, b.x1, 0, b.x1 + dc.stroke_x, dc.x_height - dc.dent)
+        draw_rect(pen, b.x1, 0, b.x1 + dc.stroke_x - dc.gap, dc.ascent)
 
         # Right stem — reaches up to the arch midpoint
-        draw_rect(pen, b.x2 - dc.stroke, 0, b.x2, b.y2 - b.height * self.loop_ratio / 2)
+        draw_rect(pen, b.x2 - dc.stroke_x, 0, b.x2, b.y2 - b.height * self.loop_ratio / 2)

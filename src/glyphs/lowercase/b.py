@@ -1,5 +1,5 @@
 from config import FontConfig as fc
-from glyph import Glyph
+from glyphs import Glyph
 from shapes.superellipse_arch import draw_superellipse_arch
 from shapes.rect import draw_rect
 
@@ -22,7 +22,8 @@ class LowercaseBGlyph(Glyph):
         )
         draw_superellipse_arch(
             pen,
-            dc.stroke,
+            dc.stroke_x,
+            dc.stroke_y,
             b.x1,
             b.y1,
             b.x2,
@@ -32,5 +33,5 @@ class LowercaseBGlyph(Glyph):
             dent=dc.dent + dc.v_overshoot,
             side="left",
         )
-        draw_rect(pen, b.x1, 0, b.x1 + dc.stroke - dc.gap, dc.ascent)
-        draw_rect(pen, b.x1, dc.dent, b.x1 + dc.stroke, dc.x_height - dc.dent)
+        draw_rect(pen, b.x1, 0, b.x1 + dc.stroke_x - dc.gap, dc.ascent)
+        draw_rect(pen, b.x1, dc.dent, b.x1 + dc.stroke_x, dc.x_height - dc.dent)

@@ -1,4 +1,4 @@
-from glyph import Glyph
+from glyphs import Glyph
 from shapes.superellipse_arch import draw_superellipse_arch
 from shapes.rect import draw_rect
 
@@ -19,7 +19,8 @@ class LowercaseQGlyph(Glyph):
         # Bowl (open on the right, same as d)
         draw_superellipse_arch(
             pen,
-            dc.stroke,
+            dc.stroke_x,
+            dc.stroke_y,
             b.x1,
             b.y1,
             b.x2,
@@ -30,5 +31,5 @@ class LowercaseQGlyph(Glyph):
             side="right",
         )
         # Right descender stem
-        draw_rect(pen, b.x2 - dc.stroke + dc.gap, dc.descent, b.x2, dc.x_height)
-        draw_rect(pen, b.x2 - dc.stroke, dc.dent, b.x2, dc.x_height - dc.dent)
+        draw_rect(pen, b.x2 - dc.stroke_x + dc.gap, dc.descent, b.x2, dc.x_height)
+        draw_rect(pen, b.x2 - dc.stroke_x, dc.dent, b.x2, dc.x_height - dc.dent)
