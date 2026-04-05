@@ -1,0 +1,58 @@
+import ufoLib2
+from booleanOperations.booleanGlyph import BooleanGlyph
+from glyphs.uppercase import UppercaseGlyph
+from draw.superellipse_loop import draw_superellipse_loop
+from draw.rect import draw_rect
+
+
+class UppercaseGGlyph(UppercaseGlyph):
+    name = "uppercase_g"
+    unicode = "0x47"
+    offset = 0
+    opening = 140
+
+    def draw(self, pen, dc):
+        b = dc.body_bounds(
+            offset=self.offset,
+            height="ascent",
+            overshoot_bottom=True,
+            overshoot_top=True,
+            overshoot_left=True,
+            overshoot_right=True,
+            width_ratio=self.width_ratio,
+        )
+        opening = self.opening * dc.ascent / dc.x_height
+        hx, hy = dc.hx * self.width_ratio, dc.hy * dc.ascent / dc.x_height
+
+        loop_glyph = ufoLib2.objects.Glyph()
+        draw_superellipse_loop(
+            loop_glyph.getPen(),
+            dc.stroke_x,
+            dc.stroke_y,
+            b.x1,
+            b.y1,
+            b.x2,
+            b.y2,
+            hx,
+            hy,
+        )
+
+        cut_glyph = ufoLib2.objects.Glyph()
+        draw_rect(
+            cut_glyph.getPen(),
+            b.xmid,
+            b.ymid,
+            b.xmid + dc.window_width,
+            b.ymid + opening - dc.stroke_y / 2,
+        )
+
+        result = BooleanGlyph(loop_glyph).difference(BooleanGlyph(cut_glyph))
+        result.draw(pen)
+
+        draw_rect(
+            pen,
+            b.xmid,
+            b.ymid - dc.stroke_y,
+            b.x2 - dc.stroke_x / 2,
+            b.ymid,
+        )

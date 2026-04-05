@@ -24,7 +24,7 @@ class LowercaseRGlyph(Glyph):
             b.y2,
             hx,
             hy,
-            taper=dc.taper,
+            taper=dc.taper ** 2,
             side="left",
             cut="bottom",
         )

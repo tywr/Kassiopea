@@ -7,7 +7,7 @@ class LowercaseIGlyph(Glyph):
     unicode = "0x69"
     offset = 30
     rl_ratio = 0.5
-    dot_width = 30
+    dot_width = 20
 
     def draw(self, pen, dc):
         b = dc.body_bounds(offset=self.offset)
