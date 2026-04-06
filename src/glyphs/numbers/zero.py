@@ -21,6 +21,7 @@ class ZeroGlyph(NumberGlyph):
             overshoot_left=True,
             overshoot_right=True,
         )
+
         draw_superellipse_loop(
             pen,
             dc.stroke_x,
@@ -32,15 +33,7 @@ class ZeroGlyph(NumberGlyph):
             b.hx,
             b.hy,
         )
-        # draw_polygon(
-        #     pen,
-        #     points=[
-        #         (b.x2 - dc.stroke_x, b.y2 - dc.stroke_y - self.slash * b.height),
-        #         (b.x2 - dc.stroke_x, b.y2 - dc.stroke_y),
-        #         (b.x1 + dc.stroke_x, b.y1 + dc.stroke_y + self.slash * b.height),
-        #         (b.x1 + dc.stroke_x, b.y1 + dc.stroke_y),
-        #     ],
-        # )
+
         draw_parallelogramm_vertical(
             pen,
             dc.stroke_x,
