@@ -7,10 +7,14 @@ class LowercaseUGlyph(Glyph):
     name = "lowercase_u"
     unicode = "0x75"
     offset = 0
+    width_ratio = 1.06
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
-            offset=self.offset, overshoot_bottom=True, overshoot_top=True
+            offset=self.offset,
+            overshoot_bottom=True,
+            overshoot_top=True,
+            width_ratio=self.width_ratio,
         )
         arch_top = b.y2
 

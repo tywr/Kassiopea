@@ -7,11 +7,14 @@ class LowercaseTGlyph(Glyph):
     name = "lowercase_t"
     unicode = "0x74"
     offset = -40
-    rl_ratio = 0.55  # Right/left split of the cross-bar and footer
+    width_ratio = 1.1
+    rl_ratio = 0.58
     up_ratio = 0.28
 
     def draw(self, pen, dc):
-        b = dc.body_bounds(offset=self.offset, height="x_height")
+        b = dc.body_bounds(
+            offset=self.offset, height="x_height", width_ratio=self.width_ratio
+        )
         right_len = b.width * self.rl_ratio - dc.stroke_x / 2
         left_len = b.width * (1 - self.rl_ratio) - dc.stroke_x / 2
 

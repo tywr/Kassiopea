@@ -8,9 +8,10 @@ class LowercaseRGlyph(Glyph):
     unicode = "0x72"
     offset = 20
     loop_ratio = 0.8
+    width_ratio = 1
 
     def draw(self, pen, dc):
-        b = dc.body_bounds(offset=self.offset, overshoot_top=True)
+        b = dc.body_bounds(offset=self.offset, overshoot_top=True, width_ratio=self.width_ratio)
         hx, hy = dc.hx, dc.hy * self.loop_ratio
 
         # Top arch, cut at the bottom (only upper half drawn)

@@ -7,10 +7,14 @@ class LowercaseNGlyph(Glyph):
     name = "lowercase_n"
     unicode = "0x6E"
     offset = 0
+    width_ratio = 1.06
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
-            offset=self.offset, overshoot_top=True, overshoot_bottom=True
+            offset=self.offset,
+            overshoot_top=True,
+            overshoot_bottom=True,
+            width_ratio=self.width_ratio,
         )
 
         # Top arch, cut at the bottom (only upper half drawn)

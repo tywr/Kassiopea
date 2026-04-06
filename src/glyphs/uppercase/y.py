@@ -11,7 +11,7 @@ class UppercaseYGlyph(UppercaseGlyph):
     unicode = "0x59"
     offset = 0
     width_ratio = 1.3
-    junction_ratio = 0.5
+    junction_ratio = 0.35
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
