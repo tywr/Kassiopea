@@ -25,7 +25,7 @@ def draw_cross_curve(
 
     sign = -1 if invert else 1
     ohy = hy * (hh + stroke_y / 2) / hh
-    ihy = hy * (hh - stroke_y / 2) / hh
+    ihy = ohy
     if invert:
         ihy, ohy = ohy, ihy
 
