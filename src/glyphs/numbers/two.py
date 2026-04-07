@@ -10,7 +10,7 @@ class TwoGlyph(NumberGlyph):
     name = "two"
     unicode = "0x32"
     offset = 0
-    width_ratio = 1.0
+    width_ratio = 1.1
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -18,6 +18,7 @@ class TwoGlyph(NumberGlyph):
             height="cap",
             overshoot_top=True,
             overshoot_right=True,
+            overshoot_left=True,
             width_ratio=self.width_ratio,
             number=True,
         )
@@ -32,7 +33,7 @@ class TwoGlyph(NumberGlyph):
             b.x2,
             b.y2,
             b.hx,
-            b.hy * 0.5,
+            b.hy / 2,
             cut="bottom",
         )
 

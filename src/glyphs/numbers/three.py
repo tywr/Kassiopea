@@ -27,6 +27,7 @@ class ThreeGlyph(NumberGlyph):
         )
 
         base_glyph = ufoLib2.objects.Glyph()
+        ry = (b.y2 - b.ymid + dc.stroke_y / 2) / b.height
 
         # Top loop
         draw_superellipse_arch(
@@ -38,7 +39,7 @@ class ThreeGlyph(NumberGlyph):
             b.x2,
             b.y2,
             b.hx,
-            b.hy / 2,
+            b.hy * ry,
             taper=self.taper,
             side="bottom",
         )
@@ -53,7 +54,7 @@ class ThreeGlyph(NumberGlyph):
             b.x2,
             b.ymid + dc.stroke_y / 2,
             b.hx,
-            b.hy / 2,
+            b.hy * ry,
             taper=self.taper,
             side="top",
         )
@@ -72,4 +73,10 @@ class ThreeGlyph(NumberGlyph):
         result.draw(pen)
 
         # Extension of the middle bar
-        draw_rect(pen, b.x1 + (1 - self.len_mid) * b.width, b.ymid - dc.stroke_y / 2, b.xmid, b.ymid + dc.stroke_y / 2)
+        draw_rect(
+            pen,
+            b.x1 + (1 - self.len_mid) * b.width,
+            b.ymid - dc.stroke_y / 2,
+            b.xmid,
+            b.ymid + dc.stroke_y / 2,
+        )
