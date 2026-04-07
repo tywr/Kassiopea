@@ -26,6 +26,7 @@ def draw_cross_curve(
     hh = (y2 - y1) / 2
 
     sign = -1 if invert else 1
+    inv = 1 if invert else 0
 
     # Compute perpendicular stroke at the midpoint based on the diagonal angle,
     # matching the parallelogramm stroke formula
@@ -36,33 +37,35 @@ def draw_cross_curve(
     s2x = s / 2 * h / diag
     s2y = s / 2 * w / diag
 
-    # Upper stroke edge spans hh + s2y, lower spans hh - s2y
+    # Outer edges get increased handle, inner edges get decreased handle
     ahh = abs(hh)
     ohy = hy * (ahh + s2y) / ahh
     ihy = hy * (ahh - s2y) / ahh
     if invert:
         ihy, ohy = ohy, ihy
 
-    pen.moveTo((x1, y1))
+    # Outer edge: (x1,y1) → upper mid → (x2,y2)
+    pen.moveTo((x1 + inv * stroke_x, y1))
     pen.curveTo(
-        (x1, y1 + sign * ohy),
-        (x1, y1 + sign * ohy),
-        (mid_x - sign * s2x, mid_y + sign * s2y),
+        (x1 + inv * stroke_x, y1 + sign * ohy),
+        (x1 + inv * stroke_x, y1 + sign * ohy),
+        (mid_x - sign * s2x, mid_y + s2y),
     )
     pen.curveTo(
-        (x2 - stroke_x, y2 - sign * ihy),
-        (x2 - stroke_x, y2 - sign * ihy),
-        (x2 - stroke_x, y2),
+        (x2 - (1 - inv) * stroke_x, y2 - sign * ihy),
+        (x2 - (1 - inv) * stroke_x, y2 - sign * ihy),
+        (x2 - (1 - inv) * stroke_x, y2),
     )
-    pen.lineTo((x2, y2))
+    # Inner edge: (x2-stroke_x,y2) → lower mid → (x1+stroke_x,y1)
+    pen.lineTo((x2 - inv * stroke_x, y2))
     pen.curveTo(
-        (x2, y2 - sign * ohy),
-        (x2, y2 - sign * ohy),
-        (mid_x + sign * s2x, mid_y - sign * s2y),
+        (x2 - inv * stroke_x, y2 - sign * ohy),
+        (x2 - inv * stroke_x, y2 - sign * ohy),
+        (mid_x + sign * s2x, mid_y - s2y),
     )
     pen.curveTo(
-        (x1 + stroke_x, y1 + sign * ihy),
-        (x1 + stroke_x, y1 + sign * ihy),
-        (x1 + stroke_x, y1),
+        (x1 + (1 - inv) * stroke_x, y1 + sign * ihy),
+        (x1 + (1 - inv) * stroke_x, y1 + sign * ihy),
+        (x1 + (1 - inv) * stroke_x, y1),
     )
     pen.closePath()
