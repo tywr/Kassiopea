@@ -38,9 +38,9 @@ from glyphs.accents.ring import Ring
 from glyphs.accents.cedilla import Cedilla
 
 # Heights for accent positioning
-_lc_accent = fc.accent  # lowercase accent height (above x-height)
-_uc_accent = fc.cap + 80  # uppercase accent height (above cap)
-_cedilla_y = 0  # baseline for cedilla
+_lc_accent = fc.accent
+_uc_accent = fc.accent_cap
+_cedilla_y = 0
 
 
 # ── Lowercase with acute ─────────────────────────────────────────────
