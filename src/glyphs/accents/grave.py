@@ -5,16 +5,18 @@ from draw.parallelogramm import draw_parallelogramm_vertical
 class Grave(Accent):
     name = "grave"
     unicode = "0x60"
-    height = 80
-    width = 50
+    height = 0.4
+    width = 1
 
     def draw_at(self, pen, dc, x, y):
+        h = self.height * dc.x_height
+        w = self.width * dc.width
         draw_parallelogramm_vertical(
             pen,
-            dc.stroke_x * 0.7,
-            dc.stroke_y * 0.7,
-            x + self.width / 2,
-            y - self.height / 2,
-            x - self.width / 2,
-            y + self.height / 2,
+            dc.stroke_x,
+            dc.stroke_y,
+            x + w / 2,
+            y - h / 2,
+            x - w / 2,
+            y + h / 2,
         )
