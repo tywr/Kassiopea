@@ -10,7 +10,8 @@ class LowercaseIGlyph(Glyph):
     cap = 0.45
     dot_width = 36
 
-    def draw(self, pen, dc):
+    def draw_base(self, pen, dc):
+        """Draw the letter without the dot (for use with accents)."""
         b = dc.body_bounds(offset=self.offset, width_ratio=self.width_ratio)
         right_len = 0.5 * b.width - dc.stroke_x / 2
         left_len = 0.5 * b.width - dc.stroke_x / 2
@@ -35,6 +36,10 @@ class LowercaseIGlyph(Glyph):
             b.xmid,
             dc.x_height,
         )
+
+    def draw(self, pen, dc):
+        self.draw_base(pen, dc)
+        b = dc.body_bounds(offset=self.offset, width_ratio=self.width_ratio)
         # Accent dot
         draw_rect(
             pen,
