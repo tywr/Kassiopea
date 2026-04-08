@@ -177,7 +177,8 @@ def draw_cross_curve_2_h(
     h = y2 - y1
     diag = sqrt(w**2 + h**2)
     s = sqrt((stroke_x * h / diag) ** 2 + (stroke_y * w / diag) ** 2)
-    s2x = stroke_x / 2
+
+    s2x = s / 2 * h / diag
     s2y = s / 2 * w / diag
 
     # Outer edges get increased handle, inner edges get decreased handle
@@ -190,25 +191,25 @@ def draw_cross_curve_2_h(
     # Outer edge: (x1,y1) → right mid → (x2,y2)
     pen.moveTo((x1, y1 + inv * stroke_y))
     pen.curveTo(
-        (x1 + sign * ihx, y1 + inv * stroke_y),
-        (x1 + sign * ihx, y1 + inv * stroke_y),
-        (mid_x - s2x, mid_y - sign * s2y),
+        (x1 + sign * ohx, y1 + inv * stroke_y),
+        (x1 + sign * ohx, y1 + inv * stroke_y),
+        (mid_x + s2x, mid_y - sign * s2y),
     )
     pen.curveTo(
-        (x2 - sign * ohx, y2 - (1 - inv) * stroke_y),
-        (x2 - sign * ohx, y2 - (1 - inv) * stroke_y),
+        (x2 - sign * ihx, y2 - (1 - inv) * stroke_y),
+        (x2 - sign * ihx, y2 - (1 - inv) * stroke_y),
         (x2, y2 - (1 - inv) * stroke_y),
     )
     # Inner edge: (x2,y2-stroke_y) → left mid → (x1,y1+stroke_y)
     pen.lineTo((x2, y2 - inv * stroke_y))
     pen.curveTo(
-        (x2 - sign * ihx, y2 - inv * stroke_y),
-        (x2 - sign * ihx, y2 - inv * stroke_y),
-        (mid_x + s2x, mid_y + sign * s2y),
+        (x2 - sign * ohx, y2 - inv * stroke_y),
+        (x2 - sign * ohx, y2 - inv * stroke_y),
+        (mid_x - s2x, mid_y + sign * s2y),
     )
     pen.curveTo(
-        (x1 + sign * ohx, y1 + (1 - inv) * stroke_y),
-        (x1 + sign * ohx, y1 + (1 - inv) * stroke_y),
+        (x1 + sign * ihx, y1 + (1 - inv) * stroke_y),
+        (x1 + sign * ihx, y1 + (1 - inv) * stroke_y),
         (x1, y1 + (1 - inv) * stroke_y),
     )
     pen.closePath()
