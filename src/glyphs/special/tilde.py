@@ -42,7 +42,7 @@ class TildeGlyph(Glyph):
             y2 - s,
             b.x2 - cr * b.width,
             y1 + s,
-            b.hx * (1 - 2 * cr),
+            b.hx * 0.2,
             b.hy * self.height_ratio,
         )
         draw_corner(
