@@ -24,8 +24,9 @@ def visualize_text(text, point_size=None, guides=False):
     all_glyphs = discover_glyphs()
     glyph_map = {}
     for g in all_glyphs:
-        char = chr(int(g.unicode, 16))
-        glyph_map[char] = g
+        if g.unicode:
+            char = chr(int(g.unicode, 16))
+            glyph_map[char] = g
 
     fig, ax = plt.subplots(1, 1, figsize=(max(6, len(text) * 1.5), 4), dpi=200)
 
@@ -43,7 +44,9 @@ def visualize_text(text, point_size=None, guides=False):
         # Draw through pathops to get simplified/correct winding
         raw_path = pathops.Path()
         glyph.draw(pathops.PathPen(raw_path), dc=DrawConfig())
-        simplified = pathops.simplify(raw_path, clockwise=False, keep_starting_points=True)
+        simplified = pathops.simplify(
+            raw_path, clockwise=False, keep_starting_points=True
+        )
 
         # Record the simplified path
         rec = RecordingPen()

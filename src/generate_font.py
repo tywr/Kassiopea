@@ -68,7 +68,8 @@ def build_font(output_path=None, bold=False):
 
     cmap = {0x20: "space"}
     for g in all_glyphs:
-        cmap[int(g.unicode, 16)] = g.name
+        if g.unicode:
+            cmap[int(g.unicode, 16)] = g.name
 
     # Build charstrings
     notdef_pen = T2CharStringPen(fc.window_width, None)
