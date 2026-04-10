@@ -22,8 +22,8 @@ class CommercialAtGlyph(Glyph):
 
         draw_superellipse_arch(
             pen,
-            dc.stroke_x,
-            dc.stroke_y,
+            dc.stroke_alt,
+            dc.stroke_alt,
             xi1,
             yi1,
             xi2,

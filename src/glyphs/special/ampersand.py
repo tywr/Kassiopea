@@ -14,7 +14,7 @@ class AmpersandGlyph(Glyph):
     name = "ampersand"
     unicode = "0x26"
     offset = 0
-    width_ratio = 1.2
+    width_ratio = 1.28
     upper_width = 0.8
     upper_height = 0.4
     lower_width = 1
