@@ -11,9 +11,9 @@ from PIL import Image, ImageDraw, ImageFont
 BG = "#000000"
 FG = "#91c7d9"
 TEXT = "Kassiopea"
-FONT_SIZE = 120
-PADDING_X = 80
-PADDING_Y = 50
+FONT_SIZE = 360
+PADDING_X = 240
+PADDING_Y = 150
 
 
 def render_banner(font_path, output="banner.png"):

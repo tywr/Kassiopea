@@ -9,6 +9,7 @@ class LowercaseSGlyph(Glyph):
     unicode = "0x73"
     offset = 0
     loop_ratio = 0.5  # Controls the height of each half-loop
+    width_ratio = 1
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -17,6 +18,7 @@ class LowercaseSGlyph(Glyph):
             overshoot_top=True,
             overshoot_left=True,
             overshoot_right=True,
+            width_ratio=self.width_ratio,
         )
         hx, hy = b.hx, b.hy * self.loop_ratio
 
@@ -46,7 +48,7 @@ class LowercaseSGlyph(Glyph):
             hx,
             hy,
         )
-        
+
         # Middle right
         draw_corner(
             pen,
@@ -58,5 +60,5 @@ class LowercaseSGlyph(Glyph):
             ym1,
             hx,
             hy,
-            orientation="top-left"
+            orientation="top-left",
         )
