@@ -23,10 +23,10 @@ from visualize import recording_to_mpl_path
 def visualize_text(text, point_size=None, guides=False):
     all_glyphs = discover_glyphs()
 
-    # Map single characters to their glyph
+    # Map single characters to their default glyph (skip alternates)
     glyph_map = {}
     for g in all_glyphs:
-        if g.unicode:
+        if g.unicode and not g.font_feature:
             char = chr(int(g.unicode, 16))
             glyph_map[char] = g
 

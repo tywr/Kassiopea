@@ -2,4 +2,4 @@
 
 # Kassiopea font
 
-Stay tuned
+A compact neo-grotesk font designed for coding.

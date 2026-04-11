@@ -3,8 +3,8 @@ from draw.rect import draw_rect
 from draw.corner import draw_corner
 
 
-class LowercaseIGlyph(Glyph):
-    name = "lowercase_i"
+class LowercaseI2Glyph(Glyph):
+    name = "lowercase_i_2"
     unicode = "0x69"
     font_feature = {"ss03": 1}
     default_italic = True

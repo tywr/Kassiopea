@@ -26,7 +26,9 @@ class FontConfig:
 
     default_stroke = 90
     italic_angle: float = 9.4
+
     v_overshoot: int = 10
+    h_overshoot: int = 10
 
 
 @dataclass
@@ -39,7 +41,6 @@ class DrawConfig(FontConfig):
     hx: int = 160
     hy: int = 200
     gap: int = 5
-    h_overshoot: int = 8
     number_hx: int = 160
     number_hy: int = 240
 
