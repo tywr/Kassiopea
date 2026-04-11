@@ -2,6 +2,7 @@
 
 import importlib
 import inspect
+import math
 import pkgutil
 
 import pathops
@@ -75,6 +76,55 @@ def record_glyph(glyph, **kwargs):
     pen = T2CharStringPen(fc.window_width, None)
     path.draw(pen)
     return pen.getCharString()
+
+
+def skew_path(path, angle_deg):
+    """Apply an italic skew (horizontal shear) to a pathops.Path."""
+    skew = math.tan(math.radians(angle_deg))
+    skewed = pathops.Path()
+    pen = pathops.PathPen(skewed)
+    for verb, points in path:
+        transformed = tuple((x + y * skew, y) for x, y in points)
+        if verb == pathops.PathVerb.MOVE:
+            pen.moveTo(*transformed)
+        elif verb == pathops.PathVerb.LINE:
+            pen.lineTo(*transformed)
+        elif verb == pathops.PathVerb.CUBIC:
+            pen.curveTo(*transformed)
+        elif verb == pathops.PathVerb.CLOSE:
+            pen.closePath()
+    return skewed
+
+
+def select_italic_glyphs(all_glyphs):
+    """For each unicode, prefer the glyph with default_italic=True.
+
+    Returns (active_glyphs, italic_promoted_names) where italic_promoted_names
+    contains glyph names that were promoted to default for the italic variant
+    and should NOT be treated as alternates.
+    """
+    by_unicode = {}
+    for g in all_glyphs:
+        if not g.unicode:
+            continue
+        code = int(g.unicode, 16)
+        existing = by_unicode.get(code)
+        if existing is None:
+            by_unicode[code] = g
+        elif g.default_italic and not existing.default_italic:
+            by_unicode[code] = g
+        elif g.default_italic and existing.default_italic:
+            by_unicode[code] = g  # last one wins
+
+    # Names promoted as the italic default (they go into cmap, not alternates)
+    promoted = {g.name for g in by_unicode.values()}
+
+    # Build the final list: selected base glyphs + non-unicode glyphs (ligatures etc.)
+    result = list(by_unicode.values())
+    for g in all_glyphs:
+        if not g.unicode and g.name not in promoted:
+            result.append(g)
+    return result, promoted
 
 
 def build_gsub(glyph_names, ligature_glyphs, alternate_glyphs, cmap):
@@ -191,8 +241,16 @@ def build_gsub(glyph_names, ligature_glyphs, alternate_glyphs, cmap):
     return gsub_table
 
 
-def build_font(output_path=None, bold=False):
-    style_name = "Bold" if bold else "Regular"
+def build_font(output_path=None, bold=False, italic=False):
+    if bold and italic:
+        style_name = "BoldItalic"
+    elif bold:
+        style_name = "Bold"
+    elif italic:
+        style_name = "Italic"
+    else:
+        style_name = "Regular"
+
     if output_path is None:
         output_path = f"fonts/{fc.family_name}-{style_name}.otf"
 
@@ -200,11 +258,18 @@ def build_font(output_path=None, bold=False):
 
     all_glyphs = discover_glyphs()
 
+    # For italic, prefer glyphs with default_italic=True
+    if italic:
+        active_glyphs, promoted = select_italic_glyphs(all_glyphs)
+    else:
+        active_glyphs = all_glyphs
+        promoted = set()
+
     cmap = {0x20: "space"}
     ligature_glyphs = []
     alternate_glyphs = []
-    for g in all_glyphs:
-        if g.font_feature:
+    for g in active_glyphs:
+        if g.font_feature and g.name not in promoted:
             alternate_glyphs.append(g)
         elif g.unicode:
             cmap[int(g.unicode, 16)] = g.name
@@ -221,8 +286,13 @@ def build_font(output_path=None, bold=False):
         ".notdef": notdef_pen.getCharString(),
         "space": space_pen.getCharString(),
     }
-    for g in all_glyphs:
-        charstrings[g.name] = record_glyph(g, dc=dc)
+    for g in active_glyphs:
+        path = simplify_glyph(g, dc=dc)
+        if italic:
+            path = skew_path(path, fc.italic_angle)
+        pen = T2CharStringPen(fc.window_width, None)
+        path.draw(pen)
+        charstrings[g.name] = pen.getCharString()
 
     glyph_names = list(charstrings.keys())
 
@@ -236,7 +306,7 @@ def build_font(output_path=None, bold=False):
         privateDict={},
     )
     # Ligature glyphs get wider advance width based on number_characters
-    glyph_by_name = {g.name: g for g in all_glyphs}
+    glyph_by_name = {g.name: g for g in active_glyphs}
     metrics = {}
     for name in glyph_names:
         g = glyph_by_name.get(name)
@@ -255,9 +325,17 @@ def build_font(output_path=None, bold=False):
         }
     )
 
-    # fsSelection / macStyle flags for bold
-    fs_selection = 0x0020 if bold else 0x0040  # BOLD or REGULAR
-    mac_style = 0x0001 if bold else 0x0000
+    # fsSelection / macStyle flags
+    fs_selection = 0x0000
+    mac_style = 0x0000
+    if bold:
+        fs_selection |= 0x0020  # BOLD
+        mac_style |= 0x0001
+    if italic:
+        fs_selection |= 0x0001  # ITALIC
+        mac_style |= 0x0002
+    if not bold and not italic:
+        fs_selection |= 0x0040  # REGULAR
 
     fb.setupOS2(
         sTypoAscender=fc.ascent,
@@ -270,7 +348,8 @@ def build_font(output_path=None, bold=False):
         fsType=0,
         fsSelection=fs_selection,
     )
-    fb.setupPost(isFixedPitch=1)
+    ital_angle = -fc.italic_angle if italic else 0
+    fb.setupPost(isFixedPitch=1, italicAngle=ital_angle)
     fb.setupHead(unitsPerEm=fc.units_per_em, macStyle=mac_style)
 
     # GSUB table for ligatures and alternates
@@ -290,16 +369,18 @@ def build_font(output_path=None, bold=False):
 
     # Build TTF version
     ttf_path = output_path.replace(".otf", ".ttf")
-    build_ttf(ttf_path, style_name, all_glyphs, cmap, dc, ligature_glyphs, alternate_glyphs)
+    build_ttf(ttf_path, style_name, active_glyphs, cmap, dc, ligature_glyphs, alternate_glyphs, italic)
 
 
-def build_ttf(output_path, style_name, all_glyphs, cmap, dc, ligature_glyphs, alternate_glyphs):
+def build_ttf(output_path, style_name, all_glyphs, cmap, dc, ligature_glyphs, alternate_glyphs, italic=False):
     """Build a TTF font with quadratic outlines from scratch."""
     from fontTools.pens.cu2quPen import Cu2QuPen
     from fontTools.pens.ttGlyphPen import TTGlyphPen
 
     def record_ttf_glyph(glyph):
         path = simplify_glyph(glyph, dc=dc)
+        if italic:
+            path = skew_path(path, fc.italic_angle)
         ttf_pen = TTGlyphPen(None)
         cu2qu_pen = Cu2QuPen(ttf_pen, max_err=1.0, reverse_direction=False)
         path.draw(cu2qu_pen)
@@ -345,8 +426,17 @@ def build_ttf(output_path, style_name, all_glyphs, cmap, dc, ligature_glyphs, al
         }
     )
 
-    fs_selection = 0x0020 if style_name == "Bold" else 0x0040
-    mac_style = 0x0001 if style_name == "Bold" else 0x0000
+    bold = "Bold" in style_name
+    fs_selection = 0x0000
+    mac_style = 0x0000
+    if bold:
+        fs_selection |= 0x0020
+        mac_style |= 0x0001
+    if italic:
+        fs_selection |= 0x0001
+        mac_style |= 0x0002
+    if not bold and not italic:
+        fs_selection |= 0x0040
 
     fb.setupOS2(
         sTypoAscender=fc.ascent,
@@ -359,7 +449,8 @@ def build_ttf(output_path, style_name, all_glyphs, cmap, dc, ligature_glyphs, al
         fsType=0,
         fsSelection=fs_selection,
     )
-    fb.setupPost(isFixedPitch=1)
+    ital_angle = -fc.italic_angle if italic else 0
+    fb.setupPost(isFixedPitch=1, italicAngle=ital_angle)
     fb.setupHead(unitsPerEm=fc.units_per_em, macStyle=mac_style)
 
     # GSUB table for ligatures and alternates
@@ -380,3 +471,5 @@ def build_ttf(output_path, style_name, all_glyphs, cmap, dc, ligature_glyphs, al
 if __name__ == "__main__":
     build_font(bold=False)
     build_font(bold=True)
+    build_font(italic=True)
+    build_font(bold=True, italic=True)

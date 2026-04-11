@@ -9,6 +9,7 @@ class LowercaseA2Glyph(Glyph):
     name = "lowercase_a_2"
     font_feature = {"ss01": 1}
     unicode = "0x61"
+    default_italic = True
     offset = 0
     loop_ratio = 0.6
     width_ratio = 1

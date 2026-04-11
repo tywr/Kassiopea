@@ -25,13 +25,14 @@ class FontConfig:
     parenthesis_length: int = 920
 
     default_stroke = 90
+    italic_angle: float = 9.4
 
 
 @dataclass
 class DrawConfig(FontConfig):
     # Default parameters
-    stroke_x: int = 88
-    stroke_y: int = 80
+    stroke_x: int = 90
+    stroke_y: int = 82
     stroke_alt: int = 72
     width: int = 340
     hx: int = 180
@@ -51,7 +52,7 @@ class DrawConfig(FontConfig):
     @classmethod
     def bold(cls):
         """Return a DrawConfig with heavier stroke weights for a bold variant."""
-        ratio = 1.3
+        ratio = 1.24
         return cls(
             stroke_x=int(cls.stroke_x * ratio),
             stroke_y=int(cls.stroke_y * ratio),
