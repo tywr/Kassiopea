@@ -13,6 +13,7 @@ class DoubleLeftArrowGlyph(LigatureGlyph):
     width_ratio = 1
     overlap = 0.6
     gap = 0.4
+    span = 0.85
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -20,7 +21,7 @@ class DoubleLeftArrowGlyph(LigatureGlyph):
         )
         ymid = dc.math
         ov = self.overlap * dc.stroke_y
-        h = dc.parenthesis_length
+        h = dc.parenthesis_length * self.span
         theta, delta = draw_parallelogramm_vertical(
             pen,
             dc.stroke_x,

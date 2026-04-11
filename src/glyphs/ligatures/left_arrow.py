@@ -11,6 +11,7 @@ class LeftArrowGlyph(LigatureGlyph):
     number_characters = 2
     width_ratio = 1
     overlap = 0.6
+    span = 0.85
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -18,7 +19,7 @@ class LeftArrowGlyph(LigatureGlyph):
         )
         ymid = dc.math
         ov = self.overlap * dc.stroke_y
-        h = dc.parenthesis_length
+        h = dc.parenthesis_length * self.span
         draw_parallelogramm_vertical(
             pen,
             dc.stroke_x,

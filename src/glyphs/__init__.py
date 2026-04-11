@@ -16,6 +16,7 @@ class Glyph(ABC):
     def offset(self) -> int: ...
 
     number_characters: int = 1
+    font_feature: dict = None
 
     @abstractmethod
     def draw(self, pen, dc) -> None: ...
