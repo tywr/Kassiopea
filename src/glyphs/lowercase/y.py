@@ -1,6 +1,7 @@
-from math import tan
+from math import tan, pi
 from glyphs import Glyph
 from draw.parallelogramm import draw_parallelogramm
+from draw.rect import draw_rect
 
 
 class LowercaseYGlyph(Glyph):
@@ -8,18 +9,19 @@ class LowercaseYGlyph(Glyph):
     unicode = "0x79"
     offset = 0
     width_ratio = 1.2
-    overlap = 0.05
+    overlap = 0.285
     dent_ratio = 0.1
 
     def draw(self, pen, dc):
         b = dc.body_bounds(offset=self.offset, width_ratio=self.width_ratio)
         dent_height = self.dent_ratio * b.height
+        ov = self.overlap * dc.stroke_x
 
         draw_parallelogramm(
             pen,
             dc.stroke_x,
             dc.stroke_y,
-            b.xmid + self.overlap * b.width,
+            b.xmid + ov,
             dent_height,
             b.x1,
             b.y2,
@@ -29,7 +31,7 @@ class LowercaseYGlyph(Glyph):
             pen,
             dc.stroke_x,
             dc.stroke_y,
-            b.xmid - self.overlap * b.width,
+            b.xmid - ov,
             dent_height,
             b.x2,
             b.y2,
@@ -38,11 +40,20 @@ class LowercaseYGlyph(Glyph):
             pen,
             dc.stroke_x,
             dc.stroke_y,
-            b.xmid - self.overlap * b.width + delta,
+            b.xmid - ov + delta,
             dent_height,
-            b.xmid
-            - self.overlap * b.width
-            - (abs(dc.descent) + dent_height) / tan(theta),
+            b.xmid - ov - (abs(dc.descent) + dent_height) / tan(theta),
             dc.descent,
             direction="bottom-left",
+        )
+
+        # Fill the gap
+        h = dc.gap / (2 * tan(0.5 * pi - theta))
+        p = ov * tan(theta)
+        draw_rect(
+            pen,
+            b.xmid - ov,
+            dent_height,
+            b.xmid + ov,
+            dent_height + p + h,
         )

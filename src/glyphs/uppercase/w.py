@@ -64,7 +64,6 @@ class UppercaseWGlyph(Glyph):
         x = 1 / (1 + tan(theta) / tan(theta2))
         p = x * (ov * tan(theta))
         h = dc.gap * p / ov
-        print(p + h)
         draw_rect(
             pen,
             b.xmid + self.inner_angle_ratio * b.width - delta2 / 2,
