@@ -1,5 +1,7 @@
+from math import tan, pi
 from glyphs.uppercase import UppercaseGlyph
 from draw.parallelogramm import draw_parallelogramm
+from draw.rect import draw_rect
 
 
 class UppercaseVGlyph(UppercaseGlyph):
@@ -7,13 +9,15 @@ class UppercaseVGlyph(UppercaseGlyph):
     unicode = "0x56"
     offset = 0
     width_ratio = 1.3
-    overlap = 0.3
+    overlap = 0.175
 
     def draw(self, pen, dc):
-        b = dc.body_bounds(offset=self.offset, width_ratio=self.width_ratio, height="cap")
+        b = dc.body_bounds(
+            offset=self.offset, width_ratio=self.width_ratio, height="cap"
+        )
         ov = self.overlap * dc.stroke_x
 
-        draw_parallelogramm(
+        theta, delta = draw_parallelogramm(
             pen,
             dc.stroke_x,
             dc.stroke_y,
@@ -31,4 +35,15 @@ class UppercaseVGlyph(UppercaseGlyph):
             b.x1,
             b.y2,
             direction="top-left",
+        )
+
+        # Fill the gap
+        h = dc.gap / (2 * tan(0.5 * pi - theta))
+        p = ov * tan(theta)
+        draw_rect(
+            pen,
+            b.xmid - ov,
+            b.y1,
+            b.xmid + ov,
+            b.y1 + p + h,
         )

@@ -13,7 +13,6 @@ class LowercaseMGlyph(Glyph):
     def draw(self, pen, dc):
         b = dc.body_bounds(
             offset=self.offset,
-            overshoot_bottom=True,
             overshoot_top=True,
             width_ratio=self.width_ratio,
         )

@@ -38,7 +38,6 @@ class LowercaseVGlyph(Glyph):
         # Fill the gap
         h = dc.gap / (2 * tan(0.5 * pi - theta))
         p = ov * tan(theta)
-        print(b.y1 + p + h)
         draw_rect(
             pen,
             b.xmid - ov,

@@ -1,4 +1,4 @@
-from math import tan
+from math import tan, pi
 from glyphs import Glyph
 from draw.parallelogramm import draw_parallelogramm
 from draw.rect import draw_rect
@@ -8,8 +8,8 @@ class LowercaseWGlyph(Glyph):
     name = "lowercase_w"
     unicode = "0x77"
     offset = 0
-    outer_overlap = 0.155
-    inner_overlap = 0.25
+    outer_overlap = 0.11
+    inner_overlap = 0.1
     width_ratio = 1.25
     inner_stroke_ratio = 0.75
     inner_height_ratio = 0.7
@@ -60,22 +60,32 @@ class LowercaseWGlyph(Glyph):
             inner_height,
         )
 
-        # Fill the gaps
+        # Fill the outer gaps
         x = 1 / (1 + tan(theta) / tan(theta2))
         p = x * (ov * tan(theta))
         h = dc.gap * p / ov
-        print(b.y1 + p + h)
         draw_rect(
             pen,
             b.xmid + self.inner_angle_ratio * b.width - delta2 / 2,
             b.y1,
             b.xmid + self.inner_angle_ratio * b.width + ov,
             b.y1 + p + h,
+            draw_rect(
+                pen,
+                b.xmid - self.inner_angle_ratio * b.width - ov,
+                b.y1,
+                b.xmid - self.inner_angle_ratio * b.width + delta2 / 2,
+                b.y1 + p + h,
+            ),
+        )
+
+        # Fill the inside gap
+        h = dc.gap / (2 * tan(0.5 * pi - theta2))
+        p = ovi * tan(theta2)
         draw_rect(
             pen,
-            b.xmid - self.inner_angle_ratio * b.width - ov,
-            b.y1,
-            b.xmid - self.inner_angle_ratio * b.width + delta2 / 2,
-            b.y1 + p + h,
-        )
+            b.xmid - ovi,
+            inner_height - p - h,
+            b.xmid + ovi,
+            inner_height,
         )
