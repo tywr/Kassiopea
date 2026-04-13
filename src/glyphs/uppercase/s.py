@@ -15,6 +15,7 @@ class UppercaseSGlyph(UppercaseGlyph):
             overshoot_bottom=True,
             overshoot_top=True,
             height="cap",
+            width_ratio=self.width_ratio,
         )
         hx, hy = b.hx, b.hy * self.loop_ratio
 
