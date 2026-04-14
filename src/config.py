@@ -35,8 +35,8 @@ class FontConfig:
 class DrawConfig(FontConfig):
     # Default parameters
     stroke_x: int = 90
-    stroke_y: int = 82
-    stroke_alt: int = 72
+    stroke_y: int = 80
+    stroke_alt: int = 70
     width: int = 340
 
     hx: int = 172
