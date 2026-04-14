@@ -14,6 +14,7 @@ class LowercaseAGlyph(Glyph):
     width_ratio = 1
     stroke_x_ratio = 1.04
     stroke_y_ratio = 0.96
+    taper = 0.15
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -37,7 +38,7 @@ class LowercaseAGlyph(Glyph):
             b.y1 + b.height * self.loop_ratio,
             hx,
             hy,
-            taper=dc.taper_a,
+            taper=self.taper,
             side="right",
             cut="top",
         )

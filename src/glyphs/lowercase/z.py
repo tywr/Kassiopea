@@ -7,6 +7,7 @@ class LowercaseZGlyph(Glyph):
     name = "lowercase_z"
     unicode = "0x7A"
     offset = 0
+    diag_stroke_ratio = 0.96
 
     def draw(self, pen, dc):
         b = dc.body_bounds(offset=self.offset)
@@ -14,12 +15,14 @@ class LowercaseZGlyph(Glyph):
         # Top and bottom bars
         draw_rect(pen, b.x1, dc.x_height - dc.stroke_y, b.x2, dc.x_height)
         draw_rect(pen, b.x1, 0, b.x2, dc.stroke_y)
+        dsx = self.diag_stroke_ratio * dc.stroke_x
+        dsy = self.diag_stroke_ratio * dc.stroke_y
 
         # Diagonal stroke
         theta, delta = draw_parallelogramm(
             pen,
-            dc.stroke_x,
-            dc.stroke_y,
+            dsx,
+            dsy,
             b.x1,
             b.y1 + dc.stroke_y + dc.gap,
             b.x2,

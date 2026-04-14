@@ -10,6 +10,8 @@ class LowercaseHGlyph(Glyph):
     offset = 0
     width_ratio = 1.00
     top_stroke_y = 0.96
+    hx_ratio = 1.15
+    taper = 0.28
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -27,9 +29,9 @@ class LowercaseHGlyph(Glyph):
             b.y2 - b.height,
             b.x2,
             b.y2,
-            b.hx,
+            1.1 * b.hx,
             b.hy,
-            taper=dc.taper,
+            taper=self.taper,
             side="left",
             cut="bottom",
         )
@@ -37,7 +39,9 @@ class LowercaseHGlyph(Glyph):
         draw_rect(pen, b.x1, 0, b.x1 + dc.stroke_x, dc.ascent)
 
         # Compute the intersection and fill the gap
-        (_, y1), (_, y2) = arch_params["outer"].intersection_x(x=b.x1 + dc.stroke_x + dc.gap)
+        (_, y1), (_, y2) = arch_params["outer"].intersection_x(
+            x=b.x1 + dc.stroke_x + dc.gap
+        )
         _, y2 = min(y1, y2), max(y1, y2)
 
         # Fill the gap
@@ -52,4 +56,3 @@ class LowercaseHGlyph(Glyph):
 
         # Right stem — reaches up to the arch midpoint
         draw_rect(pen, b.x2 - dc.stroke_x, 0, b.x2, b.y1 + b.height / 2)
-

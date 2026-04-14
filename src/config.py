@@ -51,9 +51,8 @@ class DrawConfig(FontConfig):
     number_hy: int = 240
 
     # Taper values
-    taper: float = 0.3
+    taper: float = 0.4
     taper_a: float = 0.15
-    taper_m: float = 0.28
     taper_r: float = 0.15
 
     @classmethod
@@ -65,8 +64,6 @@ class DrawConfig(FontConfig):
             stroke_y=int(cls.stroke_y * ratio),
             stroke_alt=int(cls.stroke_alt * ratio),
             taper=cls.taper,
-            taper_a=cls.taper_a,
-            taper_m=cls.taper_m,
         )
 
     @classmethod
@@ -78,8 +75,6 @@ class DrawConfig(FontConfig):
             stroke_y=int(cls.stroke_y * ratio_y),
             stroke_alt=int(cls.stroke_alt * ratio_alt),
             taper=cls.taper,
-            taper_a=cls.taper_a,
-            taper_m=cls.taper_m,
             gap=0,
         )
 

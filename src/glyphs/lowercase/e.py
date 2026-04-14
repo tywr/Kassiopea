@@ -17,7 +17,6 @@ class LowercaseEGlyph(Glyph):
             offset=self.offset,
             overshoot_top=True,
             overshoot_left=True,
-            overshoot_right=True,
             width_ratio=self.width_ratio,
         )
         sx, sy = self.stroke_x_ratio * dc.stroke_x, self.stroke_y_ratio * dc.stroke_y

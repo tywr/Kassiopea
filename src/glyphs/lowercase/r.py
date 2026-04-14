@@ -10,11 +10,13 @@ class LowercaseRGlyph(Glyph):
     offset = 20
     loop_ratio = 0.8
     width_ratio = 1.02
-    top_stroke_y = 0.96
+    top_stroke_y = 1
+    hx_ratio = 1
+    taper = 0.1
 
     def draw(self, pen, dc):
         b = dc.body_bounds(offset=self.offset, overshoot_top=True, overshoot_right=True, width_ratio=self.width_ratio)
-        hx, hy = dc.hx, dc.hy * self.loop_ratio
+        hx, hy = dc.hx * self.hx_ratio, dc.hy * self.loop_ratio
 
         # Top arch, cut at the bottom (only upper half drawn)
         arch_params = draw_superellipse_arch(
@@ -27,7 +29,7 @@ class LowercaseRGlyph(Glyph):
             b.y2,
             hx,
             hy,
-            taper=dc.taper_r,
+            taper=self.taper,
             side="left",
             cut="bottom",
         )

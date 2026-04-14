@@ -1,6 +1,5 @@
 from glyphs import Glyph
 from draw.superellipse_loop import draw_superellipse_loop
-from draw.cross_curve import draw_cross_curve
 from draw.corner import draw_corner
 
 

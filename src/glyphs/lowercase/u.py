@@ -10,6 +10,8 @@ class LowercaseUGlyph(Glyph):
     offset = 0
     width_ratio = 1.00
     bottom_stroke_y = 0.96
+    hx_ratio = 1.15
+    taper = 0.28
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -28,15 +30,17 @@ class LowercaseUGlyph(Glyph):
             b.y1,
             b.x2,
             arch_top,
-            b.hx,
+            self.hx_ratio * b.hx,
             b.hy,
-            taper=dc.taper,
+            taper=self.taper,
             side="right",
             cut="top",
         )
 
         # Compute the intersection of the outer bowl with the stem
-        (_, y1), (_, y2) = arch_params["outer"].intersection_x(x=b.x2 - dc.stroke_x - dc.gap)
+        (_, y1), (_, y2) = arch_params["outer"].intersection_x(
+            x=b.x2 - dc.stroke_x - dc.gap
+        )
         y1, y2 = min(y1, y2), max(y1, y2)
 
         # Fill the gap

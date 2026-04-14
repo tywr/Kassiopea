@@ -9,6 +9,8 @@ class UppercaseSGlyph(UppercaseGlyph):
     offset = 0
     lower_loop_ratio = 0.52
     upper_loop_width = 0.96
+    stroke_x_ratio = UppercaseGlyph.stroke_x_ratio * 1.05
+    stroke_y_ratio = UppercaseGlyph.stroke_y_ratio * 0.95
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
