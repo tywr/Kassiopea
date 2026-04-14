@@ -7,7 +7,7 @@ class UppercaseSGlyph(UppercaseGlyph):
     name = "uppercase_s"
     unicode = "0x53"
     offset = 0
-    loop_ratio = 0.5
+    lower_loop_ratio = 0.52
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -19,20 +19,23 @@ class UppercaseSGlyph(UppercaseGlyph):
             uppercase=True,
         )
         sx, sy = dc.stroke_x * self.stroke_x_ratio, dc.stroke_y * self.stroke_y_ratio
-        hx, hy = b.hx, b.hy * self.loop_ratio
+        lhx, lhy = b.hx, b.hy * self.lower_loop_ratio
+        uhx, uhy = b.hx, b.hy * (1 - self.lower_loop_ratio)
+        ymid = b.y1 + self.lower_loop_ratio * b.height
 
         # Height of each half-loop from its respective baseline
-        lh = b.height * self.loop_ratio
+        lh = b.height * self.lower_loop_ratio
+        uh = b.height - lh
         ym1 = b.y1 + lh + sy / 2
-        ym2 = b.y2 - lh - sy / 2
+        ym2 = b.y2 - uh - sy / 2
 
         # Bottom half-loop (cut at top)
         draw_superellipse_loop(
-            pen, sx, sy, b.x1, b.y1, b.x2, ym1, hx, hy, cut="top"
+            pen, sx, sy, b.x1, b.y1, b.x2, b.y1 + lh + sy / 2, lhx, lhy, cut="top"
         )
         # Top half-loop (cut at bottom)
         draw_superellipse_loop(
-            pen, sx, sy, b.x1, ym2, b.x2, b.y2, hx, hy, cut="bottom"
+            pen, sx, sy, b.x1, b.y2 - uh - sy / 2, b.x2, b.y2, uhx, uhy, cut="bottom"
         )
 
         # Middle left
@@ -41,11 +44,11 @@ class UppercaseSGlyph(UppercaseGlyph):
             sx,
             sy,
             b.x1,
-            ym2 + (b.y2 - ym2) / 2,
+            (b.y2 + ymid - sy / 2) / 2,
             b.xmid,
-            ym2,
-            hx,
-            hy,
+            ymid - sy / 2,
+            lhx,
+            lhy,
         )
 
         # Middle right
@@ -54,10 +57,10 @@ class UppercaseSGlyph(UppercaseGlyph):
             sx,
             sy,
             b.x2,
-            b.y1 + (ym1 - b.y1) / 2,
+            (ymid + sy / 2 + b.y1) / 2,
             b.xmid,
-            ym1,
-            hx,
-            hy,
+            ymid + sy / 2,
+            uhx,
+            uhy,
             orientation="top-left",
         )

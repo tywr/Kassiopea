@@ -6,6 +6,8 @@ class LowercaseOGlyph(Glyph):
     name = "lowercase_o"
     unicode = "0x6F"
     offset = 0
+    stroke_x_ratio = 1.05
+    stroke_y_ratio = 0.95
 
     def draw(
         self,
@@ -19,6 +21,5 @@ class LowercaseOGlyph(Glyph):
             overshoot_left=True,
             overshoot_right=True,
         )
-        draw_superellipse_loop(
-            pen, dc.stroke_x, dc.stroke_y, b.x1, b.y1, b.x2, b.y2, b.hx, b.hy
-        )
+        sx, sy = self.stroke_x_ratio * dc.stroke_x, self.stroke_y_ratio * dc.stroke_y
+        draw_superellipse_loop(pen, sx, sy, b.x1, b.y1, b.x2, b.y2, b.hx, b.hy)
