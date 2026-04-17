@@ -94,7 +94,6 @@ class LowercaseAGlyph(Glyph):
             pen, sx, sy, b.x2, yc, b.xmid, b.y2, chx, chy, orientation="top-left"
         )
 
-        print(b.x2 - cw)
         loop_glyph = ufoLib2.objects.Glyph()
         draw_corner(
             loop_glyph.getPen(),
