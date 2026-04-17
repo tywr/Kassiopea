@@ -19,12 +19,14 @@ class LowercaseEGlyph(Glyph):
     stroke_y_ratio = 0.96
     cut_offset = 0.05
     tail_radius = 1.618
+    tail_hy = 0.5
+    overshoot_reducing = 0.65
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
             offset=self.offset,
             overshoot_top=True,
-            overshoot_bottom = True,
+            overshoot_bottom=True,
             overshoot_left=True,
             width_ratio=self.width_ratio,
         )
@@ -40,7 +42,7 @@ class LowercaseEGlyph(Glyph):
             sx,
             sy,
             b.x1,
-            b.y1,
+            b.y1 + self.overshoot_reducing * dc.v_overshoot,
             b.x2,
             b.y2,
             b.hx,
@@ -56,9 +58,9 @@ class LowercaseEGlyph(Glyph):
             xe,
             ymid,
             b.xmid,
-            b.y1,
+            b.y1 + self.overshoot_reducing * dc.v_overshoot,
             b.hx * self.tail_radius,
-            b.hy,
+            b.hy * self.tail_hy,
             orientation="bottom-left",
         )
 

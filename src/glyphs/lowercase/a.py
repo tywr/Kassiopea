@@ -1,13 +1,10 @@
 import ufoLib2
 from booleanOperations.booleanGlyph import BooleanGlyph
-from config import FontConfig as fc
 from glyphs import Glyph
 from draw.superellipse_arch import draw_superellipse_arch
-from draw.smooth_corner import draw_smooth_corner
 from draw.corner import draw_corner
 from draw.rect import draw_rect
 from draw.polygon import draw_polygon
-from draw.superellipse_loop import draw_superellipse_loop
 
 
 class LowercaseAGlyph(Glyph):
@@ -22,10 +19,13 @@ class LowercaseAGlyph(Glyph):
     cap_ratio = 0.6
     cap_width = 0.96
     cap_radius = 1.618
-    cap_hx_ratio = 1
-    cap_hy_ratio = 0.8
+    cap_right_hx_ratio = 1
+    cap_right_hy_ratio = 0.8
+    cap_left_hx_ratio = 1.618
+    cap_left_hy_ratio = 0.2
     cut_offset = 0.13
-    thinning = 0.4
+    thinning = 0.6
+    overshoot_reducing = 0.5
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -39,7 +39,8 @@ class LowercaseAGlyph(Glyph):
         dx = sx - dc.stroke_x
         hx, hy = b.hx, b.hy * self.loop_ratio
         yc = b.y1 + self.cap_ratio * b.height
-        chx, chy = self.cap_hx_ratio * b.hx, self.cap_hy_ratio * b.hy
+        crhx, crhy = self.cap_right_hx_ratio * b.hx, self.cap_right_hy_ratio * b.hy
+        clhx, clhy = self.cap_left_hx_ratio * b.hx, self.cap_left_hy_ratio * b.hy
         xc = b.x1 + self.cut_offset * b.width
         xe = b.x1 - (self.cap_radius - 1) * b.width / 2
 
@@ -88,10 +89,20 @@ class LowercaseAGlyph(Glyph):
             b.x2,
             yc,
         )
-        draw_corner(
-            pen, sx, sy, b.x2, yc, b.xmid, b.y2, chx, chy, orientation="top-left"
-        )
 
+        # Cap
+        draw_corner(
+            pen,
+            sx,
+            sy,
+            b.x2,
+            yc,
+            b.xmid,
+            b.y2 - self.overshoot_reducing * dc.v_overshoot,
+            crhx,
+            crhy,
+            orientation="top-left",
+        )
         loop_glyph = ufoLib2.objects.Glyph()
         draw_corner(
             loop_glyph.getPen(),
@@ -100,9 +111,9 @@ class LowercaseAGlyph(Glyph):
             xe,
             yc,
             b.xmid,
-            b.y2,
-            chx,
-            chy,
+            b.y2 - self.overshoot_reducing * dc.v_overshoot,
+            clhx,
+            clhy,
             orientation="top-right",
         )
         cut_glyph = ufoLib2.objects.Glyph()
