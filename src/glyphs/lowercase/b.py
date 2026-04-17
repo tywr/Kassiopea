@@ -8,7 +8,7 @@ from draw.polygon import draw_polygon
 class LowercaseBGlyph(Glyph):
     name = "lowercase_b"
     unicode = "0x62"
-    offset = 0
+    offset = 5
     bowl_stroke_x_ratio = 1.04
     bowl_stroke_y_ratio = 0.96
 

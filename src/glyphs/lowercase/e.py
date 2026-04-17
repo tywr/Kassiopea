@@ -9,7 +9,7 @@ from booleanOperations.booleanGlyph import BooleanGlyph
 class LowercaseEGlyph(Glyph):
     name = "lowercase_e"
     unicode = "0x65"
-    offset = 0
+    offset = 5
     width_ratio = 1
     stroke_x_ratio = 1.00
     stroke_y_ratio = 0.96

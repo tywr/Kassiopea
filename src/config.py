@@ -42,9 +42,9 @@ class DrawConfig(FontConfig):
     stroke_alt: int = 66
 
     v_overshoot: int = 12
-    h_overshoot: int = 24
+    h_overshoot: int = 11
 
-    width: int = 330
+    width: int = 350
 
     hx: int = 158
     hy: int = 164

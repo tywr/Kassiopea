@@ -13,7 +13,7 @@ from draw.superellipse_loop import draw_superellipse_loop
 class LowercaseAGlyph(Glyph):
     name = "lowercase_a"
     unicode = "0x61"
-    offset = 0
+    offset = -8
     loop_ratio = 0.6
     width_ratio = 1
     stroke_x_ratio = 1.04

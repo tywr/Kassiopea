@@ -7,7 +7,7 @@ from draw.polygon import draw_polygon
 class LowercaseQGlyph(Glyph):
     name = "lowercase_q"
     unicode = "0x71"
-    offset = 0
+    offset = -5
     bowl_stroke_x_ratio = 1.04
     bowl_stroke_y_ratio = 0.96
 
