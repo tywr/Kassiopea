@@ -242,34 +242,85 @@ def build_gsub(glyph_names, ligature_glyphs, alternate_glyphs, cmap):
     return gsub_table
 
 
-def build_font(output_path=None, bold=False, italic=False, light=False):
-    if bold and light:
-        raise ValueError("bold and light are mutually exclusive")
+WEIGHT_NAMES = {
+    100: "Thin",
+    200: "ExtraLight",
+    300: "Light",
+    400: "Regular",
+    500: "Medium",
+    600: "SemiBold",
+    700: "Bold",
+}
 
-    if bold and italic:
-        style_name = "Bold Italic"
-    elif bold:
-        style_name = "Bold"
-    elif light and italic:
-        style_name = "Light Italic"
-    elif light:
-        style_name = "Light"
-    elif italic:
-        style_name = "Italic"
+
+def _style_metadata(weight, italic):
+    """Compute style name, PS name, name table entries, and OS/2 flags for a weight/italic combination."""
+    if weight not in WEIGHT_NAMES:
+        raise ValueError(f"Unsupported weight {weight}; must be one of {sorted(WEIGHT_NAMES)}")
+
+    weight_name = WEIGHT_NAMES[weight]
+    if weight == 400:
+        style_name = "Italic" if italic else "Regular"
+    elif weight == 700:
+        style_name = "Bold Italic" if italic else "Bold"
     else:
-        style_name = "Regular"
+        style_name = f"{weight_name} Italic" if italic else weight_name
 
     ps_style_name = style_name.replace(" ", "")
+    ps_name = f"{fc.family_name}-{ps_style_name}"
+    full_name = f"{fc.family_name} {style_name}"
+
+    # RIBBI = Regular/Bold/Italic/BoldItalic — macOS style-links these under one family.
+    # Non-RIBBI weights get their own family name plus typographic family/subfamily
+    # (name IDs 16/17) so modern apps can still group them.
+    is_ribbi = weight in (400, 700)
+    if is_ribbi:
+        name_table = {
+            "familyName": fc.family_name,
+            "styleName": style_name,
+            "uniqueFontIdentifier": ps_name,
+            "fullName": full_name,
+            "version": "Version 1.000",
+            "psName": ps_name,
+        }
+    else:
+        legacy_family = f"{fc.family_name} {weight_name}"
+        legacy_sub = "Italic" if italic else "Regular"
+        name_table = {
+            "familyName": legacy_family,
+            "styleName": legacy_sub,
+            "uniqueFontIdentifier": ps_name,
+            "fullName": full_name,
+            "version": "Version 1.000",
+            "psName": ps_name,
+            "typographicFamily": fc.family_name,
+            "typographicSubfamily": style_name,
+        }
+
+    fs_selection = 0x0000
+    mac_style = 0x0000
+    if weight == 700:
+        fs_selection |= 0x0020  # BOLD
+        mac_style |= 0x0001
+    if italic:
+        fs_selection |= 0x0001  # ITALIC
+        mac_style |= 0x0002
+    if fs_selection == 0:
+        fs_selection |= 0x0040  # REGULAR
+
+    return style_name, ps_style_name, name_table, fs_selection, mac_style
+
+
+def build_font(output_path=None, weight=400, italic=False):
+    style_name, ps_style_name, name_table, fs_selection, mac_style = _style_metadata(weight, italic)
 
     if output_path is None:
         os.makedirs("fonts/otf/", exist_ok=True)
         os.makedirs("fonts/ttf/", exist_ok=True)
         output_path = f"fonts/otf/{fc.family_name}-{ps_style_name}.otf"
 
-    if bold:
-        dc = DrawConfig.bold()
-    elif light:
-        dc = DrawConfig.light()
+    if weight != 400:
+        dc = DrawConfig.weight(w=weight)
     elif italic:
         dc = DrawConfig.italic()
     else:
@@ -352,35 +403,7 @@ def build_font(output_path=None, bold=False, italic=False, light=False):
         metrics[name] = (fc.window_width * n, 0)
     fb.setupHorizontalMetrics(metrics)
     fb.setupHorizontalHeader(ascent=fc.window_ascent, descent=-abs(fc.window_descent))
-    fb.setupNameTable(
-        {
-            "familyName": fc.family_name,
-            "styleName": style_name,
-            "uniqueFontIdentifier": f"{fc.family_name}-{ps_style_name}",
-            "fullName": f"{fc.family_name} {style_name}",
-            "version": "Version 1.000",
-            "psName": f"{fc.family_name}-{ps_style_name}",
-        }
-    )
-
-    # fsSelection / macStyle flags
-    fs_selection = 0x0000
-    mac_style = 0x0000
-    if bold:
-        fs_selection |= 0x0020  # BOLD
-        mac_style |= 0x0001
-    if italic:
-        fs_selection |= 0x0001  # ITALIC
-        mac_style |= 0x0002
-    if not bold and not italic:
-        fs_selection |= 0x0040  # REGULAR
-
-    if bold:
-        weight_class = 700
-    elif light:
-        weight_class = 300
-    else:
-        weight_class = 400
+    fb.setupNameTable(name_table)
 
     fb.setupOS2(
         sTypoAscender=fc.ascent,
@@ -392,7 +415,7 @@ def build_font(output_path=None, bold=False, italic=False, light=False):
         sCapHeight=fc.cap,
         fsType=0,
         fsSelection=fs_selection,
-        usWeightClass=weight_class,
+        usWeightClass=weight,
     )
     ital_angle = -fc.italic_angle if italic else 0
     fb.setupPost(isFixedPitch=1, italicAngle=ital_angle)
@@ -415,15 +438,15 @@ def build_font(output_path=None, bold=False, italic=False, light=False):
 
     # Build TTF version
     ttf_path = output_path.replace(".otf", ".ttf").replace("/otf", "/ttf")
-    build_ttf(ttf_path, style_name, active_glyphs, cmap, dc, ligature_glyphs, alternate_glyphs, italic)
+    build_ttf(ttf_path, weight, italic, active_glyphs, cmap, dc, ligature_glyphs, alternate_glyphs)
 
 
-def build_ttf(output_path, style_name, all_glyphs, cmap, dc, ligature_glyphs, alternate_glyphs, italic=False):
+def build_ttf(output_path, weight, italic, all_glyphs, cmap, dc, ligature_glyphs, alternate_glyphs):
     """Build a TTF font with quadratic outlines from scratch."""
     from fontTools.pens.cu2quPen import Cu2QuPen
     from fontTools.pens.ttGlyphPen import TTGlyphPen
 
-    ps_style_name = style_name.replace(" ", "")
+    _, _, name_table, fs_selection, mac_style = _style_metadata(weight, italic)
 
     def record_ttf_glyph(glyph):
         path = simplify_glyph(glyph, dc=dc)
@@ -463,36 +486,7 @@ def build_ttf(output_path, style_name, all_glyphs, cmap, dc, ligature_glyphs, al
         metrics[name] = (fc.window_width * n, lsb)
     fb.setupHorizontalMetrics(metrics)
     fb.setupHorizontalHeader(ascent=fc.window_ascent, descent=-abs(fc.window_descent))
-    fb.setupNameTable(
-        {
-            "familyName": fc.family_name,
-            "styleName": style_name,
-            "uniqueFontIdentifier": f"{fc.family_name}-{ps_style_name}",
-            "fullName": f"{fc.family_name} {style_name}",
-            "version": "Version 1.000",
-            "psName": f"{fc.family_name}-{ps_style_name}",
-        }
-    )
-
-    bold = "Bold" in style_name
-    light = "Light" in style_name
-    fs_selection = 0x0000
-    mac_style = 0x0000
-    if bold:
-        fs_selection |= 0x0020
-        mac_style |= 0x0001
-    if italic:
-        fs_selection |= 0x0001
-        mac_style |= 0x0002
-    if not bold and not italic:
-        fs_selection |= 0x0040
-
-    if bold:
-        weight_class = 700
-    elif light:
-        weight_class = 300
-    else:
-        weight_class = 400
+    fb.setupNameTable(name_table)
 
     fb.setupOS2(
         sTypoAscender=fc.ascent,
@@ -504,7 +498,7 @@ def build_ttf(output_path, style_name, all_glyphs, cmap, dc, ligature_glyphs, al
         sCapHeight=fc.cap,
         fsType=0,
         fsSelection=fs_selection,
-        usWeightClass=weight_class,
+        usWeightClass=weight,
     )
     ital_angle = -fc.italic_angle if italic else 0
     fb.setupPost(isFixedPitch=1, italicAngle=ital_angle)
@@ -526,9 +520,6 @@ def build_ttf(output_path, style_name, all_glyphs, cmap, dc, ligature_glyphs, al
 
 
 if __name__ == "__main__":
-    build_font(bold=False)
-    build_font(bold=True)
-    build_font(italic=True)
-    build_font(bold=True, italic=True)
-    build_font(light=True)
-    build_font(light=True, italic=True)
+    for w in [100, 200, 300, 400, 500, 600, 700]:
+        build_font(weight=w)
+        build_font(weight=w, italic=True)

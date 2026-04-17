@@ -62,30 +62,14 @@ class DrawConfig(FontConfig):
     taper_r: float = 0.15
 
     @classmethod
-    def bold(cls):
+    def weight(cls, w=400):
         """Return a DrawConfig with heavier stroke weights for a bold variant."""
-        ratio = 1.618
-        hy_ratio = 1.3
-        extra_height = int((ratio - 1) * cls.stroke_y / 2)
-        return cls(
-            stroke_x=int(cls.stroke_x * ratio),
-            stroke_y=int(cls.stroke_y * ratio),
-            stroke_alt=int(cls.stroke_alt * ratio),
-            x_height=cls.x_height + extra_height,
-            cap=cls.cap + extra_height,
-            ascent=cls.ascent + extra_height,
-            descent=cls.descent - extra_height,
-            taper=cls.taper,
-            hy=hy_ratio * cls.hy,
-            number_hy=hy_ratio * cls.number_hy,
-            cap_hy=hy_ratio * cls.cap_hy,
-        )
+        from math import log, exp
 
-    @classmethod
-    def light(cls):
-        """Return a DrawConfig with heavier stroke weights for a bold variant."""
-        ratio = 0.618
-        hy_ratio = 0.8
+        br = 1.58
+        bhy = 1.3
+        ratio = exp((w - 400) * log(br) / 300)
+        hy_ratio = exp((w - 400) * log(bhy) / 300)
         extra_height = int((ratio - 1) * cls.stroke_y / 2)
         return cls(
             stroke_x=int(cls.stroke_x * ratio),
