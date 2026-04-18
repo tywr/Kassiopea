@@ -44,7 +44,7 @@ class DrawConfig(FontConfig):
     v_overshoot: int = 12
     h_overshoot: int = 11
 
-    width: int = 350
+    width: int = 358
 
     hx: int = 158
     hy: int = 164
