@@ -14,11 +14,10 @@ class LowercaseSGlyph(Glyph):
     width_ratio = 1
     stroke_x_ratio = 1.00
     stroke_y_ratio = 0.96
-    left_tail_offset = 0.03
-    right_tail_offset = 0.025
+    left_tail_offset = 0.02
+    right_tail_offset = 0.015
     hx_ratio = 0.75
     hy_ratio = 0.8
-    width_ratio = 1.02
     top_height_ratio = 0.28
     bottom_height_ratio = 0.29
     top_cut = 0.72
@@ -88,8 +87,7 @@ class LowercaseSGlyph(Glyph):
             yl,
             hx,
             hy,
-            middle_y_ratio=0.5,
+            middle_y_ratio=0.53,
             dx=150,
             dy=112,
-            thinning=2,
         )

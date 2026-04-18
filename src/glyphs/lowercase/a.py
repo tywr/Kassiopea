@@ -1,5 +1,6 @@
 import ufoLib2
 from booleanOperations.booleanGlyph import BooleanGlyph
+from config import FontConfig as fc
 from glyphs import Glyph
 from draw.superellipse_arch import draw_superellipse_arch
 from draw.corner import draw_corner
@@ -16,16 +17,12 @@ class LowercaseAGlyph(Glyph):
     stroke_x_ratio = 1.04
     stroke_y_ratio = 0.96
     taper = 0.15
-    cap_ratio = 0.6
+    cap_hx_ratio = 1.05
+    cap_hy_ratio = 0.75
+    cap_ratio = 0.65
+    cap_height = 0.72
     cap_width = 0.96
-    cap_radius = 1.618
-    cap_right_hx_ratio = 1
-    cap_right_hy_ratio = 0.8
-    cap_left_hx_ratio = 1.618
-    cap_left_hy_ratio = 0.2
-    cut_offset = 0.13
-    thinning = 0.6
-    overshoot_reducing = 0.5
+    thinning = 0.87
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -38,11 +35,13 @@ class LowercaseAGlyph(Glyph):
         sx, sy = self.stroke_x_ratio * dc.stroke_x, self.stroke_y_ratio * dc.stroke_y
         dx = sx - dc.stroke_x
         hx, hy = b.hx, b.hy * self.loop_ratio
-        yc = b.y1 + self.cap_ratio * b.height
-        crhx, crhy = self.cap_right_hx_ratio * b.hx, self.cap_right_hy_ratio * b.hy
-        clhx, clhy = self.cap_left_hx_ratio * b.hx, self.cap_left_hy_ratio * b.hy
-        xc = b.x1 + self.cut_offset * b.width
-        xe = b.x1 - (self.cap_radius - 1) * b.width / 2
+        yc, ys = (
+            b.y1 + self.cap_ratio * b.height,
+            b.y1 + (2 * self.cap_ratio - 1) * b.height,
+        )
+        chx, chy = self.cap_hx_ratio * b.hx, self.cap_hy_ratio * b.hy
+        ycut = b.y1 + self.cap_height * b.height
+        cw, csx = self.cap_width * b.width, self.thinning * sx
 
         # Lower half half of the bowl
         arch_params = draw_superellipse_arch(
@@ -89,35 +88,25 @@ class LowercaseAGlyph(Glyph):
             b.x2,
             yc,
         )
-
-        # Cap
         draw_corner(
-            pen,
-            sx,
-            sy,
-            b.x2,
-            yc,
-            b.xmid,
-            b.y2 - self.overshoot_reducing * dc.v_overshoot,
-            crhx,
-            crhy,
-            orientation="top-left",
+            pen, sx, sy, b.x2, yc, b.xmid, b.y2, chx, chy, orientation="top-left"
         )
+
         loop_glyph = ufoLib2.objects.Glyph()
         draw_corner(
             loop_glyph.getPen(),
-            sx * self.thinning,
+            csx,
             sy,
-            xe,
+            b.x2 - cw,
             yc,
             b.xmid,
-            b.y2 - self.overshoot_reducing * dc.v_overshoot,
-            clhx,
-            clhy,
+            b.y2,
+            chx,
+            chy,
             orientation="top-right",
         )
         cut_glyph = ufoLib2.objects.Glyph()
-        draw_rect(cut_glyph.getPen(), xe - 1, b.ymid, xc, b.y2)
+        draw_rect(cut_glyph.getPen(), b.x1, b.ymid, b.xmid, ycut)
         result = BooleanGlyph(loop_glyph).difference(BooleanGlyph(cut_glyph))
         result.draw(pen)
 

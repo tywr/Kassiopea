@@ -59,12 +59,12 @@ def draw_s_curve(
     pen.moveTo((xi1, yi1))
     pen.curveTo(
         (xi1 + sin(theta) * ihx, yi1 - cos(theta) * ihx * rbot),
-        (x2 - sx, y1 + ihy),
+        (x2 - sx, y1 + ihy * rbot),
         (x2 - sx, y1),
     )
     pen.lineTo((x2, y1))
     pen.curveTo(
         (x2, y1 + ihy * rbot + sy / 2),
-        (xe1 + sin(theta) * hx * rbot, ye1 - cos(theta) * hx * rbot),
+        (xe1 + sin(theta) * hx, ye1 - cos(theta) * hx * rbot),
         (xe1, ye1),
     )

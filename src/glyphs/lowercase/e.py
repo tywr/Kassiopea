@@ -13,28 +13,25 @@ class LowercaseEGlyph(Glyph):
     width_ratio = 1
     stroke_x_ratio = 1.00
     stroke_y_ratio = 0.96
+    tail_height = 0.25
     mid_height = 0.52
-    thinning = 0.5
     stroke_x_ratio = 1.04
     stroke_y_ratio = 0.96
-    cut_offset = 0.05
-    tail_radius = 1.618
-    tail_hy = 0.5
-    overshoot_reducing = 0.65
+    thinning = 0.89
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
             offset=self.offset,
             overshoot_top=True,
-            overshoot_bottom=True,
             overshoot_left=True,
+            overshoot_right=True,
+            overshoot_bottom=True,
             width_ratio=self.width_ratio,
         )
         sx, sy = self.stroke_x_ratio * dc.stroke_x, self.stroke_y_ratio * dc.stroke_y
         hx, hy = b.hx * (b.width - dc.h_overshoot) / b.width, b.hy
+        yo = self.tail_height * b.height
         ymid = self.mid_height * b.height
-        xe = b.x2 + (self.tail_radius - 1) * b.width / 2
-        xc = b.x2 - self.cut_offset * b.width
 
         # Half-top of a superellipse
         draw_superellipse_loop(
@@ -42,7 +39,7 @@ class LowercaseEGlyph(Glyph):
             sx,
             sy,
             b.x1,
-            b.y1 + self.overshoot_reducing * dc.v_overshoot,
+            b.y1,
             b.x2,
             b.y2,
             b.hx,
@@ -55,22 +52,22 @@ class LowercaseEGlyph(Glyph):
             loop_glyph.getPen(),
             sx * self.thinning,
             sy,
-            xe,
-            ymid,
+            b.x2,
+            b.ymid,
             b.xmid,
-            b.y1 + self.overshoot_reducing * dc.v_overshoot,
-            b.hx * self.tail_radius,
-            b.hy * self.tail_hy,
+            b.y1,
+            b.hx,
+            b.hy,
             orientation="bottom-left",
         )
 
         cut_glyph = ufoLib2.objects.Glyph()
         draw_rect(
             cut_glyph.getPen(),
-            xc,
-            b.y1,
-            xe + 1,
-            b.y2,
+            b.xmid,
+            yo,
+            b.xmid + b.width,
+            b.ymid,
         )
         result = BooleanGlyph(loop_glyph).difference(BooleanGlyph(cut_glyph))
         result.draw(pen)
@@ -87,8 +84,6 @@ class LowercaseEGlyph(Glyph):
             hy,
             orientation="top-left",
         )
-
-        # Middle bar
         draw_rect(
             pen,
             b.x1 + sx / 2,
