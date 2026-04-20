@@ -41,21 +41,3 @@ class UppercaseYGlyph(UppercaseGlyph):
         h = dc.gap / (2 * tan(0.5 * pi - theta))
         p = ov * tan(theta)
         draw_rect(pen, b.xmid - sx / 2, b.y1, b.xmid + sx / 2, yj + p + h)
-
-        # Draw junction to fill the gaps
-        draw_polygon(
-            pen,
-            points=[
-                (b.xmid + ov - delta, yj),
-                (b.xmid + ov - delta + (delta - ov) * cos(theta), yj - (delta - ov) * sin(theta)),
-                (b.xmid, yj),
-            ],
-        )
-        draw_polygon(
-            pen,
-            points=[
-                (b.xmid, yj),
-                (b.xmid - ov + delta - (delta - ov) * cos(theta), yj - (delta - ov) * sin(theta)),
-                (b.xmid - ov + delta, yj),
-            ],
-        )

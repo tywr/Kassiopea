@@ -22,6 +22,7 @@ class LowercaseAGlyph(Glyph):
     cap_right_hy_ratio = 0.8
     overshoot_reducing = 0.5
     cap_offset = 0.08
+    ending_thickness = 0.8
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -76,14 +77,6 @@ class LowercaseAGlyph(Glyph):
             b.y1 + b.height * self.loop_ratio,
         )
 
-        # Stem
-        draw_rect(
-            pen,
-            b.x2 - sx,
-            0,
-            b.x2,
-            yc,
-        )
 
         # Cap
         draw_corner(
@@ -116,6 +109,25 @@ class LowercaseAGlyph(Glyph):
             x=b.x2 - dc.stroke_x - dc.gap
         )
         y1, y2 = min(y1, y2), max(y1, y2)
+
+        # Stem
+        draw_rect(
+            pen,
+            b.x2 - sx,
+            y1,
+            b.x2,
+            yc,
+        )
+
+        draw_polygon(
+            pen,
+            points=[
+                (b.x2 - self.ending_thickness * dc.stroke_x, 0),
+                (b.x2, 0),
+                (b.x2, y1),
+                (b.x2 - dc.stroke_x, y1),
+            ],
+        )
 
         # Fill the gap
         draw_polygon(

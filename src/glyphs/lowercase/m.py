@@ -1,6 +1,7 @@
 from glyphs import Glyph
 from draw.superellipse_arch import draw_superellipse_arch
 from draw.rect import draw_rect
+from draw.polygon import draw_polygon
 
 
 class LowercaseMGlyph(Glyph):
@@ -12,6 +13,7 @@ class LowercaseMGlyph(Glyph):
     top_stroke_y = 0.96
     hx_ratio = 0.75
     taper = 0.22
+    ending_thickness = 0.75
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -55,13 +57,22 @@ class LowercaseMGlyph(Glyph):
             side="left",
             cut="bottom",
         )
-        # Left foot
-        draw_rect(pen, b.x1, 0, b.x1 + dc.stroke_x - dc.gap, dc.x_height)
 
         # Compute the intersection and fill the gap
         (_, y1), (_, y2) = arch_params["outer"].intersection_x(x=b.x1 + dc.stroke_x)
         y1, y2 = min(y1, y2), max(y1, y2)
+
+        # Left stem
         draw_rect(pen, b.x1, 0, b.x1 + dc.stroke_x, y2)
+        draw_polygon(
+            pen,
+            points=[
+                (b.x1 + self.ending_thickness * dc.stroke_x, dc.x_height),
+                (b.x1, dc.x_height),
+                (b.x1, y2),
+                (b.x1 + dc.stroke_x - dc.gap, y2),
+            ],
+        )
 
         # Right foot — reaches up to the arch midpoint
         draw_rect(pen, b.x2 - dc.stroke_x, 0, b.x2, b.ymid)
