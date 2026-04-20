@@ -9,7 +9,7 @@ from draw.parallelogramm import draw_parallelogramm_vertical
 class LowercaseGGlyph(Glyph):
     name = "lowercase_g"
     unicode = "0x67"
-    offset = -5
+    offset = -10
     tail_offset = 0
     bowl_stroke_x_ratio = 1.04
     bowl_stroke_y_ratio = 0.96
