@@ -7,9 +7,10 @@ from draw.polygon import draw_polygon
 class LowercasePGlyph(Glyph):
     name = "lowercase_p"
     unicode = "0x70"
-    offset = 5
+    offset = 7
     bowl_stroke_x_ratio = 1.04
     bowl_stroke_y_ratio = 0.96
+    ending_thickness = 0.8
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -46,7 +47,16 @@ class LowercasePGlyph(Glyph):
         y1, y2 = min(y1, y2), max(y1, y2)
 
         # Left descender stem
-        draw_rect(pen, b.x1, dc.descent, b.x1 + dc.stroke_x, dc.x_height)
+        draw_rect(pen, b.x1, dc.descent, b.x1 + dc.stroke_x, y2)
+        draw_polygon(
+            pen,
+            points=[
+                (b.x1 + self.ending_thickness * dc.stroke_x, dc.x_height),
+                (b.x1, dc.x_height),
+                (b.x1, y2),
+                (b.x1 + dc.stroke_x, y2),
+            ],
+        )
 
         draw_polygon(
             pen,

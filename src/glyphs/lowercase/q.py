@@ -7,9 +7,10 @@ from draw.polygon import draw_polygon
 class LowercaseQGlyph(Glyph):
     name = "lowercase_q"
     unicode = "0x71"
-    offset = -5
+    offset = -7
     bowl_stroke_x_ratio = 1.04
     bowl_stroke_y_ratio = 0.96
+    ending_thickness = 0.8
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -45,7 +46,16 @@ class LowercaseQGlyph(Glyph):
         y1, y2 = min(y1, y2), max(y1, y2)
 
         # Right descender stem
-        draw_rect(pen, b.x2 - dc.stroke_x, dc.descent, b.x2, dc.x_height)
+        draw_rect(pen, b.x2 - dc.stroke_x, dc.descent, b.x2, y2)
+        draw_polygon(
+            pen,
+            points=[
+                (b.x2 - dc.stroke_x, y2),
+                (b.x2, y2),
+                (b.x2, dc.x_height),
+                (b.x2 - self.ending_thickness * dc.stroke_x, dc.x_height),
+            ],
+        )
 
         draw_polygon(
             pen,

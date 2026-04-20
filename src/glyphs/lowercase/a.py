@@ -2,9 +2,8 @@ from glyphs import Glyph
 from draw.superellipse_arch import draw_superellipse_arch
 from draw.corner import draw_corner
 from draw.rect import draw_rect
-from draw.parallelogramm import draw_smooth_parallelogramm_vertical
+from draw.parallelogramm import draw_parallelogramm_vertical
 from draw.polygon import draw_polygon
-from utils.pens import NullPen
 
 
 class LowercaseAGlyph(Glyph):
@@ -15,7 +14,7 @@ class LowercaseAGlyph(Glyph):
     width_ratio = 1
     stroke_x_ratio = 1.04
     stroke_y_ratio = 0.96
-    taper = 0.15
+    taper = 0.3
     cap_ratio = 0.6
     cap_width = 0.96
     cap_radius = 1.618
@@ -23,7 +22,6 @@ class LowercaseAGlyph(Glyph):
     cap_right_hy_ratio = 0.8
     overshoot_reducing = 0.5
     cap_offset = 0.08
-    cap_dip = 0.05
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -38,7 +36,7 @@ class LowercaseAGlyph(Glyph):
         hx, hy = b.hx, b.hy * self.loop_ratio
         yc = b.y1 + self.cap_ratio * b.height
         crhx, crhy = self.cap_right_hx_ratio * b.hx, self.cap_right_hy_ratio * b.hy
-        yt = dc.x_height - dc.stroke_y - self.cap_dip * b.height
+        yt = dc.x_height - dc.stroke_y - dc.v_overshoot
         xt = b.x1 + self.cap_offset * b.width
 
         # Lower half half of the bowl
@@ -101,8 +99,16 @@ class LowercaseAGlyph(Glyph):
             crhy,
             orientation="top-left",
         )
-        theta, delta = draw_smooth_parallelogramm_vertical(
-            pen, dc.stroke_y, b.xmid, b.y2, xt, yt, direction="bottom-left"
+        theta, delta = draw_parallelogramm_vertical(
+            pen,
+            dc.stroke_x,
+            dc.stroke_y,
+            b.xmid,
+            b.y2,
+            xt,
+            yt,
+            direction="bottom-left",
+            delta=dc.stroke_y,
         )
 
         # Fill the gap

@@ -4,7 +4,7 @@ from draw.rect import draw_rect
 from draw.square_corner import draw_square_corner
 from draw.corner import draw_corner
 from draw.polygon import draw_polygon
-from draw.parallelogramm import draw_smooth_parallelogramm_vertical
+from draw.parallelogramm import draw_parallelogramm_vertical
 
 
 class LowercaseGGlyph(Glyph):
@@ -14,8 +14,7 @@ class LowercaseGGlyph(Glyph):
     tail_offset = 0
     bowl_stroke_x_ratio = 1.04
     bowl_stroke_y_ratio = 0.96
-    tail_dip = 0.05
-    tail_offset = 0.08
+    tail_offset = 0.15
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -61,20 +60,22 @@ class LowercaseGGlyph(Glyph):
             b.x2,
             0,
             b.xmid,
-            dc.descent + self.tail_offset,
+            dc.descent - dc.v_overshoot,
             b.hx,
             b.hy,
             orientation="bottom-left",
         )
 
-        draw_smooth_parallelogramm_vertical(
+        draw_parallelogramm_vertical(
             pen,
+            dc.stroke_x,
             dc.stroke_y,
             b.xmid,
-            dc.descent,
+            dc.descent - dc.v_overshoot,
             b.x1 + self.tail_offset * b.width,
-            dc.descent + self.tail_dip * b.height + dc.stroke_y,
-            direction="top-left"
+            dc.descent + dc.stroke_y + dc.v_overshoot, 
+            direction="top-left",
+            delta=dc.stroke_y
         )
 
         draw_polygon(

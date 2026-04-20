@@ -45,35 +45,12 @@ def draw_superellipse_arch(
     outer_se.draw(loop_glyph.getPen(), clockwise=False)
     inner_se.draw(loop_glyph.getPen(), clockwise=True)
 
-    if cut == "bottom":
-        cut_glyph = ufoLib2.objects.Glyph()
-        draw_rect(cut_glyph.getPen(), x1 - 10, y1, x2 + 10, y_mid)
-        result = BooleanGlyph(loop_glyph).difference(BooleanGlyph(cut_glyph))
-        result.draw(pen)
+    cuts = str(cut).split(",")
+    cut_glyph = ufoLib2.objects.Glyph()
+    cut_pen = cut_glyph.getPen()
 
-    elif cut == "top":
-        cut_glyph = ufoLib2.objects.Glyph()
-        draw_rect(cut_glyph.getPen(), x1 - 10, y_mid, x2 + 10, y2)
-        result = BooleanGlyph(loop_glyph).difference(BooleanGlyph(cut_glyph))
-        result.draw(pen)
-
-    elif cut == "left":
-        x_mid = x1 + w
-        cut_glyph = ufoLib2.objects.Glyph()
-        draw_rect(cut_glyph.getPen(), x1, y1 - 10, x_mid, y2 + 10)
-        result = BooleanGlyph(loop_glyph).difference(BooleanGlyph(cut_glyph))
-        result.draw(pen)
-
-    elif cut == "right":
-        x_mid = x1 + w
-        cut_glyph = ufoLib2.objects.Glyph()
-        draw_rect(cut_glyph.getPen(), x_mid, y1 - 10, x2, y2 + 10)
-        result = BooleanGlyph(loop_glyph).difference(BooleanGlyph(cut_glyph))
-        result.draw(pen)
-
-    elif cut == "m_junction":
+    if "m_junction" in cuts:
         # First cut the bottom part
-        cut_glyph = ufoLib2.objects.Glyph()
         draw_rect(cut_glyph.getPen(), x1 - 10, y1, x2 + 10, y_mid)
         result_1 = BooleanGlyph(loop_glyph).difference(BooleanGlyph(cut_glyph))
 
@@ -83,9 +60,23 @@ def draw_superellipse_arch(
         result_2 = result_1.difference(BooleanGlyph(cut_glyph))
 
         result_2.draw(pen)
-
+        
     else:
-        result = BooleanGlyph(loop_glyph)
+        if "bottom" in cuts:
+            draw_rect(cut_pen, x1 - 10, y1, x2 + 10, y_mid)
+
+        if "top" in cuts:
+            draw_rect(cut_pen, x1 - 10, y_mid, x2 + 10, y2)
+
+        if "left" in cuts:
+            x_mid = x1 + w
+            draw_rect(cut_pen, x1, y1 - 10, x_mid, y2 + 10)
+
+        if "right" in cuts:
+            x_mid = x1 + w
+            draw_rect(cut_pen, x_mid, y1 - 10, x2, y2 + 10)
+
+        result = BooleanGlyph(loop_glyph).difference(BooleanGlyph(cut_glyph))
         result.draw(pen)
 
     return {

@@ -2,7 +2,7 @@ from glyphs import Glyph
 from draw.superellipse_loop import draw_superellipse_loop
 from draw.corner import draw_corner
 from draw.rect import draw_rect
-from draw.parallelogramm import draw_smooth_parallelogramm_vertical
+from draw.parallelogramm import draw_parallelogramm_vertical
 
 
 class LowercaseEGlyph(Glyph):
@@ -17,7 +17,6 @@ class LowercaseEGlyph(Glyph):
     stroke_x_ratio = 1.04
     stroke_y_ratio = 0.96
     overshoot_reducing = 0.65
-    tail_dip = 0.05
     tail_offset = 0.08
 
     def draw(self, pen, dc):
@@ -31,7 +30,7 @@ class LowercaseEGlyph(Glyph):
         sx, sy = self.stroke_x_ratio * dc.stroke_x, self.stroke_y_ratio * dc.stroke_y
         hx, hy = b.hx * (b.width - dc.h_overshoot) / b.width, b.hy
         ymid = self.mid_height * b.height
-        yt = dc.stroke_y + self.tail_dip * b.height
+        yt = sy + dc.v_overshoot
         xt = b.x2 - self.tail_offset * b.width
 
         # Half-top of a superellipse
@@ -63,8 +62,8 @@ class LowercaseEGlyph(Glyph):
         )
 
         # Tail of e
-        draw_smooth_parallelogramm_vertical(
-            pen, sy, b.xmid, b.y1, xt, yt, direction="top-right"
+        draw_parallelogramm_vertical(
+            pen, sx, sy, b.xmid, b.y1, xt, yt, direction="top-right", delta=sy
         )
 
         # Middle bar

@@ -12,6 +12,7 @@ class LowercaseUGlyph(Glyph):
     bottom_stroke_y = 0.96
     hx_ratio = 1.15
     taper = 0.4
+    ending_thickness = 0.8
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -43,6 +44,19 @@ class LowercaseUGlyph(Glyph):
         )
         y1, y2 = min(y1, y2), max(y1, y2)
 
+        # Right stem — full x_height
+        draw_rect(pen, b.x2 - dc.stroke_x, y1, b.x2, dc.x_height)
+
+        draw_polygon(
+            pen,
+            points=[
+                (b.x2 - self.ending_thickness * dc.stroke_x, 0),
+                (b.x2, 0),
+                (b.x2, y1),
+                (b.x2 - dc.stroke_x, y1),
+            ],
+        )
+
         # Fill the gap
         draw_polygon(
             pen,
@@ -52,9 +66,6 @@ class LowercaseUGlyph(Glyph):
                 (b.x2 - dc.stroke_x + dc.stroke_x * dc.taper / 2, b.ymid),
             ],
         )
-
-        # Right stem — full x_height
-        draw_rect(pen, b.x2 - dc.stroke_x, 0, b.x2, dc.x_height)
 
         # Left stem — starts from arch midpoint
         draw_rect(pen, b.x1, (arch_top + b.y1) / 2, b.x1 + dc.stroke_x, dc.x_height)

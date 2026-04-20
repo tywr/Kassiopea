@@ -12,6 +12,7 @@ class LowercaseNGlyph(Glyph):
     top_stroke_y = 0.96
     hx_ratio = 1.15
     taper = 0.3
+    ending_thickness = 0.8
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -35,14 +36,24 @@ class LowercaseNGlyph(Glyph):
             side="left",
             cut="bottom",
         )
-        # Left step
-        draw_rect(pen, b.x1, 0, b.x1 + dc.stroke_x, dc.x_height)
 
         # Compute the intersection and fill the gap
         (_, y1), (_, y2) = arch_params["outer"].intersection_x(
             x=b.x1 + dc.stroke_x + dc.gap
         )
         y1, y2 = min(y1, y2), max(y1, y2)
+
+        # Left stem
+        draw_rect(pen, b.x1, 0, b.x1 + dc.stroke_x, y2)
+        draw_polygon(
+            pen,
+            points=[
+                (b.x1 + self.ending_thickness * dc.stroke_x, dc.x_height),
+                (b.x1, dc.x_height),
+                (b.x1, y2),
+                (b.x1 + dc.stroke_x, y2),
+            ],
+        )
 
         # Fill the gap
         draw_polygon(

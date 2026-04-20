@@ -44,9 +44,9 @@ class DrawConfig(FontConfig):
     v_overshoot: int = 12
     h_overshoot: int = 11
 
-    width: int = 360
+    width: int = 366
 
-    hx: int = 158
+    hx: int = 172
     hy: int = 164
 
     cap_hx: int = 164
@@ -57,7 +57,7 @@ class DrawConfig(FontConfig):
     number_hx: int = 180
     number_hy: int = 180
 
-    taper: float = 0.4
+    taper: float = 0.5
     taper_a: float = 0.15
     taper_r: float = 0.15
 

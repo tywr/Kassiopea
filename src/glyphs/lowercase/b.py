@@ -8,9 +8,10 @@ from draw.polygon import draw_polygon
 class LowercaseBGlyph(Glyph):
     name = "lowercase_b"
     unicode = "0x62"
-    offset = 5
+    offset = 7
     bowl_stroke_x_ratio = 1.04
     bowl_stroke_y_ratio = 0.96
+    ending_thickness = 0.8
 
     def draw(
         self,
@@ -41,7 +42,6 @@ class LowercaseBGlyph(Glyph):
             taper=dc.taper,
             side="left",
         )
-        draw_rect(pen, b.x1, 0, b.x1 + dc.stroke_x, dc.ascent)
 
         # Compute the intersection and fill the gap
         (_, y1), (_, y2) = arch_params["outer"].intersection_x(
@@ -49,6 +49,16 @@ class LowercaseBGlyph(Glyph):
         )
         y1, y2 = min(y1, y2), max(y1, y2)
 
+        draw_rect(pen, b.x1, y1, b.x1 + dc.stroke_x, dc.ascent)
+        draw_polygon(
+            pen,
+            points=[
+                (b.x1 + dc.stroke_x, y1),
+                (b.x1, y1),
+                (b.x1, 0),
+                (b.x1 + self.ending_thickness * dc.stroke_x, 0),
+            ],
+        )
         draw_polygon(
             pen,
             points=[
