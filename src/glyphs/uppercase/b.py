@@ -10,7 +10,7 @@ class UppercaseBGlyph(UppercaseGlyph):
     offset = 12
     upper_ratio = 0.9  # Upper loop width as a fraction of the lower loop width
     mid_ratio = 0.52
-    width_ratio = 1.04
+    width_ratio = 1.06
 
     def draw(self, pen, dc):
         b = dc.body_bounds(

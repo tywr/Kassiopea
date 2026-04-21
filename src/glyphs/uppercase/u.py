@@ -9,7 +9,7 @@ class UppercaseUGlyph(UppercaseGlyph):
     offset = 0
     hx_ratio = 1.0
     hy_ratio = 1.2
-    width_ratio = 1.06
+    width_ratio = 1.04
 
     def draw(self, pen, dc):
         b = dc.body_bounds(

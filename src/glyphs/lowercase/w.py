@@ -1,6 +1,6 @@
 import ufoLib2
 from booleanOperations.booleanGlyph import BooleanGlyph
-from math import tan, pi, sin, cos
+from math import tan, pi
 from glyphs import Glyph
 from draw.parallelogramm import draw_parallelogramm_vertical
 from draw.rect import draw_rect
@@ -11,7 +11,7 @@ class LowercaseWGlyph(Glyph):
     unicode = "0x77"
     offset = 0
     width_ratio = 1.12
-    inner_stroke_ratio = 0.94
+    inner_stroke_ratio = 0.88
     inner_thickness_ratio = 1.1
     inner_height_ratio = 1
 

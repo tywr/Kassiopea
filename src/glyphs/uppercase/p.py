@@ -8,6 +8,7 @@ class UppercasePGlyph(UppercaseGlyph):
     unicode = "0x50"
     offset = 8
     loop_ratio = 0.6
+    width_ratio = 1.06
 
     def draw(self, pen, dc):
         b = dc.body_bounds(

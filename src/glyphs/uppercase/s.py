@@ -15,7 +15,7 @@ class UppercaseSGlyph(UppercaseGlyph):
     hy_ratio = 1.35
     mid_height = 0.53
     reduce_overshoot = 0
-    width_ratio = 1.08
+    width_ratio = 1.06
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
