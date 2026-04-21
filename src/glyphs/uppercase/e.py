@@ -5,10 +5,10 @@ from draw.rect import draw_rect
 class UppercaseEGlyph(UppercaseGlyph):
     name = "uppercase_e"
     unicode = "0x45"
-    offset = 3
+    offset = 11
     upper_bar_ratio = 0.95
     mid_bar_ratio = 0.9
-    mid_ratio = 0.52
+    mid_ratio = 0.53
     width_ratio = 1
 
     def draw(self, pen, dc):

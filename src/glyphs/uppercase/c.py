@@ -6,8 +6,8 @@ from draw.parallelogramm import draw_parallelogramm_vertical
 class UppercaseCGlyph(UppercaseGlyph):
     name = "uppercase_c"
     unicode = "0x43"
-    offset = 28
-    stroke_x_ratio = UppercaseGlyph.stroke_x_ratio * 1.12
+    offset = 30
+    stroke_x_ratio = UppercaseGlyph.stroke_x_ratio * 1.10
     stroke_y_ratio = UppercaseGlyph.stroke_y_ratio * 1.0
     hy_ratio = 1.05
     hx_ratio = 1

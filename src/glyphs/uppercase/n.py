@@ -9,7 +9,7 @@ class UppercaseNGlyph(UppercaseGlyph):
     name = "uppercase_n"
     unicode = "0x4E"
     offset = 0
-    middle_stroke_ratio = 0.9
+    middle_stroke_ratio = 0.92
     overlap = 0.3
     width_ratio = 1.06
 

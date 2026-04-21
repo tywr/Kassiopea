@@ -6,7 +6,7 @@ from draw.rect import draw_rect
 class UppercasePGlyph(UppercaseGlyph):
     name = "uppercase_p"
     unicode = "0x50"
-    offset = 8
+    offset = 14
     loop_ratio = 0.6
     width_ratio = 1.06
 

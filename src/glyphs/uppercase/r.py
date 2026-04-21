@@ -7,7 +7,7 @@ from draw.parallelogramm import draw_parallelogramm
 class UppercaseRGlyph(UppercaseGlyph):
     name = "uppercase_r"
     unicode = "0x52"
-    offset = 8
+    offset = 20
     loop_ratio = 0.55
     loop_width = 0.95
     branch_start = 0.52

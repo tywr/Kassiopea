@@ -6,8 +6,8 @@ from draw.rect import draw_rect
 class UppercaseDGlyph(UppercaseGlyph):
     name = "uppercase_d"
     unicode = "0x44"
-    offset = 0
-    arch_start = 0.55
+    offset = 14
+    arch_start = 0.5
     hy_ratio = 0.7
     width_ratio = 1.08
 
