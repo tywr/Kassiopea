@@ -18,6 +18,7 @@ class FiveGlyph(NumberGlyph):
     tilt = 0.25
     width_ratio = 1.04
     hx_ratio = 0.78
+    taper = 0.75
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -58,7 +59,7 @@ class FiveGlyph(NumberGlyph):
             b.y1 + b.height * self.loop_ratio,
             b.hx * self.hx_ratio,
             b.hy * self.loop_ratio,
-            taper=dc.taper,
+            taper=self.taper,
             side="left",
             cut="bottom",
         )

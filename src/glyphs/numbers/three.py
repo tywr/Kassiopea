@@ -11,7 +11,9 @@ class ThreeGlyph(NumberGlyph):
     unicode = "0x33"
     offset = 0
     width_ratio = 1.08
-    taper = 0.6
+    loop_width_ratio = 0.92
+    mid_ratio = 0.53
+    taper = 0.75
     len_mid = 0.7
     hx_ratio = 0.78
 
@@ -28,6 +30,9 @@ class ThreeGlyph(NumberGlyph):
         )
         sx, sy = dc.stroke_x * self.stroke_x_ratio, dc.stroke_y * self.stroke_y_ratio
 
+        ymid = b.y1 + self.mid_ratio * b.height
+        xl = b.x1 + (1 - self.loop_width_ratio) * b.width / 2
+        xr = b.x2 - (1 - self.loop_width_ratio) * b.width / 2
         base_glyph = ufoLib2.objects.Glyph()
         ry = (b.y2 - b.ymid + sy / 2) / b.height
 
@@ -36,12 +41,12 @@ class ThreeGlyph(NumberGlyph):
             base_glyph.getPen(),
             sx,
             sy,
-            b.x1,
-            b.ymid - sy / 2,
-            b.x2,
+            xl,
+            ymid - sy / 2,
+            xr,
             b.y2,
             b.hx * self.hx_ratio,
-            b.hy * ry,
+            b.hy * ry * 2 * (1 - self.mid_ratio),
             taper=self.taper,
             side="bottom",
         )
@@ -54,9 +59,9 @@ class ThreeGlyph(NumberGlyph):
             b.x1,
             b.y1,
             b.x2,
-            b.ymid + sy / 2,
+            ymid + sy / 2,
             b.hx * self.hx_ratio,
-            b.hy * ry,
+            b.hy * ry * 2 * self.mid_ratio,
             taper=self.taper,
             side="top",
         )
@@ -72,9 +77,9 @@ class ThreeGlyph(NumberGlyph):
         draw_rect(
             pen,
             b.xmid,
-            b.ymid - sy / 2,
+            ymid - sy / 2,
             intersection_x,
-            b.ymid + sy / 2,
+            ymid + sy / 2,
         )
 
         # Remove the left-middle part
@@ -82,9 +87,9 @@ class ThreeGlyph(NumberGlyph):
         draw_rect(
             cut_glyph.getPen(),
             b.x1,
-            b.ymid - b.height / 4,
+            ymid - b.height / 4,
             b.x1 + b.width / 2,
-            b.ymid + b.height / 4,
+            ymid + b.height / 4,
         )
 
         result = BooleanGlyph(base_glyph).difference(BooleanGlyph(cut_glyph))
@@ -94,7 +99,7 @@ class ThreeGlyph(NumberGlyph):
         draw_rect(
             pen,
             b.x1 + (1 - self.len_mid) * b.width,
-            b.ymid - sy / 2,
+            ymid - sy / 2,
             b.xmid,
-            b.ymid + sy / 2,
+            ymid + sy / 2,
         )

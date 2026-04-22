@@ -54,9 +54,6 @@ class DrawConfig(FontConfig):
 
     gap: int = 10
 
-    number_hx: int = 180
-    number_hy: int = 180
-
     taper: float = 0.5
 
     @classmethod
@@ -79,7 +76,6 @@ class DrawConfig(FontConfig):
             descent=cls.descent - extra_height,
             taper=cls.taper,
             hy=hy_ratio * cls.hy,
-            number_hy=hy_ratio * cls.number_hy,
             cap_hy=hy_ratio * cls.cap_hy,
         )
 
@@ -140,10 +136,7 @@ class DrawConfig(FontConfig):
             y2 += v_ov
 
         # Rescale the hx and hy for the new box
-        if number:
-            hx = self.number_hx
-            hy = self.number_hy
-        elif uppercase:
+        if uppercase:
             hx = self.cap_hx
             hy = self.cap_hy
         else:

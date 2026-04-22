@@ -2,8 +2,8 @@ from math import cos, sin
 from glyphs.numbers import NumberGlyph
 from draw.rect import draw_rect
 from draw.parallelogramm import draw_parallelogramm
-from draw.cross_curve import draw_cross_curve_2
 from draw.superellipse_loop import draw_superellipse_loop
+from utils.pens import NullPen
 
 
 class TwoGlyph(NumberGlyph):
@@ -11,9 +11,10 @@ class TwoGlyph(NumberGlyph):
     unicode = "0x32"
     offset = 0
     hx_ratio = 0.78
-    xj_ratio = 0.68
-    yj_ratio = 0.45
-    internal_radius = 0.2
+    xj_ratio = 0.82
+    yj_ratio = 0.55
+    radius = 0.2
+    internal_radius = 0.1
     external_radius = 0.1
 
     def draw(self, pen, dc):
@@ -47,7 +48,7 @@ class TwoGlyph(NumberGlyph):
         oshy = params["outer"].hy
 
         theta, delta = draw_parallelogramm(
-            pen,
+            NullPen(),
             sy,
             sy,
             b.x1,
@@ -56,17 +57,23 @@ class TwoGlyph(NumberGlyph):
             yj,
         )
 
-        ehx, ehy = eh * cos(theta), eh * sin(theta)
+        eps = theta
+        px, py = delta * sin(eps) * cos(eps), delta * sin(eps) ** 2
+        xl = xj - px
+        yl = yj - py
+
         ihx, ihy = ih * cos(theta), ih * sin(theta)
 
-        pen.moveTo((xj, yj))
-        pen.curveTo((xj + ehx, yj + ehy), (b.x2, yt - oshy), (b.x2, yt))
+        pen.moveTo((xl, yl))
+        pen.curveTo((xl + ihx, yl + ihy), (b.x2, yt - oshy), (b.x2, yt))
         pen.lineTo((b.x2 - sx, yt))
         pen.curveTo(
             (b.x2 - sx, yt - ishy),
             (xj - delta + ihx, yj + ihy),
             (xj - delta, yj),
         )
+        pen.lineTo((b.x1, b.y1 + sy + dc.gap))
+        pen.lineTo((b.x1 + delta, b.y1 + sy + dc.gap))
         pen.closePath()
 
         # Bottom bar
