@@ -16,7 +16,6 @@ class FiveGlyph(NumberGlyph):
     loop_ratio = 0.66
     junction_ratio = 0.45
     tilt = 0.25
-    width_ratio = 1.04
     hx_ratio = 0.78
     taper = 0.75
 
@@ -25,7 +24,6 @@ class FiveGlyph(NumberGlyph):
             offset=self.offset,
             height="cap",
             overshoot_bottom=True,
-            overshoot_left=True,
             overshoot_right=True,
             width_ratio=self.width_ratio,
             number=True,

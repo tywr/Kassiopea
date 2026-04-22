@@ -6,7 +6,7 @@ from draw.parallelogramm import draw_parallelogramm
 class SevenGlyph(NumberGlyph):
     name = "seven"
     unicode = "0x37"
-    offset = 5
+    offset = 0
     offset_foot = 0.2
 
     def draw(self, pen, dc):

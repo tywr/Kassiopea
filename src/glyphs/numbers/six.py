@@ -2,7 +2,6 @@ from math import cos, sin
 from glyphs.numbers import NumberGlyph
 from draw.superellipse_loop import draw_superellipse_loop
 from draw.superellipse_arch import draw_superellipse_arch
-from draw.rect import draw_rect
 from draw.polygon import draw_polygon
 from draw.parallelogramm import draw_parallelogramm
 from utils.pens import NullPen
