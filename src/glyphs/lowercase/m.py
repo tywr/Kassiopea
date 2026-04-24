@@ -20,6 +20,7 @@ class LowercaseMGlyph(Glyph):
             offset=self.offset,
             overshoot_top=True,
             width_ratio=self.width_ratio,
+            min_margin=dc.min_margin,
         )
         mid_y = (1 - self.mid_len) * (b.height - b.y1)
         mid_offset = ((1 + self.taper * dc.taper) * dc.stroke_x - dc.gap) / 2

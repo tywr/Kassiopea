@@ -17,7 +17,10 @@ class UppercaseWGlyph(UppercaseGlyph):
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
-            offset=self.offset, width_ratio=self.width_ratio, height="cap"
+            offset=self.offset,
+            width_ratio=self.width_ratio,
+            min_margin=dc.min_margin,
+            height="cap",
         )
         yi = b.y1 + self.inner_height_ratio * b.height
         isx, isy = (

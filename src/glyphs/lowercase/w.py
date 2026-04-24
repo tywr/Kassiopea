@@ -16,7 +16,9 @@ class LowercaseWGlyph(Glyph):
     inner_height_ratio = 1
 
     def draw(self, pen, dc):
-        b = dc.body_bounds(offset=self.offset, width_ratio=self.width_ratio)
+        b = dc.body_bounds(
+            offset=self.offset, width_ratio=self.width_ratio, min_margin=dc.min_margin
+        )
         yi = b.y1 + self.inner_height_ratio * b.height
         isx, isy = (
             self.inner_stroke_ratio * dc.stroke_x,

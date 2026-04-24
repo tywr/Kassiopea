@@ -23,6 +23,8 @@ class FontConfig:
 
     parenthesis: int = 345
     parenthesis_length: int = 920
+    
+    min_margin: int = 15
 
     default_stroke = 90
     italic_angle: float = 9.4
@@ -110,6 +112,7 @@ class DrawConfig(FontConfig):
         overshoot_bottom=False,
         number=False,
         uppercase=False,
+        min_margin=None,
     ):
         """
         Abstraction for storing common metrics relative to the body
@@ -125,6 +128,12 @@ class DrawConfig(FontConfig):
         y1 = 0
         x2 = self.window_width / 2 + width / 2 + self.stroke_x / 2 + offset
         y2 = getattr(self, height)
+
+        # For some wide characters (w, m, W, M) we fix a min margin for bolder
+        # weights
+        if min_margin:
+            x1 = max(min_margin, x1)
+            x2 = min(self.window_width - min_margin, x2)
 
         v_ov = self.v_overshoot
         h_ov = self.h_overshoot
