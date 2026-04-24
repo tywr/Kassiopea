@@ -12,7 +12,7 @@ class LowercaseEGlyph(Glyph):
     offset = 5
     width_ratio = 1
     mid_height = 0.52
-    stroke_x_ratio = 1.01
+    stroke_x_ratio = 1.00
     stroke_y_ratio = 1.10
     thinning = 0.89
     tail_offset = 0.01
@@ -93,5 +93,9 @@ class LowercaseEGlyph(Glyph):
             ymid + dc.stroke_alt / 2,
         )
         draw_rect(
-            pen, b.x1 + sx / 2, ymid - dc.stroke_alt / 2, b.x2 - dc.h_overshoot, max(ymid, b.ymid)
+            pen,
+            b.x1 + sx / 2,
+            ymid - dc.stroke_alt / 2,
+            b.x2 - dc.h_overshoot,
+            max(ymid, b.ymid),
         )
