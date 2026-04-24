@@ -1,4 +1,4 @@
-from math import tan, pi
+from math import tan
 from glyphs import Glyph
 from draw.rect import draw_rect
 from draw.parallelogramm import draw_parallelogramm
