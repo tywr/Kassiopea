@@ -15,7 +15,6 @@ class UppercaseMGlyph(UppercaseGlyph):
     depth = 0.6
     inner_stroke_ratio = 0.9
     inner_thickness_ratio = 1.16
-    inner_height_ratio = 1.2
     width_ratio = 1.16
 
     def draw(self, pen, dc):
@@ -31,7 +30,6 @@ class UppercaseMGlyph(UppercaseGlyph):
             self.inner_stroke_ratio * dc.stroke_y,
         )
         th = self.inner_thickness_ratio * dc.stroke_x
-        yi = b.y2 - self.inner_height_ratio * b.height
 
         # Vertical stems
         draw_rect(pen, b.x1, b.y1, b.x1 + sx, b.y2)
@@ -45,8 +43,8 @@ class UppercaseMGlyph(UppercaseGlyph):
             isy,
             b.x1 + dc.stroke_x + dc.gap,
             b.y2,
-            b.xmid + th / 2,
-            yi,
+            b.xmid - dc.gap / 2,
+            0,
             direction="bottom-right",
         )
         theta, delta = draw_parallelogramm_vertical(
@@ -55,18 +53,24 @@ class UppercaseMGlyph(UppercaseGlyph):
             isy,
             b.x2 - dc.stroke_x - dc.gap,
             b.y2,
-            b.xmid - th / 2,
-            yi,
+            b.xmid + dc.gap / 2,
+            0,
             direction="bottom-left",
         )
-        h = tan(pi / 2 - theta) * th
+        draw_rect(
+            gpen,
+            b.xmid - dc.gap / 2,
+            0,
+            b.xmid + dc.gap / 2,
+            delta,
+        )
         cut_glyph = ufoLib2.objects.Glyph()
         draw_rect(
             cut_glyph.getPen(),
-            b.xmid - th / 2,
-            yi,
-            b.xmid + th / 2,
-            yi + h,
+            b.x1 + sx,
+            0,
+            b.x2 - sx,
+            delta / 2,
         )
         res = BooleanGlyph(glyph).difference(BooleanGlyph(cut_glyph))
         res.draw(pen)
@@ -76,11 +80,4 @@ class UppercaseMGlyph(UppercaseGlyph):
         )
         draw_rect(
             pen, b.x2 - dc.stroke_x - dc.gap, b.y2 - delta, b.x2 - dc.stroke_x, b.y2
-        )
-        draw_rect(
-            pen,
-            b.xmid - dc.gap / 2,
-            yi + h / 2 + delta,
-            b.xmid + dc.gap / 2,
-            yi + h / 2 + delta + 0.5 * dc.gap / tan(theta),
         )

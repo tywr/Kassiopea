@@ -13,7 +13,7 @@ class UppercaseWGlyph(UppercaseGlyph):
     width_ratio = 1.16
     inner_stroke_ratio = 0.9
     inner_thickness_ratio = 1.1
-    inner_height_ratio = 0.86
+    inner_offset = 0.2
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -22,12 +22,11 @@ class UppercaseWGlyph(UppercaseGlyph):
             min_margin=dc.min_margin,
             height="cap",
         )
-        yi = b.y1 + self.inner_height_ratio * b.height
         isx, isy = (
             self.inner_stroke_ratio * dc.stroke_x,
             self.inner_stroke_ratio * dc.stroke_y,
         )
-        th = self.inner_thickness_ratio * dc.stroke_x
+        yi2 = b.y2 - self.inner_offset * b.height
 
         draw_rect(
             pen,
@@ -52,8 +51,8 @@ class UppercaseWGlyph(UppercaseGlyph):
             isy,
             b.x1 + dc.stroke_x + dc.gap,
             b.y1,
-            b.xmid + th / 2,
-            yi,
+            b.xmid - dc.gap / 2,
+            yi2,
         )
         theta, delta = draw_parallelogramm_vertical(
             gpen,
@@ -61,18 +60,24 @@ class UppercaseWGlyph(UppercaseGlyph):
             isy,
             b.x2 - dc.stroke_x - dc.gap,
             b.y1,
-            b.xmid - th / 2,
-            yi,
+            b.xmid + dc.gap / 2,
+            yi2,
             direction="top-left",
         )
-        h = tan(pi / 2 - theta) * th
+        draw_rect(
+            gpen,
+            b.xmid - dc.gap / 2,
+            yi2 - delta,
+            b.xmid + dc.gap / 2,
+            yi2,
+        )
         cut_glyph = ufoLib2.objects.Glyph()
         draw_rect(
             cut_glyph.getPen(),
-            b.xmid - th / 2,
-            yi - h,
-            b.xmid + th / 2,
-            yi,
+            b.x1 + dc.stroke_x,
+            yi2 - delta / 2,
+            b.x2 - dc.stroke_x,
+            b.y2,
         )
         res = BooleanGlyph(glyph).difference(BooleanGlyph(cut_glyph))
         res.draw(pen)
@@ -82,11 +87,4 @@ class UppercaseWGlyph(UppercaseGlyph):
         )
         draw_rect(
             pen, b.x2 - dc.stroke_x - dc.gap, b.y1, b.x2 - dc.stroke_x, b.y1 + delta
-        )
-        draw_rect(
-            pen,
-            b.xmid - dc.gap / 2,
-            yi - h / 2 - delta - 0.5 * dc.gap / tan(theta),
-            b.xmid + dc.gap / 2,
-            yi - h / 2 - delta,
         )
