@@ -12,6 +12,8 @@ from fontTools.pens.t2CharStringPen import T2CharStringPen
 
 from fontTools.ttLib.tables.otTables import (
     GSUB,
+    ChainContextSubst,
+    Coverage,
     DefaultLangSys,
     Feature,
     FeatureList,
@@ -24,12 +26,13 @@ from fontTools.ttLib.tables.otTables import (
     ScriptList,
     ScriptRecord,
     SingleSubst,
+    SubstLookupRecord,
 )
 from fontTools.ttLib import newTable
 
 from config import FontConfig as fc
 from config import DrawConfig
-from glyphs import Glyph, LigatureGlyph
+from glyphs import Glyph, LigatureGlyph, ContextualLigatureGlyph
 
 import glyphs
 
@@ -128,6 +131,34 @@ def select_italic_glyphs(all_glyphs):
     return result, promoted
 
 
+def _coverage(glyphs):
+    """Build a Coverage table from a glyph name or list of glyph names."""
+    cov = Coverage()
+    cov.glyphs = list(glyphs) if isinstance(glyphs, (list, tuple)) else [glyphs]
+    return cov
+
+
+def _chain_subtable(input_seq, backtrack, lookahead, subst_records):
+    """Build a format-3 ChainContextSubst subtable.
+
+    Each element of `input_seq`, `backtrack`, `lookahead` is either a glyph
+    name (one-glyph coverage) or a list of glyph names (any-of coverage).
+    Backtrack is stored in reverse sequence order per the OpenType spec
+    (closest-to-input first).
+    """
+    st = ChainContextSubst()
+    st.Format = 3
+    st.BacktrackGlyphCount = len(backtrack)
+    st.BacktrackCoverage = [_coverage(g) for g in reversed(backtrack)]
+    st.InputGlyphCount = len(input_seq)
+    st.InputCoverage = [_coverage(g) for g in input_seq]
+    st.LookAheadGlyphCount = len(lookahead)
+    st.LookAheadCoverage = [_coverage(g) for g in lookahead]
+    st.SubstCount = len(subst_records)
+    st.SubstLookupRecord = subst_records
+    return st
+
+
 def build_gsub(glyph_names, ligature_glyphs, alternate_glyphs, cmap):
     """Build a GSUB table with ligature and alternate substitutions."""
     gsub_table = newTable("GSUB")
@@ -176,12 +207,20 @@ def build_gsub(glyph_names, ligature_glyphs, alternate_glyphs, cmap):
         feat_record.Feature = feature
         feature_records.append(feat_record)
 
-    # Build ligature substitution lookup
-    if ligature_glyphs:
+    # Split ligatures: regular (unconditional) vs contextual (neighbor-gated)
+    regular_ligs = [
+        g for g in ligature_glyphs
+        if not isinstance(g, ContextualLigatureGlyph) and g.name in glyph_names
+    ]
+    contextual_ligs = [
+        g for g in ligature_glyphs
+        if isinstance(g, ContextualLigatureGlyph) and g.name in glyph_names
+    ]
+
+    # Build ligature substitution lookup (regular `liga`)
+    if regular_ligs:
         lig_by_first = {}
-        for g in ligature_glyphs:
-            if g.name not in glyph_names:
-                continue
+        for g in regular_ligs:
             first = g.components[0]
             rest = g.components[1:]
             lig = Ligature()
@@ -209,6 +248,80 @@ def build_gsub(glyph_names, ligature_glyphs, alternate_glyphs, cmap):
 
         feat_record = FeatureRecord()
         feat_record.FeatureTag = "liga"
+        feat_record.Feature = feature
+        feature_records.append(feat_record)
+
+    # Build contextual ligature lookups (`calt`).
+    # For each contextual ligature, emit a nested LookupType 4 that does the
+    # actual substitution, plus a LookupType 6 chain-context wrapper with
+    # ignore-subtables that suppress the match when a forbidden neighbor
+    # appears before or after the input sequence. Longer ligatures are
+    # referenced first so the shaper tries them before shorter ones.
+    contextual_ligs.sort(key=lambda g: -len(g.components))
+    calt_lookup_indices = []
+    for g in contextual_ligs:
+        lig = Ligature()
+        lig.LigGlyph = g.name
+        lig.Component = g.components[1:]
+        lig.CompCount = len(g.components)
+
+        nested_subst = LigatureSubst()
+        nested_subst.ligatures = {g.components[0]: [lig]}
+
+        nested_lookup = Lookup()
+        nested_lookup.LookupType = 4
+        nested_lookup.LookupFlag = 0
+        nested_lookup.SubTableCount = 1
+        nested_lookup.SubTable = [nested_subst]
+        nested_idx = len(lookups)
+        lookups.append(nested_lookup)
+
+        chain_lookup = Lookup()
+        chain_lookup.LookupType = 6
+        chain_lookup.LookupFlag = 0
+        subtables = []
+        if g.forbidden_neighbors:
+            subtables.append(
+                _chain_subtable(
+                    input_seq=g.components,
+                    backtrack=[],
+                    lookahead=[g.forbidden_neighbors],
+                    subst_records=[],
+                )
+            )
+            subtables.append(
+                _chain_subtable(
+                    input_seq=g.components,
+                    backtrack=[g.forbidden_neighbors],
+                    lookahead=[],
+                    subst_records=[],
+                )
+            )
+        rec = SubstLookupRecord()
+        rec.SequenceIndex = 0
+        rec.LookupListIndex = nested_idx
+        subtables.append(
+            _chain_subtable(
+                input_seq=g.components,
+                backtrack=[],
+                lookahead=[],
+                subst_records=[rec],
+            )
+        )
+        chain_lookup.SubTable = subtables
+        chain_lookup.SubTableCount = len(subtables)
+
+        calt_lookup_indices.append(len(lookups))
+        lookups.append(chain_lookup)
+
+    if calt_lookup_indices:
+        feature = Feature()
+        feature.FeatureParams = None
+        feature.LookupListIndex = calt_lookup_indices
+        feature.LookupCount = len(calt_lookup_indices)
+
+        feat_record = FeatureRecord()
+        feat_record.FeatureTag = "calt"
         feat_record.Feature = feature
         feature_records.append(feat_record)
 

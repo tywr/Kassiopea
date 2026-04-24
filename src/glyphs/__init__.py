@@ -36,3 +36,15 @@ class LigatureGlyph(Glyph):
     @property
     @abstractmethod
     def components(self) -> list[str]: ...
+
+
+class ContextualLigatureGlyph(LigatureGlyph):
+    """Ligature that only fires when not adjacent to `forbidden_neighbors`.
+
+    Useful for capped-length ligatures: e.g. `==` and `===` ligate, but
+    `====` and longer stay unligated. Set `forbidden_neighbors` to the
+    glyph names whose presence on either side disqualifies the match
+    (typically the ligature's own component glyph).
+    """
+
+    forbidden_neighbors: list[str] = []

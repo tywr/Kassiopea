@@ -1,17 +1,18 @@
-from glyphs import LigatureGlyph
+from glyphs import ContextualLigatureGlyph
 from draw.rect import draw_rect
 from draw.dented_rect import draw_dented_rect
 
 
-class DoubleLowLineGlyph(LigatureGlyph):
+class DoubleLowLineGlyph(ContextualLigatureGlyph):
     """Ligature glyph for __ (two consecutive underscores).
 
-    Draws a single continuous bar spanning the full width of two cells
-    (2 * window_width), creating a seamless connection between underscores.
+    Only fires when the run is exactly two underscores — longer runs keep
+    discrete glyphs thanks to the forbidden-neighbor guard.
     """
 
     name = "double_low_line"
     components = ["low_line", "low_line"]
+    forbidden_neighbors = ["low_line"]
     number_characters = 2
     width_ratio = 1
 

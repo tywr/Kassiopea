@@ -1,16 +1,17 @@
-from glyphs import LigatureGlyph
+from glyphs import ContextualLigatureGlyph
 from draw.dented_rect import draw_dented_rect
 
 
-class DoubleHyphenGlyph(LigatureGlyph):
-    """Ligature glyph for -- (two consecutive underscores).
+class DoubleHyphenGlyph(ContextualLigatureGlyph):
+    """Ligature glyph for -- (two consecutive hyphens).
 
-    Draws a single continuous bar spanning the full width of two cells
-    (2 * window_width), creating a seamless connection between underscores.
+    Only fires when the run is exactly two hyphens — longer runs keep
+    discrete glyphs thanks to the forbidden-neighbor guard.
     """
 
     name = "double_hyphen"
     components = ["hyphen_minus", "hyphen_minus"]
+    forbidden_neighbors = ["hyphen_minus"]
     number_characters = 2
     width_ratio = 1
 
