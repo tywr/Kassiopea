@@ -32,7 +32,7 @@ FG = (0, 0, 0)
 LABEL_COLOR = (0.5, 0.5, 0.5)
 
 MARGIN_X = 20 * mm
-TITLE_SIZE = 48
+TITLE_SIZE = 24
 LABEL_SIZE = 14
 CHAR_SIZE = 28
 
@@ -55,10 +55,32 @@ FAMILY_VARIANTS = [
 ]
 
 
+TITLE_FONT = "Switzer"
+TITLE_FONT_REGULAR = "Switzer-Regular"
+TITLE_FONT_PATH = "assets/Switzer-Variable.ttf"
+
+
+def _instantiate_weight(variable_path, weight):
+    """Save a static instance of the variable font at the given wght axis to a temp file."""
+    import tempfile
+    from fontTools.ttLib import TTFont as FTTTFont
+    from fontTools.varLib.instancer import instantiateVariableFont
+
+    vf = FTTTFont(variable_path)
+    instance = instantiateVariableFont(vf, {"wght": weight})
+    tmp = tempfile.NamedTemporaryFile(suffix=".ttf", delete=False)
+    tmp.close()
+    instance.save(tmp.name)
+    return tmp.name
+
+
 def render_specimen(font_path, output="specimen.pdf"):
     import os
+
     os.makedirs(os.path.dirname(output), exist_ok=True)
     pdfmetrics.registerFont(TTFont("Kassiopea", font_path))
+    pdfmetrics.registerFont(TTFont(TITLE_FONT, _instantiate_weight(TITLE_FONT_PATH, 700)))
+    pdfmetrics.registerFont(TTFont(TITLE_FONT_REGULAR, _instantiate_weight(TITLE_FONT_PATH, 400)))
 
     # Register every available family variant for the overview page
     font_dir = os.path.dirname(font_path)
@@ -92,7 +114,7 @@ def render_specimen(font_path, output="specimen.pdf"):
 
     y = page_h - 30 * mm
     c.setFillColorRGB(*FG)
-    c.setFont("Kassiopea", TITLE_SIZE)
+    c.setFont(TITLE_FONT, TITLE_SIZE)
     c.drawString(MARGIN_X, y, "Family Overview")
 
     regulars = [v for v in available_variants if "Italic" not in v[0]]
@@ -129,14 +151,14 @@ def render_specimen(font_path, output="specimen.pdf"):
 
     # Title
     c.setFillColorRGB(*FG)
-    c.setFont("Kassiopea", TITLE_SIZE)
+    c.setFont(TITLE_FONT, TITLE_SIZE)
     c.drawString(MARGIN_X, y, "Kassiopea")
     y -= TITLE_SIZE + 16 * mm
 
     for group_label, chars in GROUPS:
         # Section label
         c.setFillColorRGB(*LABEL_COLOR)
-        c.setFont("Kassiopea", LABEL_SIZE)
+        c.setFont(TITLE_FONT, LABEL_SIZE)
         c.drawString(MARGIN_X, y, group_label)
         y -= LABEL_SIZE + CHAR_SIZE
 
@@ -175,6 +197,8 @@ def render_specimen(font_path, output="specimen.pdf"):
 
     samples = [
         (
+            "Bold",
+            "Kassiopea-Bold",
             16,
             "Cassiopeia boasted that she (or her daughter Andromeda), was more "
             "beautiful than all the Nereids, the nymph-daughters of the sea god "
@@ -182,6 +206,8 @@ def render_specimen(font_path, output="specimen.pdf"):
             "upon the kingdom of Aethiopia.",
         ),
         (
+            "Medium",
+            "Kassiopea-Medium",
             14,
             "Accounts differ as to whether Poseidon decided to flood the whole "
             "country or direct the sea monster Cetus to destroy it. In either "
@@ -190,12 +216,16 @@ def render_specimen(font_path, output="specimen.pdf"):
             "sea gods was to sacrifice their daughter.",
         ),
         (
+            "Regular",
+            "Kassiopea",
             12,
             "Accordingly, Andromeda was chained to a rock at the sea's edge and "
             "left to be killed by the sea monster. Perseus arrived and instead "
             "killed Cetus, saved Andromeda and married her.",
         ),
         (
+            "Light",
+            "Kassiopea-Light",
             10,
             "Poseidon thought Cassiopeia should not escape punishment, so he "
             "placed her in the heavens chained to a throne in a position that "
@@ -209,24 +239,32 @@ def render_specimen(font_path, output="specimen.pdf"):
 
     y = page_h - 30 * mm
 
-    for sample_size, text in samples:
+    for family_label, font_name, sample_size, text in samples:
         leading = sample_size * 1.5
 
-        # Section label
-        c.setFillColorRGB(*LABEL_COLOR)
-        c.setFont("Kassiopea", LABEL_SIZE)
-        c.drawString(MARGIN_X, y, f"Sample text @{sample_size}pt")
-        y -= LABEL_SIZE + sample_size + 4
+        # Solid separator line
+        c.setStrokeColorRGB(*FG)
+        c.setLineWidth(0.5)
+        c.line(MARGIN_X, y, page_w - MARGIN_X, y)
+        y -= LABEL_SIZE + 4
 
-        # Word-wrap and draw
+        # Label: family name in Switzer Bold, size in Switzer Regular
         c.setFillColorRGB(*FG)
-        c.setFont("Kassiopea", sample_size)
+        c.setFont(TITLE_FONT, LABEL_SIZE)
+        c.drawString(MARGIN_X, y, family_label)
+        family_w = c.stringWidth(family_label + " ", TITLE_FONT, LABEL_SIZE)
+        c.setFont(TITLE_FONT_REGULAR, LABEL_SIZE)
+        c.drawString(MARGIN_X + family_w, y, f"{sample_size}pt")
+        y -= LABEL_SIZE + 8 + leading
+
+        # Word-wrap and draw the sample text in the chosen Kassiopea variant
+        c.setFont(font_name, sample_size)
 
         words = text.split(" ")
         line = ""
         for word in words:
             test = f"{line} {word}".strip()
-            if c.stringWidth(test, "Kassiopea", sample_size) > max_text_w:
+            if c.stringWidth(test, font_name, sample_size) > max_text_w:
                 c.drawString(MARGIN_X, y, line)
                 y -= leading
                 line = word
@@ -236,12 +274,18 @@ def render_specimen(font_path, output="specimen.pdf"):
             c.drawString(MARGIN_X, y, line)
             y -= leading
 
-        y -= 10 * mm
+        y -= 8 * mm
 
     # --- Page 3: Mission status report ---
     c.showPage()
     c.setFillColorRGB(*BG)
     c.rect(0, 0, page_w, page_h, fill=1, stroke=0)
+
+    # Page title
+    y = page_h - 30 * mm
+    c.setFillColorRGB(*FG)
+    c.setFont(TITLE_FONT, TITLE_SIZE)
+    c.drawString(MARGIN_X, y, "Technical Document")
 
     report_size = 12
     report_leading = report_size * 1.6
@@ -272,7 +316,6 @@ def render_specimen(font_path, output="specimen.pdf"):
         "  SEMI-MAJOR AXIS   : 42,164.00 km",
         "  ECCENTRICITY      : 0.000142",
         "  INCLINATION       : 0.0471 deg",
-        "  RAAN              : 247.812 deg",
         "  ARG OF PERIGEE    : 312.004 deg",
         "  TRUE ANOMALY      : 89.441 deg",
         "  PERIOD            : 23h 56m 04.09s",
@@ -283,16 +326,14 @@ def render_specimen(font_path, output="specimen.pdf"):
         "  THERMAL   : +22.4 C bus avg / radiator delta -1.2 C  [NOMINAL]",
         "  PROPULSN  : 48.7 kg hydrazine remaining (62%)        [NOMINAL]",
         "  COMMS     : X-band primary / S-band backup active    [NOMINAL]",
-        "  AOCS      : reaction wheels 1-4 balanced at 1200 RPM [NOMINAL]",
-        "  PAYLOAD   : Ka-band relay transponder locked         [NOMINAL]",
     ]
 
     # Measure box width
     box_x1 = MARGIN_X
     box_x2 = page_w - MARGIN_X
 
-    # Draw header box
-    y = page_h - 30 * mm
+    # Draw header box (shifted down to leave room for the page title)
+    y = page_h - 30 * mm - TITLE_SIZE - 16 * mm
 
     header_height = box_padding_y * 2
     for size, _ in header_lines:
@@ -306,9 +347,12 @@ def render_specimen(font_path, output="specimen.pdf"):
     c.setLineWidth(0.5)
     inset = 3
     c.rect(
-        box_x1 + inset, y - header_height + inset,
-        box_x2 - box_x1 - 2 * inset, header_height - 2 * inset,
-        fill=0, stroke=1,
+        box_x1 + inset,
+        y - header_height + inset,
+        box_x2 - box_x1 - 2 * inset,
+        header_height - 2 * inset,
+        fill=0,
+        stroke=1,
     )
 
     # Draw header text centered
@@ -330,107 +374,6 @@ def render_specimen(font_path, output="specimen.pdf"):
     for text in body_lines:
         c.drawString(MARGIN_X + box_padding_x, y, text)
         y -= report_leading
-
-    # --- Code snippet pages ---
-    code_snippets = [
-        ("Python", [
-            "import numpy as np",
-            "from dataclasses import dataclass",
-            "",
-            "",
-            "@dataclass",
-            "class Particle:",
-            '    """A particle in 3D space with mass and velocity."""',
-            "    position: np.ndarray",
-            "    velocity: np.ndarray",
-            "    mass: float = 1.0",
-            "",
-            "    @property",
-            "    def kinetic_energy(self) -> float:",
-            "        return 0.5 * self.mass * np.dot(self.velocity, self.velocity)",
-            "",
-            "    def step(self, force: np.ndarray, dt: float) -> None:",
-            "        acceleration = force / self.mass",
-            "        self.velocity += acceleration * dt",
-            "        self.position += self.velocity * dt",
-        ]),
-        ("C++", [
-            "#include <iostream>",
-            "#include <vector>",
-            "#include <cmath>",
-            "#include <algorithm>",
-            "#include <numeric>",
-            "",
-            "template <typename T>",
-            "struct Vec3 {",
-            "    T x, y, z;",
-            "",
-            "    Vec3 operator+(const Vec3& o) const {",
-            "        return {x + o.x, y + o.y, z + o.z};",
-            "    }",
-            "    Vec3 operator-(const Vec3& o) const {",
-            "        return {x - o.x, y - o.y, z - o.z};",
-            "    }",
-            "    Vec3 operator*(T s) const { return {x*s, y*s, z*s}; }",
-            "    T dot(const Vec3& o) const {",
-            "        return x*o.x + y*o.y + z*o.z;",
-            "    }",
-            "    T norm() const { return std::sqrt(dot(*this)); }",
-            "};",
-        ]),
-        ("Haskell", [
-            "module NBody where",
-            "",
-            "import Data.List (tails)",
-            "",
-            "data Vec3 = Vec3 !Double !Double !Double",
-            "  deriving (Show)",
-            "",
-            "vadd :: Vec3 -> Vec3 -> Vec3",
-            "vadd (Vec3 x1 y1 z1) (Vec3 x2 y2 z2) =",
-            "  Vec3 (x1 + x2) (y1 + y2) (z1 + z2)",
-            "",
-            "vsub :: Vec3 -> Vec3 -> Vec3",
-            "vsub (Vec3 x1 y1 z1) (Vec3 x2 y2 z2) =",
-            "  Vec3 (x1 - x2) (y1 - y2) (z1 - z2)",
-            "",
-            "vscale :: Double -> Vec3 -> Vec3",
-            "vscale s (Vec3 x y z) = Vec3 (s*x) (s*y) (s*z)",
-            "",
-            "vnorm :: Vec3 -> Double",
-            "vnorm (Vec3 x y z) = sqrt (x*x + y*y + z*z)",
-            "",
-            "data Body = Body",
-            "  { bodyPos  :: !Vec3",
-            "  , bodyVel  :: !Vec3",
-            "  , bodyMass :: !Double",
-            "  } deriving (Show)",
-        ]),
-    ]
-
-    for lang, lines in code_snippets:
-        c.showPage()
-        c.setFillColorRGB(*BG)
-        c.rect(0, 0, page_w, page_h, fill=1, stroke=0)
-
-        y = page_h - 30 * mm
-
-        # Language label
-        c.setFillColorRGB(*LABEL_COLOR)
-        c.setFont("Kassiopea", LABEL_SIZE)
-        c.drawString(MARGIN_X, y, lang)
-        y -= LABEL_SIZE + 12
-
-        # Code
-        code_size = 10
-        code_leading = code_size * 1.5
-        c.setFillColorRGB(*FG)
-        c.setFont("Kassiopea", code_size)
-        for line in lines:
-            if y < 20 * mm:
-                break
-            c.drawString(MARGIN_X, y, line)
-            y -= code_leading
 
     c.save()
     print(f"Saved {output}")
