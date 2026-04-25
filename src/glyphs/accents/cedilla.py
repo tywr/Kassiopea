@@ -10,22 +10,31 @@ class Cedilla(Accent):
     unicode = "0xB8"
     x_ratio = 0.55
     cut_ratio = 0.7
-    stroke_ratio = 0.55
+    stroke_ratio = 0.6
+    neck_length = 0.05
 
     def draw_at(self, pen, dc, x, y):
         h = abs(dc.descent)
         w = self.x_ratio * dc.width
         yr = h / dc.x_height
+        yn = - self.neck_length * dc.x_height
 
+        draw_rect(
+            pen,
+            x - dc.stroke_y / 2,
+            yn - dc.stroke_y / 2,
+            x + dc.stroke_y / 2,
+            0,
+        )
         glyph = ufoLib2.objects.Glyph()
         draw_loop(
             glyph.getPen(),
             self.stroke_ratio * dc.stroke_x,
             self.stroke_ratio * dc.stroke_y,
             x - w / 2,
-            -h,
+            yn - h,
             x + w / 2,
-            0,
+            yn,
             dc.hx * self.x_ratio / 2,
             dc.hy * yr,
         )
@@ -34,9 +43,9 @@ class Cedilla(Accent):
         draw_rect(
             cut_glyph.getPen(),
             x - w / 2 - 10,
-            -h + self.cut_ratio * h / 2,
+            yn-h + self.cut_ratio * h / 2,
             x,
-            -self.cut_ratio * h / 2,
+            yn-self.cut_ratio * h / 2,
         )
 
         result = BooleanGlyph(glyph).difference(BooleanGlyph(cut_glyph))
