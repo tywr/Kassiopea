@@ -1,4 +1,3 @@
-from glyphs import Glyph
 from draw.square_corner import draw_square_corner
 from draw.rect import draw_rect
 from glyphs.lowercase.dotted import DottedLowercaseGlyph
@@ -7,7 +6,7 @@ from glyphs.lowercase.dotted import DottedLowercaseGlyph
 class LowercaseJGlyph(DottedLowercaseGlyph):
     name = "lowercase_j"
     unicode = "0x6A"
-    offset = 88
+    offset = 118
     tail_offset = 0
     width_ratio = 1.4
     updown_ratio = 1
