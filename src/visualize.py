@@ -2,18 +2,27 @@
 """Visualize a single glyph (by slug name) or a text string."""
 
 import sys
+import math
 import argparse
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.path import Path
 import pathops
 from fontTools.pens.recordingPen import RecordingPen
+from fontTools.pens.transformPen import TransformPen
+from fontTools.misc.transform import Transform
 
 sys.path.insert(0, "src")
 from config import FontConfig as fc
 from config import DrawConfig
 from glyphs import LigatureGlyph
-from generate_font import discover_glyphs
+from generate_font import discover_glyphs, select_italic_glyphs, skew_path
+
+
+def _italic_transform():
+    """Horizontal shear matching generate_font.skew_path."""
+    s = math.tan(math.radians(fc.italic_angle))
+    return Transform(1, 0, s, 1, 0, 0)
 
 
 def recording_to_mpl_path(recording):
@@ -127,20 +136,35 @@ def find_glyph(slug_name, all_glyphs):
     raise SystemExit(f"No glyph found with name '{slug_name}'")
 
 
-def visualize_glyph(slug_name, show_controls=False, show_optical_center=False, configs=None):
+def visualize_glyph(slug_name, show_controls=False, show_optical_center=False, configs=None, italic=False):
     if configs is None:
         configs = [DrawConfig()]
 
-    glyph_inst = find_glyph(slug_name, discover_glyphs())
+    all_glyphs = discover_glyphs()
+    glyph_inst = find_glyph(slug_name, all_glyphs)
+
+    if italic and glyph_inst.unicode:
+        code = int(glyph_inst.unicode, 16)
+        for g in all_glyphs:
+            if g.unicode and int(g.unicode, 16) == code and g.default_italic:
+                glyph_inst = g
+                break
     draw_fn = glyph_inst.draw
     n_chars = glyph_inst.number_characters
     total_width = fc.window_width * n_chars
 
     fig, ax = plt.subplots(1, 1, figsize=(3 + 3 * n_chars, 8))
 
-    for i, dc in enumerate(configs):
+    italic_t = _italic_transform() if italic else None
+
+    def record(dc):
         rec = RecordingPen()
-        draw_fn(rec, dc=dc)
+        target = TransformPen(rec, italic_t) if italic_t else rec
+        draw_fn(target, dc=dc)
+        return rec
+
+    for i, dc in enumerate(configs):
+        rec = record(dc)
         path = recording_to_mpl_path(rec)
         color = COLORS[i % len(COLORS)]
         patch = mpatches.PathPatch(path, facecolor=color, edgecolor="none", alpha=0.7)
@@ -150,8 +174,7 @@ def visualize_glyph(slug_name, show_controls=False, show_optical_center=False, c
             plot_control_points(ax, rec)
 
     if show_optical_center:
-        rec = RecordingPen()
-        draw_fn(rec, dc=configs[0])
+        rec = record(configs[0])
         center = compute_optical_center(rec)
         if center:
             ax.plot(
@@ -197,24 +220,29 @@ def visualize_glyph(slug_name, show_controls=False, show_optical_center=False, c
     plt.show()
 
 
-def visualize_text(text, point_size=None, guides=False, dc=None):
+def visualize_text(text, point_size=None, guides=False, dc=None, italic=False):
     if dc is None:
         dc = DrawConfig()
     all_glyphs = discover_glyphs()
 
+    if italic:
+        active_glyphs, _ = select_italic_glyphs(all_glyphs)
+    else:
+        active_glyphs = all_glyphs
+
     glyph_map = {}
-    for g in all_glyphs:
+    for g in active_glyphs:
         if g.unicode and not g.font_feature:
             char = chr(int(g.unicode, 16))
             glyph_map[char] = g
 
     ligature_map = {}
-    for g in all_glyphs:
+    for g in active_glyphs:
         if not isinstance(g, LigatureGlyph):
             continue
         seq = ""
         for comp_name in g.components:
-            for og in all_glyphs:
+            for og in active_glyphs:
                 if og.name == comp_name and og.unicode:
                     seq += chr(int(og.unicode, 16))
                     break
@@ -252,6 +280,8 @@ def visualize_text(text, point_size=None, guides=False, dc=None):
         simplified = pathops.simplify(
             raw_path, clockwise=False, keep_starting_points=True
         )
+        if italic:
+            simplified = skew_path(simplified, fc.italic_angle)
 
         rec = RecordingPen()
         simplified.draw(rec)
@@ -342,12 +372,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     style = args.s.strip().lower()
+    italic = False
     if style == "regular":
         configs = [DrawConfig()]
     elif style == "bold":
         configs = [DrawConfig.weight(w=700)]
     elif style == "italic":
         configs = [DrawConfig.italic()]
+        italic = True
     else:
         configs = [
             DrawConfig(stroke_x=int(s), stroke_y=int(s) - 10)
@@ -360,6 +392,7 @@ if __name__ == "__main__":
             point_size=args.pt,
             guides=args.guides,
             dc=configs[0],
+            italic=italic,
         )
     else:
         if not args.slug:
@@ -369,4 +402,5 @@ if __name__ == "__main__":
             show_controls=args.c,
             show_optical_center=args.o,
             configs=configs,
+            italic=italic,
         )
