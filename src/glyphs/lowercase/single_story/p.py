@@ -2,17 +2,13 @@ from glyphs import Glyph
 from draw.superellipse_arch import draw_superellipse_arch
 from draw.rect import draw_rect
 from draw.polygon import draw_polygon
+from glyphs.lowercase.single_story import SingleStoryLowercaseGlyph
 
 
-class LowercasePGlyph(Glyph):
+class LowercasePGlyph(SingleStoryLowercaseGlyph):
     name = "lowercase_p"
     unicode = "0x70"
     offset = 10
-    bowl_stroke_x_ratio = 1.1
-    bowl_stroke_y_ratio = 1.01
-    ending_thickness = 0.8
-    hx_ratio = 1.03
-    hy_ratio = 1
 
     def draw(self, pen, dc):
         b = dc.body_bounds(

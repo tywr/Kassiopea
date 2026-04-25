@@ -1,18 +1,13 @@
-from glyphs import Glyph
 from draw.superellipse_arch import draw_superellipse_arch
 from draw.rect import draw_rect
 from draw.polygon import draw_polygon
+from glyphs.lowercase.single_story import SingleStoryLowercaseGlyph
 
 
-class LowercaseQGlyph(Glyph):
-    name = "lowercase_q"
-    unicode = "0x71"
+class LowercaseDGlyph(SingleStoryLowercaseGlyph):
+    name = "lowercase_d"
+    unicode = "0x64"
     offset = -10
-    bowl_stroke_x_ratio = 1.1
-    bowl_stroke_y_ratio = 1.01
-    ending_thickness = 0.8
-    hx_ratio = 1.03
-    hy_ratio = 1
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -21,14 +16,12 @@ class LowercaseQGlyph(Glyph):
             overshoot_top=True,
             overshoot_left=True,
         )
+        hx, hy = self.hx_ratio * b.hx, self.hy_ratio * b.hy
         bsx, bsy = (
             self.bowl_stroke_x_ratio * dc.stroke_x,
             self.bowl_stroke_y_ratio * dc.stroke_y,
         )
         dx = bsx - dc.stroke_x
-        hx, hy = self.hx_ratio * b.hx, self.hy_ratio * b.hy
-
-        # Bowl (open on the right, same as d)
         arch_params = draw_superellipse_arch(
             pen,
             bsx,
@@ -42,21 +35,21 @@ class LowercaseQGlyph(Glyph):
             taper=dc.taper,
             side="right",
         )
-        # Compute the intersection of the outer bowl with the stem
+
+        # Compute the intersection and fill the gap
         (_, y1), (_, y2) = arch_params["outer"].intersection_x(
             x=b.x2 - dc.stroke_x - dc.gap
         )
         y1, y2 = min(y1, y2), max(y1, y2)
 
-        # Right descender stem
-        draw_rect(pen, b.x2 - dc.stroke_x, dc.descent, b.x2, y2)
+        draw_rect(pen, b.x2 - dc.stroke_x, y1, b.x2, dc.ascent)
         draw_polygon(
             pen,
             points=[
-                (b.x2 - dc.stroke_x, y2),
-                (b.x2, y2),
-                (b.x2, dc.x_height),
-                (b.x2 - self.ending_thickness * dc.stroke_x, dc.x_height),
+                (b.x2 - self.ending_thickness * dc.stroke_x, 0),
+                (b.x2, 0),
+                (b.x2, y1),
+                (b.x2 - dc.stroke_x, y1),
             ],
         )
 

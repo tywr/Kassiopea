@@ -1,18 +1,15 @@
-from glyphs import Glyph
 from draw.superellipse_arch import draw_superellipse_arch
 from draw.rect import draw_rect
 from draw.polygon import draw_polygon
+from glyphs.lowercase.single_story import SingleStoryLowercaseGlyph
 
 
-class LowercaseDGlyph(Glyph):
-    name = "lowercase_d"
-    unicode = "0x64"
+class LowercaseA2Glyph(SingleStoryLowercaseGlyph):
+    name = "lowercase_a_2"
+    font_feature = {"cv06": 1}
+    default_italic = True
+    unicode = "0x61"
     offset = -10
-    bowl_stroke_x_ratio = 1.1
-    bowl_stroke_y_ratio = 1.01
-    ending_thickness = 0.8
-    hx_ratio = 1.03
-    hy_ratio = 1
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -47,7 +44,7 @@ class LowercaseDGlyph(Glyph):
         )
         y1, y2 = min(y1, y2), max(y1, y2)
 
-        draw_rect(pen, b.x2 - dc.stroke_x, y1, b.x2, dc.ascent)
+        draw_rect(pen, b.x2 - dc.stroke_x, y1, b.x2, y2)
         draw_polygon(
             pen,
             points=[
@@ -55,6 +52,15 @@ class LowercaseDGlyph(Glyph):
                 (b.x2, 0),
                 (b.x2, y1),
                 (b.x2 - dc.stroke_x, y1),
+            ],
+        )
+        draw_polygon(
+            pen,
+            points=[
+                (b.x2 - dc.stroke_x, y2),
+                (b.x2, y2),
+                (b.x2, dc.x_height),
+                (b.x2 - self.ending_thickness * dc.stroke_x, dc.x_height),
             ],
         )
 

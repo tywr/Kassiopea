@@ -1,24 +1,21 @@
 import ufoLib2
 from booleanOperations.booleanGlyph import BooleanGlyph
-from glyphs import Glyph
 from draw.superellipse_arch import draw_superellipse_arch
 from draw.rect import draw_rect
 from draw.corner import draw_corner
 from draw.polygon import draw_polygon
-from draw.superellipse_loop import draw_superellipse_loop
+from glyphs.lowercase.single_story import SingleStoryLowercaseGlyph
 
 
-class LowercaseGGlyph(Glyph):
+class LowercaseGGlyph(SingleStoryLowercaseGlyph):
     name = "lowercase_g"
     unicode = "0x67"
     offset = -10
+
     tail_offset = 0
-    bowl_stroke_x_ratio = 1.1
-    bowl_stroke_y_ratio = 1.01
     tail_stroke_x_ratio = 0.89
     tail_stroke_y_ratio = 1.01
     tail_offset = 0.15
-    ending_thickness = 0.8
     cut_ratio = 0.25
     tail_offset = 0.02
 
@@ -88,7 +85,15 @@ class LowercaseGGlyph(Glyph):
 
         glyph = ufoLib2.objects.Glyph()
         draw_corner(
-            glyph.getPen(), tsx, tsy, xt, 0, b.xmid, dc.descent - dc.v_overshoot, b.hx, b.hy
+            glyph.getPen(),
+            tsx,
+            tsy,
+            xt,
+            0,
+            b.xmid,
+            dc.descent - dc.v_overshoot,
+            b.hx,
+            b.hy,
         )
         cut_glyph = ufoLib2.objects.Glyph()
         draw_rect(
