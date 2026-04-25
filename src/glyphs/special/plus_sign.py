@@ -7,11 +7,13 @@ class PlusSignGlyph(Glyph):
     unicode = "0x2B"
     offset = 0
     width_ratio = 1
+    stroke_ratio = 0.88
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
             offset=self.offset, height="cap", width_ratio=self.width_ratio
         )
+        s = dc.stroke_x * self.stroke_ratio
 
-        draw_rect(pen, b.x1, dc.math - dc.stroke_x / 2, b.x2, dc.math + dc.stroke_x / 2)
-        draw_rect(pen, b.xmid - dc.stroke_x / 2, dc.math - b.width / 2, b.xmid + dc.stroke_x / 2, dc.math + b.width / 2)
+        draw_rect(pen, b.x1, dc.math - s / 2, b.x2, dc.math + s / 2)
+        draw_rect(pen, b.xmid - s / 2, dc.math - b.width / 2, b.xmid + s / 2, dc.math + b.width / 2)
