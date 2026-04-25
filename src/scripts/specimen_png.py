@@ -10,8 +10,8 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 
 
-BG = "#000000"
-FG = "#FFFFFF"
+BG = "#FFFFFF"
+FG = "#000000"
 
 # High-res scale factor (render at 2x for retina)
 SCALE = 2

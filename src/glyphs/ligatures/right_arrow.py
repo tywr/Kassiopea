@@ -12,6 +12,7 @@ class RightArrowGlyph(LigatureGlyph):
     width_ratio = 0.88
     overlap = 0.6
     span = 0.85
+    stroke_ratio = 1.2
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
@@ -19,18 +20,19 @@ class RightArrowGlyph(LigatureGlyph):
         )
         o = ((1 - self.width_ratio) * b.width) / 2
         ymid = dc.math
-        ov = self.overlap * dc.stroke_y
         h = dc.parenthesis_length * self.span
         s = dc.stroke_x
+        s2 = self.stroke_ratio * dc.stroke_x
         draw_parallelogramm_vertical(
             pen,
             dc.stroke_x,
             dc.stroke_y,
             b.x2 + dc.window_width,
-            ymid - ov,
+            ymid - s2 / 2,
             b.x1 + dc.window_width,
             ymid + h / 2,
             direction="top-left",
+            delta=s2,
         )
         draw_parallelogramm_vertical(
             pen,
@@ -39,8 +41,9 @@ class RightArrowGlyph(LigatureGlyph):
             b.x1 + dc.window_width,
             ymid - h / 2,
             b.x2 + dc.window_width,
-            ymid + ov,
+            ymid + s2 / 2,
             direction="top-right",
+            delta=s2,
         )
         draw_rect(
             pen,
