@@ -14,9 +14,9 @@ class LowercaseWGlyph(Glyph):
     overlap = 0.65
     overlap_middle = 0.5
     depth = 0.6
-    inner_thickness_ratio = 1.8
+    inner_thickness_ratio = 1.5
     inner_height = 0.4
-    width_ratio = 1.16
+    width_ratio = 1.1
     ink_trap_height = 0.6
 
     def draw(self, pen, dc):
