@@ -9,7 +9,7 @@ class LowercaseI2Glyph(DottedLowercaseGlyph):
     unicode = "0x69"
     font_feature = {"ss03": 1}
     default_italic = True
-    offset = 18
+    offset = -24
     width_ratio = 1.08
     cap = 0.45
     rl_ratio = 0.5

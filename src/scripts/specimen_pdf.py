@@ -37,10 +37,39 @@ LABEL_SIZE = 14
 CHAR_SIZE = 28
 
 
+FAMILY_VARIANTS = [
+    ("Thin", "Kassiopea Thin"),
+    ("ThinItalic", "Kassiopea Thin Italic"),
+    ("ExtraLight", "Kassiopea ExtraLight"),
+    ("ExtraLightItalic", "Kassiopea ExtraLight Italic"),
+    ("Light", "Kassiopea Light"),
+    ("LightItalic", "Kassiopea Light Italic"),
+    ("Regular", "Kassiopea Regular"),
+    ("Italic", "Kassiopea Italic"),
+    ("Medium", "Kassiopea Medium"),
+    ("MediumItalic", "Kassiopea Medium Italic"),
+    ("SemiBold", "Kassiopea SemiBold"),
+    ("SemiBoldItalic", "Kassiopea SemiBold Italic"),
+    ("Bold", "Kassiopea Bold"),
+    ("BoldItalic", "Kassiopea Bold Italic"),
+]
+
+
 def render_specimen(font_path, output="specimen.pdf"):
     import os
     os.makedirs(os.path.dirname(output), exist_ok=True)
     pdfmetrics.registerFont(TTFont("Kassiopea", font_path))
+
+    # Register every available family variant for the overview page
+    font_dir = os.path.dirname(font_path)
+    available_variants = []
+    for ps_style, display_name in FAMILY_VARIANTS:
+        path = os.path.join(font_dir, f"Kassiopea-{ps_style}.ttf")
+        if not os.path.exists(path):
+            continue
+        font_name = f"Kassiopea-{ps_style}"
+        pdfmetrics.registerFont(TTFont(font_name, path))
+        available_variants.append((font_name, display_name))
 
     page_w, page_h = A4
     c = canvas.Canvas(output, pagesize=A4)
@@ -55,6 +84,41 @@ def render_specimen(font_path, output="specimen.pdf"):
     cover_text = "Kassiopea"
     text_w = c.stringWidth(cover_text, "Kassiopea", cover_size)
     c.drawString((page_w - text_w) / 2, (page_h - cover_size) / 2, cover_text)
+    c.showPage()
+
+    # --- Family Overview page ---
+    c.setFillColorRGB(*BG)
+    c.rect(0, 0, page_w, page_h, fill=1, stroke=0)
+
+    y = page_h - 30 * mm
+    c.setFillColorRGB(*FG)
+    c.setFont("Kassiopea", TITLE_SIZE)
+    c.drawString(MARGIN_X, y, "Family Overview")
+
+    regulars = [v for v in available_variants if "Italic" not in v[0]]
+    italics = [v for v in available_variants if "Italic" in v[0]]
+
+    variant_size = 22
+    variant_leading = variant_size * 1.7
+
+    title_bottom = page_h - 30 * mm - TITLE_SIZE
+    mid = page_h / 2
+    bottom_margin = 30 * mm
+
+    def draw_block(variants, y_low, y_high):
+        if not variants:
+            return
+        block_h = (len(variants) - 1) * variant_leading
+        y = (y_low + y_high) / 2 + block_h / 2
+        for font_name, display_name in variants:
+            c.setFont(font_name, variant_size)
+            c.drawString(MARGIN_X, y, display_name)
+            y -= variant_leading
+
+    c.setFillColorRGB(*FG)
+    draw_block(regulars, mid, title_bottom)
+    draw_block(italics, bottom_margin, mid)
+
     c.showPage()
 
     # White background for the rest of the specimen
