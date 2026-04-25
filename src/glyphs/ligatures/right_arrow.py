@@ -9,7 +9,7 @@ class RightArrowGlyph(LigatureGlyph):
     name = "right_arrow"
     components = ["hyphen_minus", "greater_than_sign"]
     number_characters = 2
-    width_ratio = 1
+    width_ratio = 0.88
     overlap = 0.6
     span = 0.85
 
@@ -17,9 +17,11 @@ class RightArrowGlyph(LigatureGlyph):
         b = dc.body_bounds(
             offset=self.offset, height="x_height", width_ratio=self.width_ratio
         )
+        o = ((1 - self.width_ratio) * b.width) / 2
         ymid = dc.math
         ov = self.overlap * dc.stroke_y
         h = dc.parenthesis_length * self.span
+        s = dc.stroke_x
         draw_parallelogramm_vertical(
             pen,
             dc.stroke_x,
@@ -40,4 +42,10 @@ class RightArrowGlyph(LigatureGlyph):
             ymid + ov,
             direction="top-right",
         )
-        draw_rect(pen, b.x1, dc.math - dc.stroke_y / 2, b.x2 + dc.window_width, dc.math + dc.stroke_y / 2)
+        draw_rect(
+            pen,
+            b.x1 + o,
+            dc.math - s / 2,
+            b.x2 + dc.window_width,
+            dc.math + s / 2,
+        )

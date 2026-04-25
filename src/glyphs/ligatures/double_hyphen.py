@@ -13,22 +13,23 @@ class DoubleHyphenGlyph(ContextualLigatureGlyph):
     components = ["hyphen_minus", "hyphen_minus"]
     forbidden_neighbors = ["hyphen_minus"]
     number_characters = 2
-    width_ratio = 1
+    width_ratio = 0.88
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
             offset=self.offset, height="x_height", width_ratio=self.width_ratio
         )
-        sy = dc.stroke_y
+        s = dc.stroke_x
+        o = (1 - self.width_ratio) * b.width / 2
         # Draw a bar that spans two full glyph widths edge-to-edge
         draw_dented_rect(
-            pen, b.x1, dc.math - sy / 2, dc.window_width, dc.math + sy / 2, side="right"
+            pen, b.x1 + o, dc.math - s / 2, dc.window_width, dc.math + s / 2, side="right"
         )
         draw_dented_rect(
             pen,
             dc.window_width,
-            dc.math - sy / 2,
-            b.x2 + dc.window_width,
-            dc.math + sy / 2,
+            dc.math - s / 2,
+            b.x2 + dc.window_width - o,
+            dc.math + s / 2,
             side="left",
         )

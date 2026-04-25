@@ -8,23 +8,25 @@ class EqualsSignGlyph(Glyph):
     offset = 0
     width_ratio = 1
     gap = 0.4
+    stroke_ratio = 0.92
 
     def draw(self, pen, dc):
         b = dc.body_bounds(
             offset=self.offset, height="x_height", width_ratio=self.width_ratio
         )
+        s = dc.stroke_x * self.stroke_ratio
         g = self.gap * b.height
         draw_rect(
             pen,
             b.x1,
-            dc.math + g / 2 - dc.stroke_y / 2,
+            dc.math + g / 2 - s / 2,
             b.x2,
-            dc.math + g / 2 + dc.stroke_y / 2,
+            dc.math + g / 2 + s / 2,
         )
         draw_rect(
             pen,
             b.x1,
-            dc.math - g / 2 - dc.stroke_y / 2,
+            dc.math - g / 2 - s / 2,
             b.x2,
-            dc.math - g / 2 + dc.stroke_y / 2,
+            dc.math - g / 2 + s / 2,
         )

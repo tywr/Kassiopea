@@ -12,4 +12,4 @@ class LowLineGlyph(Glyph):
         b = dc.body_bounds(
             offset=self.offset, height="x_height", width_ratio=self.width_ratio
         )
-        draw_rect(pen, b.x1, -dc.stroke_y, b.x2, 0)
+        draw_rect(pen, b.x1, -dc.stroke_x, b.x2, 0)
