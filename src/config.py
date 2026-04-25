@@ -22,7 +22,7 @@ class FontConfig:
     math: int = 300
 
     parenthesis: int = 300
-    parenthesis_length: int = 1000
+    parenthesis_length: int = 1060
 
     min_margin: int = 25
 
@@ -95,12 +95,10 @@ class DrawConfig(FontConfig):
 
     @classmethod
     def italic(cls):
-        ratio_y = 0.92
-        ratio_alt = 0.92
         return cls(
             stroke_x=int(cls.stroke_x),
-            stroke_y=int(cls.stroke_y * ratio_y),
-            stroke_alt=int(cls.stroke_alt * ratio_alt),
+            stroke_y=int(cls.stroke_y),
+            stroke_alt=int(cls.stroke_alt),
             taper=cls.taper,
             gap=0,
         )
