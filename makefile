@@ -5,4 +5,4 @@ build:
 	python -m scripts.specimen_png
 
 install-mac:
-	cp -r fonts/otf/Kassiopea-*.otf ~/Library/Fonts
+	cp -r fonts/otf/NordwandMono-*.otf ~/Library/Fonts

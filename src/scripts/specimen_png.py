@@ -90,11 +90,11 @@ def render_specimen(font_path, output="specimen.png"):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate Kassiopea PNG specimen")
+    parser = argparse.ArgumentParser(description="Generate Nordwand Mono PNG specimen")
     parser.add_argument(
         "font",
         nargs="?",
-        default="fonts/ttf/Kassiopea-Regular.ttf",
+        default="fonts/ttf/NordwandMono-Regular.ttf",
         help="Path to font file",
     )
     parser.add_argument(

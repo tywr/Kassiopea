@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate a font specimen PDF for Kassiopea.
+"""Generate a font specimen PDF for Nordwand Mono.
 
 Usage: python scripts/specimen.py [path/to/font.ttf]
 """
@@ -38,73 +38,140 @@ CHAR_SIZE = 28
 
 
 FAMILY_VARIANTS = [
-    ("Thin", "Kassiopea Thin"),
-    ("ThinItalic", "Kassiopea Thin Italic"),
-    ("ExtraLight", "Kassiopea ExtraLight"),
-    ("ExtraLightItalic", "Kassiopea ExtraLight Italic"),
-    ("Light", "Kassiopea Light"),
-    ("LightItalic", "Kassiopea Light Italic"),
-    ("Regular", "Kassiopea Regular"),
-    ("Italic", "Kassiopea Italic"),
-    ("Medium", "Kassiopea Medium"),
-    ("MediumItalic", "Kassiopea Medium Italic"),
-    ("SemiBold", "Kassiopea SemiBold"),
-    ("SemiBoldItalic", "Kassiopea SemiBold Italic"),
-    ("Bold", "Kassiopea Bold"),
-    ("BoldItalic", "Kassiopea Bold Italic"),
+    ("Thin", "Nordwand Mono Thin"),
+    ("ThinItalic", "Nordwand Mono Thin Italic"),
+    ("ExtraLight", "Nordwand Mono ExtraLight"),
+    ("ExtraLightItalic", "Nordwand Mono ExtraLight Italic"),
+    ("Light", "Nordwand Mono Light"),
+    ("LightItalic", "Nordwand Mono Light Italic"),
+    ("Regular", "Nordwand Mono Regular"),
+    ("Italic", "Nordwand Mono Italic"),
+    ("Medium", "Nordwand Mono Medium"),
+    ("MediumItalic", "Nordwand Mono Medium Italic"),
+    ("SemiBold", "Nordwand Mono SemiBold"),
+    ("SemiBoldItalic", "Nordwand Mono SemiBold Italic"),
+    ("Bold", "Nordwand Mono Bold"),
+    ("BoldItalic", "Nordwand Mono Bold Italic"),
 ]
 
 
 TITLE_FONT = "Switzer"
 TITLE_FONT_REGULAR = "Switzer-Regular"
-TITLE_FONT_PATH = "assets/Switzer-Variable.ttf"
+
+# Sentinel: when found in the samples list, force a new page before the next sample.
+SAMPLE_SEP = object()
 
 
-def _instantiate_weight(variable_path, weight):
-    """Save a static instance of the variable font at the given wght axis to a temp file."""
+def _find_macos_font(filename):
+    """Locate a font file by basename in the standard macOS font directories."""
+    import os
+
+    dirs = [
+        os.path.expanduser("~/Library/Fonts"),
+        "/Library/Fonts",
+        "/System/Library/Fonts",
+        "/System/Library/Fonts/Supplemental",
+    ]
+    for d in dirs:
+        path = os.path.join(d, filename)
+        if os.path.exists(path):
+            return path
+    raise FileNotFoundError(f"Font '{filename}' not found in macOS font directories")
+
+
+def _otf_to_ttf(otf_path):
+    """Convert an OTF (CFF outlines) to a temp TTF (glyf outlines) for reportlab."""
     import tempfile
-    from fontTools.ttLib import TTFont as FTTTFont
-    from fontTools.varLib.instancer import instantiateVariableFont
+    from fontTools.ttLib import TTFont as FTTTFont, newTable
+    from fontTools.pens.cu2quPen import Cu2QuPen
+    from fontTools.pens.ttGlyphPen import TTGlyphPen
 
-    vf = FTTTFont(variable_path)
-    instance = instantiateVariableFont(vf, {"wght": weight})
+    font = FTTTFont(otf_path)
+    if "glyf" in font:
+        return otf_path  # already TTF
+
+    glyph_set = font.getGlyphSet()
+    glyph_order = font.getGlyphOrder()
+
+    glyf_data = {}
+    for name in glyph_order:
+        ttf_pen = TTGlyphPen(None)
+        cu2qu_pen = Cu2QuPen(ttf_pen, max_err=1.0, reverse_direction=True)
+        glyph_set[name].draw(cu2qu_pen)
+        glyf_data[name] = ttf_pen.glyph()
+
+    for tag in ("CFF ", "CFF2"):
+        if tag in font:
+            del font[tag]
+
+    glyf = newTable("glyf")
+    glyf.glyphs = glyf_data
+    glyf.glyphOrder = glyph_order
+    font["glyf"] = glyf
+    font["loca"] = newTable("loca")
+
+    font.sfntVersion = "\x00\x01\x00\x00"
+    font["head"].indexToLocFormat = 0
+
+    maxp = font["maxp"]
+    maxp.tableVersion = 0x00010000
+    for attr, default in (
+        ("maxZones", 1),
+        ("maxTwilightPoints", 0),
+        ("maxStorage", 0),
+        ("maxFunctionDefs", 0),
+        ("maxInstructionDefs", 0),
+        ("maxStackElements", 0),
+        ("maxSizeOfInstructions", 0),
+        ("maxComponentElements", 0),
+        ("maxComponentDepth", 0),
+    ):
+        if not hasattr(maxp, attr):
+            setattr(maxp, attr, default)
+
     tmp = tempfile.NamedTemporaryFile(suffix=".ttf", delete=False)
     tmp.close()
-    instance.save(tmp.name)
+    font.save(tmp.name)
     return tmp.name
+
+
+def _register_macos_otf(reportlab_name, filename):
+    pdfmetrics.registerFont(
+        TTFont(reportlab_name, _otf_to_ttf(_find_macos_font(filename)))
+    )
 
 
 def render_specimen(font_path, output="specimen.pdf"):
     import os
 
     os.makedirs(os.path.dirname(output), exist_ok=True)
-    pdfmetrics.registerFont(TTFont("Kassiopea", font_path))
-    pdfmetrics.registerFont(TTFont(TITLE_FONT, _instantiate_weight(TITLE_FONT_PATH, 700)))
-    pdfmetrics.registerFont(TTFont(TITLE_FONT_REGULAR, _instantiate_weight(TITLE_FONT_PATH, 400)))
+    pdfmetrics.registerFont(TTFont("Nordwand Mono", font_path))
+    _register_macos_otf(TITLE_FONT, "Switzer-Bold.otf")
+    _register_macos_otf(TITLE_FONT_REGULAR, "Switzer-Regular.otf")
 
     # Register every available family variant for the overview page
     font_dir = os.path.dirname(font_path)
     available_variants = []
     for ps_style, display_name in FAMILY_VARIANTS:
-        path = os.path.join(font_dir, f"Kassiopea-{ps_style}.ttf")
+        path = os.path.join(font_dir, f"Nordwand Mono-{ps_style}.ttf")
         if not os.path.exists(path):
             continue
-        font_name = f"Kassiopea-{ps_style}"
+        font_name = f"Nordwand Mono-{ps_style}"
         pdfmetrics.registerFont(TTFont(font_name, path))
         available_variants.append((font_name, display_name))
 
     page_w, page_h = A4
     c = canvas.Canvas(output, pagesize=A4)
 
-    # --- Cover page: black background, white "Kassiopea" centered ---
+    # --- Cover page: black background, white "Nordwand Mono" centered ---
     c.setFillColorRGB(0, 0, 0)
     c.rect(0, 0, page_w, page_h, fill=1, stroke=0)
 
     cover_size = 72
     c.setFillColorRGB(1, 1, 1)
-    c.setFont("Kassiopea", cover_size)
-    cover_text = "Kassiopea"
-    text_w = c.stringWidth(cover_text, "Kassiopea", cover_size)
+    c.setFont("Nordwand Mono", cover_size)
+    cover_text = "NORDWAND MONO"
+    text_w = c.stringWidth(cover_text, "Nordwand Mono", cover_size)
     c.drawString((page_w - text_w) / 2, (page_h - cover_size) / 2, cover_text)
     c.showPage()
 
@@ -152,7 +219,7 @@ def render_specimen(font_path, output="specimen.pdf"):
     # Title
     c.setFillColorRGB(*FG)
     c.setFont(TITLE_FONT, TITLE_SIZE)
-    c.drawString(MARGIN_X, y, "Kassiopea")
+    c.drawString(MARGIN_X, y, "Nordwand Mono")
     y -= TITLE_SIZE + 16 * mm
 
     for group_label, chars in GROUPS:
@@ -164,11 +231,11 @@ def render_specimen(font_path, output="specimen.pdf"):
 
         # Lay out characters
         c.setFillColorRGB(*FG)
-        c.setFont("Kassiopea", CHAR_SIZE)
+        c.setFont("Nordwand Mono", CHAR_SIZE)
         x = MARGIN_X
         max_x = page_w - MARGIN_X
         for ch in chars:
-            char_w = c.stringWidth(ch, "Kassiopea", CHAR_SIZE) + 8
+            char_w = c.stringWidth(ch, "Nordwand Mono", CHAR_SIZE) + 8
             if x + char_w > max_x:
                 y -= CHAR_SIZE + 10
                 x = MARGIN_X
@@ -198,48 +265,78 @@ def render_specimen(font_path, output="specimen.pdf"):
     samples = [
         (
             "Bold",
-            "Kassiopea-Bold",
-            16,
-            "Cassiopeia boasted that she (or her daughter Andromeda), was more "
-            "beautiful than all the Nereids, the nymph-daughters of the sea god "
-            "Nereus. This brought the wrath of Poseidon, ruling god of the sea, "
-            "upon the kingdom of Aethiopia.",
+            "Nordwand Mono-Bold",
+            12,
+            "The Eiger is a 3,967-metre (13,015 ft) mountain of the Bernese Alps, overlooking Grindelwald and Lauterbrunnen in the Bernese Oberland of Switzerland, just north of the main watershed and border with Valais.",
         ),
         (
             "Medium",
-            "Kassiopea-Medium",
-            14,
-            "Accounts differ as to whether Poseidon decided to flood the whole "
-            "country or direct the sea monster Cetus to destroy it. In either "
-            "case, trying to save their kingdom, Cepheus and Cassiopeia consulted "
-            "an oracle of Jupiter, who told them that the only way to appease the "
-            "sea gods was to sacrifice their daughter.",
+            "Nordwand Mono-Medium",
+            12,
+            "It is the easternmost peak of a ridge crest that extends across the Mönch to the Jungfrau at 4,158 m (13,642 ft), constituting one of the most emblematic sights of the Swiss Alps.",
         ),
         (
             "Regular",
-            "Kassiopea",
+            "Nordwand Mono",
             12,
-            "Accordingly, Andromeda was chained to a rock at the sea's edge and "
-            "left to be killed by the sea monster. Perseus arrived and instead "
-            "killed Cetus, saved Andromeda and married her.",
+            "While the northern side of the mountain rises more than 3,000 m (10,000 ft) above the two valleys of Grindelwald and Lauterbrunnen, the southern side faces the large glaciers of the Jungfrau-Aletsch area, the most glaciated region in the Alps.",
         ),
         (
             "Light",
-            "Kassiopea-Light",
+            "Nordwand Mono-Light",
+            12,
+            "The most notable feature of the Eiger is its nearly 1,800-metre-high (5,900 ft) north face of rock and ice, named Eiger-Nordwand, Eigerwand or just Nordwand, which is the biggest north face in the Alps.",
+        ),
+        (
+            "Thin",
+            "Nordwand Mono-Thin",
+            12,
+            "The first ascent of the Eiger was made by Swiss guides Christian Almer and Peter Bohren and Irishman Charles Barrington, who climbed the west flank on August 11, 1858.",
+        ),
+        SAMPLE_SEP,
+        (
+            "Bold",
+            "Nordwand Mono-Bold",
             10,
-            "Poseidon thought Cassiopeia should not escape punishment, so he "
-            "placed her in the heavens chained to a throne in a position that "
-            "referenced Andromeda's ordeal. The constellation resembles the chair "
-            "that originally represented an instrument of torture. Cassiopeia is "
-            "not always represented tied to the chair in torment; in some later "
-            "drawings she holds a mirror, symbol of her vanity, while in others "
-            "she holds a palm frond.",
+            "The north face, the last problem of the Alps, considered amongst the most challenging and dangerous ascents, was first climbed in 1938 by an Austrian-German expedition.",
+        ),
+        (
+            "Medium",
+            "Nordwand Mono-Medium",
+            10,
+            "The Eiger has been highly publicized for the many tragedies involving climbing expeditions. Since 1935, at least 64 climbers have died attempting the north face, earning it the German nickname Mordwand, literally \"murder(ous) wall\"—a pun on its correct title of Nordwand (North Wall).",
+        ),
+        (
+            "Regular",
+            "Nordwand Mono",
+            10,
+            "Although the summit of the Eiger can be reached by experienced climbers only, a railway tunnel runs inside the mountain, and two internal stations provide easy access to viewing-windows carved into the rock face.",
+        ),
+        (
+            "Light",
+            "Nordwand Mono-Light",
+            10,
+            "They are both part of the Jungfrau Railway line, running from Kleine Scheidegg to the Jungfraujoch, between the Mönch and the Jungfrau, at the highest railway station in Europe.",
+        ),
+        (
+            "Thin",
+            "Nordwand Mono-Thin",
+            10,
+            "The two stations within the Eiger are Eigerwand (behind the north face) and Eismeer (behind the south face), at around 3,000 metres. The Eigerwand station has not been regularly served since 2016.",
         ),
     ]
 
     y = page_h - 30 * mm
 
-    for family_label, font_name, sample_size, text in samples:
+    for sample in samples:
+        if sample is SAMPLE_SEP:
+            c.showPage()
+            c.setFillColorRGB(*BG)
+            c.rect(0, 0, page_w, page_h, fill=1, stroke=0)
+            y = page_h - 30 * mm
+            continue
+
+        family_label, font_name, sample_size, text = sample
         leading = sample_size * 1.5
 
         # Solid separator line
@@ -257,7 +354,7 @@ def render_specimen(font_path, output="specimen.pdf"):
         c.drawString(MARGIN_X + family_w, y, f"{sample_size}pt")
         y -= LABEL_SIZE + 8 + leading
 
-        # Word-wrap and draw the sample text in the chosen Kassiopea variant
+        # Word-wrap and draw the sample text in the chosen Nordwand Mono variant
         c.setFont(font_name, sample_size)
 
         words = text.split(" ")
@@ -361,15 +458,15 @@ def render_specimen(font_path, output="specimen.pdf"):
         leading = size * 1.6
         ty -= size  # move down by font size (baseline)
         c.setFillColorRGB(*FG)
-        c.setFont("Kassiopea", size)
-        text_w = c.stringWidth(text, "Kassiopea", size)
+        c.setFont("Nordwand Mono", size)
+        text_w = c.stringWidth(text, "Nordwand Mono", size)
         c.drawString((page_w - text_w) / 2, ty, text)
         ty -= leading - size + 2
 
     y -= header_height + 12 * mm
 
     # Draw body lines
-    c.setFont("Kassiopea", report_size)
+    c.setFont("Nordwand Mono", report_size)
     c.setFillColorRGB(*FG)
     for text in body_lines:
         c.drawString(MARGIN_X + box_padding_x, y, text)
@@ -380,11 +477,11 @@ def render_specimen(font_path, output="specimen.pdf"):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate Kassiopea specimen")
+    parser = argparse.ArgumentParser(description="Generate Nordwand Mono specimen")
     parser.add_argument(
         "font",
         nargs="?",
-        default="fonts/ttf/Kassiopea-Regular.ttf",
+        default="fonts/ttf/NordwandMono-Regular.ttf",
         help="Path to font file",
     )
     parser.add_argument(

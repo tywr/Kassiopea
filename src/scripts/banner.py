@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 BG = "#000000"
 FG = "#91c7d9"
-TEXT = "Kassiopea"
+TEXT = "Nordwand Mono"
 FONT_SIZE = 360
 PADDING_X = 240
 PADDING_Y = 150
@@ -43,8 +43,8 @@ def render_banner(font_path, output="banner.png"):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate Kassiopea banner")
-    parser.add_argument("font", nargs="?", default="fonts/ttf/Kassiopea-Regular.ttf", help="Path to font file")
+    parser = argparse.ArgumentParser(description="Generate Nordwand Mono banner")
+    parser.add_argument("font", nargs="?", default="fonts/ttf/NordwandMono-Regular.ttf", help="Path to font file")
     parser.add_argument("-o", "--output", default="assets/banner.png", help="Output filename")
     args = parser.parse_args()
     render_banner(args.font, args.output)

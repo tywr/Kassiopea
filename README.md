@@ -1,6 +1,6 @@
-![Kassiopea](assets/banner.png)
+![Nordwand Mono](assets/banner.png)
 
-# Kassiopea font
+# Nordwand font
 
 A compact neo-grotesk font designed for coding.
 

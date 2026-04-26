@@ -4,7 +4,7 @@ from utils.bounds import BodyBounds
 
 @dataclass
 class FontConfig:
-    family_name: str = "Kassiopea"
+    family_name: str = "Nordwand Mono"
 
     units_per_em: int = 1000
     window_ascent: int = 1025

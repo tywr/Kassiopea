@@ -1,6 +1,0 @@
-config
-generate_font
-glyph
-glyphs
-shapes
-visualize

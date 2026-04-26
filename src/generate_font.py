@@ -213,11 +213,13 @@ def build_gsub(glyph_names, ligature_glyphs, alternate_glyphs, cmap):
 
     # Split ligatures: regular (unconditional) vs contextual (neighbor-gated)
     regular_ligs = [
-        g for g in ligature_glyphs
+        g
+        for g in ligature_glyphs
         if not isinstance(g, ContextualLigatureGlyph) and g.name in glyph_names
     ]
     contextual_ligs = [
-        g for g in ligature_glyphs
+        g
+        for g in ligature_glyphs
         if isinstance(g, ContextualLigatureGlyph) and g.name in glyph_names
     ]
 
@@ -373,7 +375,9 @@ WEIGHT_NAMES = {
 def _style_metadata(weight, italic):
     """Compute style name, PS name, name table entries, and OS/2 flags for a weight/italic combination."""
     if weight not in WEIGHT_NAMES:
-        raise ValueError(f"Unsupported weight {weight}; must be one of {sorted(WEIGHT_NAMES)}")
+        raise ValueError(
+            f"Unsupported weight {weight}; must be one of {sorted(WEIGHT_NAMES)}"
+        )
 
     weight_name = WEIGHT_NAMES[weight]
     if weight == 400:
@@ -429,12 +433,15 @@ def _style_metadata(weight, italic):
 
 
 def build_font(output_path=None, weight=400, italic=False):
-    style_name, ps_style_name, name_table, fs_selection, mac_style = _style_metadata(weight, italic)
+    style_name, ps_style_name, name_table, fs_selection, mac_style = _style_metadata(
+        weight, italic
+    )
 
     if output_path is None:
         os.makedirs("fonts/otf/", exist_ok=True)
         os.makedirs("fonts/ttf/", exist_ok=True)
-        output_path = f"fonts/otf/{fc.family_name}-{ps_style_name}.otf"
+        fname = fc.family_name.replace(" ", "")
+        output_path = f"fonts/otf/{fname}-{ps_style_name}.otf"
 
     if weight != 400:
         dc = DrawConfig.weight(w=weight)
@@ -492,13 +499,18 @@ def build_font(output_path=None, weight=400, italic=False):
     # OtherBlues: pairs for zones below baseline (descender)
     ov = dc.v_overshoot
     blue_values = [
-        -ov, 0,                       # baseline (overshoot below)
-        fc.x_height, fc.x_height + ov, # x-height
-        fc.cap, fc.cap + ov,           # cap height
-        fc.ascent, fc.ascent + ov,     # ascender
+        -ov,
+        0,  # baseline (overshoot below)
+        fc.x_height,
+        fc.x_height + ov,  # x-height
+        fc.cap,
+        fc.cap + ov,  # cap height
+        fc.ascent,
+        fc.ascent + ov,  # ascender
     ]
     other_blues = [
-        fc.descent - ov, fc.descent,   # descender
+        fc.descent - ov,
+        fc.descent,  # descender
     ]
 
     fb.setupCFF(
@@ -541,7 +553,9 @@ def build_font(output_path=None, weight=400, italic=False):
 
     # GSUB table for ligatures and alternates
     if ligature_glyphs or alternate_glyphs:
-        fb.font["GSUB"] = build_gsub(glyph_names, ligature_glyphs, alternate_glyphs, cmap)
+        fb.font["GSUB"] = build_gsub(
+            glyph_names, ligature_glyphs, alternate_glyphs, cmap
+        )
 
     # Dummy DSIG so macOS validators don't complain
     dsig = newTable("DSIG")
@@ -556,10 +570,21 @@ def build_font(output_path=None, weight=400, italic=False):
 
     # Build TTF version
     ttf_path = output_path.replace(".otf", ".ttf").replace("/otf", "/ttf")
-    build_ttf(ttf_path, weight, italic, active_glyphs, cmap, dc, ligature_glyphs, alternate_glyphs)
+    build_ttf(
+        ttf_path,
+        weight,
+        italic,
+        active_glyphs,
+        cmap,
+        dc,
+        ligature_glyphs,
+        alternate_glyphs,
+    )
 
 
-def build_ttf(output_path, weight, italic, all_glyphs, cmap, dc, ligature_glyphs, alternate_glyphs):
+def build_ttf(
+    output_path, weight, italic, all_glyphs, cmap, dc, ligature_glyphs, alternate_glyphs
+):
     """Build a TTF font with quadratic outlines from scratch."""
     from fontTools.pens.cu2quPen import Cu2QuPen
     from fontTools.pens.ttGlyphPen import TTGlyphPen
@@ -624,7 +649,9 @@ def build_ttf(output_path, weight, italic, all_glyphs, cmap, dc, ligature_glyphs
 
     # GSUB table for ligatures and alternates
     if ligature_glyphs or alternate_glyphs:
-        fb.font["GSUB"] = build_gsub(glyph_names, ligature_glyphs, alternate_glyphs, cmap)
+        fb.font["GSUB"] = build_gsub(
+            glyph_names, ligature_glyphs, alternate_glyphs, cmap
+        )
 
     dsig = newTable("DSIG")
     dsig.ulVersion = 1
