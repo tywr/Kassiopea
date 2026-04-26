@@ -1,45 +1,39 @@
 #!/usr/bin/env python3
 """Generate a banner image for the GitHub README.
 
-Usage: python scripts/banner.py [path/to/font.ttf]
+Overlays "NORDWAND MONO" in white at the center of assets/banner-raw.jpg.
+
+Usage: python -m scripts.banner [path/to/font.ttf]
 """
 
 import argparse
 from PIL import Image, ImageDraw, ImageFont
 
 
-BG = "#000000"
-FG = "#91c7d9"
-TEXT = "Nordwand Mono"
-FONT_SIZE = 360
-PADDING_X = 240
-PADDING_Y = 150
+TEXT = "NORDWAND MONO"
+FG = "#ffffff"
+FONT_SIZE = 260
+INPUT = "assets/banner-raw.jpg"
 
 
-def render_banner(font_path, output="banner.png"):
+def render_banner(font_path, output="assets/banner.png"):
     import os
     os.makedirs(os.path.dirname(output), exist_ok=True)
+
+    img = Image.open(INPUT).convert("RGB")
+    draw = ImageDraw.Draw(img)
     font = ImageFont.truetype(font_path, FONT_SIZE)
 
-    # Measure text to size the image
-    dummy = Image.new("RGB", (1, 1))
-    draw = ImageDraw.Draw(dummy)
     bbox = draw.textbbox((0, 0), TEXT, font=font)
     text_w = bbox[2] - bbox[0]
     text_h = bbox[3] - bbox[1]
 
-    img_w = text_w + 2 * PADDING_X
-    img_h = text_h + 2 * PADDING_Y
-
-    img = Image.new("RGBA", (img_w, img_h), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
-
-    x = (img_w - text_w) / 2 - bbox[0]
-    y = (img_h - text_h) / 2 - bbox[1]
+    x = (img.width - text_w) / 2 - bbox[0]
+    y = (img.height - text_h) / 2 - bbox[1]
     draw.text((x, y), TEXT, font=font, fill=FG)
 
     img.save(output)
-    print(f"Saved {output} ({img_w}x{img_h})")
+    print(f"Saved {output} ({img.width}x{img.height})")
 
 
 if __name__ == "__main__":
