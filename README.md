@@ -2,7 +2,7 @@
 
 A compact neo-grotesk font designed for coding.
 
-![Specimen](specimens/specimen.png)
+![Specimen](specimens/specimen.pdf)
 
 ## Characters
 
