@@ -10,7 +10,7 @@ class LowercaseI2Glyph(DottedLowercaseGlyph):
     font_feature = {"ss03": 1}
     default_italic = True
     offset = -24
-    width_ratio = 1.05
+    width_ratio = 1.08
     cap = 0.45
     rl_ratio = 0.5
 
