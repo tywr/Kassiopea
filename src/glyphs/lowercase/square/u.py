@@ -1,6 +1,5 @@
 from draw.arch import draw_arch
 from draw.rect import draw_rect
-from draw.polygon import draw_polygon
 from glyphs.lowercase.square import SquareLowercaseGlyph
 
 
@@ -16,6 +15,7 @@ class LowercaseUGlyph(SquareLowercaseGlyph):
             width_ratio=self.width_ratio,
         )
         arch_top = b.y2
+        yl = b.y1 + self.loop_ratio * b.height
 
         # Bottom arch, cut at top (only lower half drawn)
         draw_arch(
@@ -25,7 +25,7 @@ class LowercaseUGlyph(SquareLowercaseGlyph):
             b.x1,
             b.y1,
             b.x2,
-            arch_top,
+            yl,
             self.hx_ratio * b.hx,
             b.hy,
             taper=self.taper * dc.taper,
@@ -36,4 +36,4 @@ class LowercaseUGlyph(SquareLowercaseGlyph):
         draw_rect(pen, b.x2 - dc.stroke_x, 0, b.x2, dc.x_height)
 
         # Left stem — starts from arch midpoint
-        draw_rect(pen, b.x1, (arch_top + b.y1) / 2, b.x1 + dc.stroke_x, dc.x_height)
+        draw_rect(pen, b.x1, (yl + b.y1) / 2, b.x1 + dc.stroke_x, dc.x_height)

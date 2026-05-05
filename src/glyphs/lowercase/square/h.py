@@ -16,6 +16,7 @@ class LowercaseHGlyph(SquareLowercaseGlyph):
             overshoot_top=True,
             width_ratio=self.width_ratio,
         )
+        yl = b.y2 - self.loop_ratio * b.height
 
         # Top arch, cut at the bottom (only upper half drawn)
         arch_params = draw_arch(
@@ -23,10 +24,10 @@ class LowercaseHGlyph(SquareLowercaseGlyph):
             dc.stroke_x,
             dc.stroke_y,
             b.x1,
-            b.y2 - b.height,
+            yl,
             b.x2,
             b.y2,
-            1.1 * b.hx,
+            self.hx_ratio * b.hx,
             b.hy,
             taper=self.taper * dc.taper,
             side="left",
@@ -35,4 +36,4 @@ class LowercaseHGlyph(SquareLowercaseGlyph):
         draw_rect(pen, b.x1, 0, b.x1 + dc.stroke_x, dc.ascent)
 
         # Right stem — reaches up to the arch midpoint
-        draw_rect(pen, b.x2 - dc.stroke_x, 0, b.x2, b.y1 + b.height / 2)
+        draw_rect(pen, b.x2 - dc.stroke_x, 0, b.x2, (b.y2 + yl) / 2)

@@ -27,6 +27,7 @@ class LowercaseY2Glyph(SquareLowercaseGlyph):
             overshoot_bottom=True,
             width_ratio=self.width_ratio,
         )
+        yl = b.y1 + self.loop_ratio * b.height
         arch_top = b.y2
         tsx, tsy = (
             self.tail_stroke_x_ratio * dc.stroke_x,
@@ -42,7 +43,7 @@ class LowercaseY2Glyph(SquareLowercaseGlyph):
             b.x1,
             b.y1,
             b.x2,
-            arch_top,
+            yl,
             self.hx_ratio * b.hx,
             b.hy,
             taper=self.taper * dc.taper,
@@ -54,7 +55,7 @@ class LowercaseY2Glyph(SquareLowercaseGlyph):
         draw_rect(pen, b.x2 - dc.stroke_x, 0, b.x2, dc.x_height)
 
         # Left stem — starts from arch midpoint
-        draw_rect(pen, b.x1, (arch_top + b.y1) / 2, b.x1 + dc.stroke_x, dc.x_height)
+        draw_rect(pen, b.x1, (yl + b.y1) / 2, b.x1 + dc.stroke_x, dc.x_height)
 
         # Corner curving down-left into the descender
         draw_corner(
