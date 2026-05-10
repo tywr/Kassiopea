@@ -365,21 +365,33 @@ if __name__ == "__main__":
         "-s",
         type=str,
         default="regular",
-        help="Style: 'regular', 'bold', 'italic', or comma-separated stroke widths",
+        help=(
+            "Style: weight name (thin, extralight, light, regular, medium, "
+            "semibold, bold), 'italic', or comma-separated stroke widths"
+        ),
     )
     parser.add_argument("--pt", type=float, default=None, help="Point size (text mode)")
     parser.add_argument("--guides", action="store_true", help="Show helper lines (text mode)")
     args = parser.parse_args()
 
+    WEIGHT_ALIASES = {
+        "thin": 100,
+        "extralight": 200,
+        "light": 300,
+        "regular": 400,
+        "medium": 500,
+        "semibold": 600,
+        "bold": 700,
+    }
+
     style = args.s.strip().lower()
     italic = False
-    if style == "regular":
-        configs = [DrawConfig()]
-    elif style == "bold":
-        configs = [DrawConfig.weight(w=700)]
-    elif style == "italic":
+    if style == "italic":
         configs = [DrawConfig.for_italic()]
         italic = True
+    elif style in WEIGHT_ALIASES:
+        w = WEIGHT_ALIASES[style]
+        configs = [DrawConfig() if w == 400 else DrawConfig.weight(w=w)]
     else:
         configs = [
             DrawConfig(stroke_x=int(s), stroke_y=int(s) - 10)
